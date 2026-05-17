@@ -227,7 +227,7 @@ export function AdmissionsPage() {
               />
             )}
           </div>
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20">
+          <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 z-20">
             <button
               onClick={handleContinueFromSelect}
               disabled={!canContinueFromSelect}
@@ -319,7 +319,7 @@ export function AdmissionsPage() {
               applicantId={session.applicantId}
             />
           </div>
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20">
+          <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 z-20">
             <button
               onClick={handleSubmitApplication}
               className="w-full h-12 rounded-xl bg-[#1a1a1a] text-white font-bold text-sm tracking-wide active:bg-gray-800 transition-all shadow-lg"

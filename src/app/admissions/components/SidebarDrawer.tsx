@@ -145,7 +145,7 @@ export function SidebarDrawer({
                   key={item.label}
                   onClick={() => {
                     if (step) {
-                      onrouter.push(step);
+                      onNavigate(step);
                       onClose();
                     }
                   }}

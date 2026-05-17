@@ -125,7 +125,8 @@ function ChartTooltipContent({
     indicator?: "line" | "dot" | "dashed";
     nameKey?: string;
     labelKey?: string;
-  }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } & { payload?: any[]; label?: any }) {
   const { config } = useChart();
 
   const tooltipLabel = React.useMemo(() => {
@@ -257,7 +258,8 @@ function ChartLegendContent({
   verticalAlign = "bottom",
   nameKey,
 }: React.ComponentProps<"div"> &
-  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Pick<any, "payload" | "verticalAlign"> & {
     hideIcon?: boolean;
     nameKey?: string;
   }) {
@@ -275,7 +277,7 @@ function ChartLegendContent({
         className,
       )}
     >
-      {payload.map((item) => {
+      {(payload as any[]).map((item) => {
         const key = `${nameKey || item.dataKey || "value"}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
@@ -351,3 +353,4 @@ export {
   ChartLegendContent,
   ChartStyle,
 };
+

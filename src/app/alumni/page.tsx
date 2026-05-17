@@ -1,11 +1,7 @@
 'use client';
-import { ProtectedRoute } from '../components/ProtectedRoute';
-import { AlumniDashboard } from './pages/AlumniDashboard';
+import { redirect } from 'next/navigation';
 
 export default function AlumniPage() {
-  return (
-    <ProtectedRoute allowedRoles={['alumni']}>
-      <AlumniDashboard />
-    </ProtectedRoute>
-  );
+  redirect('/alumni/dashboard');
 }
+

@@ -212,3 +212,4 @@ export default function SubjectsPage() {
     </DashboardLayout>
   );
 }
+

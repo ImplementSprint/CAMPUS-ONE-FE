@@ -1,6 +1,6 @@
 'use client'
 import { ReactNode, useState } from "react";
-import { useNavigate, useLocation } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   User, BookOpen, ClipboardCheck, BookMarked, Calendar, CalendarDays,
   GraduationCap, CreditCard, FileText, AlertCircle, CheckSquare,
@@ -13,7 +13,7 @@ interface DesktopLayoutProps {
 
 export function DesktopLayout({ children }: DesktopLayoutProps) {
   const router = useRouter();
-  const location = useLocation();
+  const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const menuItems = [
@@ -54,7 +54,7 @@ export function DesktopLayout({ children }: DesktopLayoutProps) {
         <nav className="flex-1 overflow-y-auto py-4">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = pathname === item.path;
             return (
               <button key={item.path} onClick={() => { router.push(item.path); setIsSidebarOpen(false); }}
                 className={`w-full flex items-center gap-3 px-6 py-3 text-sm transition-colors ${isActive ? "bg-[#F59E0B] text-white" : "text-gray-300 hover:bg-gray-800 hover:text-white"}`}>

@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { 
   CheckCircle, 
   Clock, 
@@ -18,7 +18,7 @@ import {
 import { fetchApplicationStatus, type FullApplicationStatus } from "../services/tracking.service";
 
 export function ApplicationStatusPage() {
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<FullApplicationStatus | null>(null);
   const [loading, setLoading] = useState(true);

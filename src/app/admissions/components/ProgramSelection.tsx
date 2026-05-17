@@ -152,7 +152,7 @@ export function ProgramSelection({
           </div>
         </div>
 
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
+        <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
           <button
             onClick={handleContinue}
             className="w-full h-12 rounded-xl bg-[#F59E0B] text-white font-bold text-sm tracking-wide shadow-lg shadow-amber-100 active:bg-[#D97706] transition-all"
@@ -239,7 +239,7 @@ export function ProgramSelection({
           )}
         </div>
 
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
+        <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
           <button
             onClick={handleContinue}
             disabled={!canContinue()}
@@ -319,7 +319,7 @@ export function ProgramSelection({
           )}
         </div>
 
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
+        <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
           <button
             onClick={handleContinue}
             disabled={!canContinue()}

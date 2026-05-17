@@ -458,7 +458,7 @@ export function ApplicationDetail({ applicationId, onBack }: ApplicationDetailPr
 
       {/* Action Buttons (Fixed at bottom) */}
       {application.status === "Under Review" && (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2">
+        <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2">
           <button
             onClick={handleAccept}
             disabled={updating}

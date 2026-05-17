@@ -61,6 +61,14 @@ export interface Announcement {
   updated_at: string;
 }
 
+export interface ProfessorNotification {
+  id: string;
+  title: string;
+  body: string | null;
+  is_read: boolean;
+  created_at: string;
+}
+
 export interface Submission {
   id: string;
   student_name: string;
@@ -277,6 +285,29 @@ export async function saveGrade(
 
 // ─── Announcements ────────────────────────────────────────────────────────────
 
+export async function getProfessorNotifications(professorId: string) {
+  const { data, error } = await supabase
+    .from("notifications")
+    .select("id, title, body, is_read, created_at")
+    .eq("profile_id", professorId)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  return {
+    data: (data ?? []) as ProfessorNotification[],
+    error,
+  };
+}
+
+export async function markProfessorNotificationRead(notificationId: string) {
+  const { error } = await supabase
+    .from("notifications")
+    .update({ is_read: true })
+    .eq("id", notificationId);
+
+  return { error };
+}
+
 export async function getClassAnnouncements(classId: string) {
   const { data, error } = await supabase
     .from("announcements")
@@ -308,6 +339,39 @@ export async function createAnnouncement(
     })
     .select()
     .single();
+
+  if (!error && data) {
+    const [{ data: classInfo }, { data: students }] = await Promise.all([
+      supabase
+        .from("class_assignments")
+        .select(`
+          id,
+          section,
+          subjects (
+            code,
+            name
+          )
+        `)
+        .eq("id", classId)
+        .maybeSingle(),
+      getClassStudents(classId),
+    ]);
+
+    if (students?.length) {
+      const classLabel = classInfo
+        ? `${classInfo.subjects?.code ?? "Class"} • Section ${classInfo.section}`
+        : "your class";
+
+      const notificationRows = students.map((enrollment) => ({
+        profile_id: enrollment.student.id,
+        title: `New announcement for ${classLabel}`,
+        body: `${announcementData.title}${announcementData.content ? ` — ${announcementData.content}` : ""}`,
+        is_read: false,
+      }));
+
+      await supabase.from("notifications").insert(notificationRows);
+    }
+  }
 
   return { data, error };
 }
