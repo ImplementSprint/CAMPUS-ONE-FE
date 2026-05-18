@@ -1,5 +1,7 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { useAlumni } from '../components/app/hooks'
+import heroImage from '../assets/hero.png'
 import {
   mockRequests,
   getActiveRequests,
@@ -149,10 +151,21 @@ export function DashboardPage() {
 
   return (
     <section className="dashboard-screen">
-      <header className="dashboard-hero">
+      <header className="dashboard-hero" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem' }}>
         <div>
           <h2>Dashboard</h2>
           <p className="dashboard-lead">Welcome back, {greetingName} 👋</p>
+        </div>
+
+        <div style={{ width: 124, height: 124, flexShrink: 0, overflow: 'hidden', borderRadius: 24, background: 'rgba(255,255,255,0.04)', boxShadow: '0 18px 40px rgba(0, 0, 0, 0.24)' }}>
+          <Image
+            src={heroImage}
+            alt="Campus portal illustration"
+            width={124}
+            height={124}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            priority
+          />
         </div>
       </header>
 

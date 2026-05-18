@@ -15,6 +15,11 @@ export function UnifiedLoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    // watchdog to ensure UI doesn't stay stuck if login promise never settles
+    const watchdog = setTimeout(() => {
+      setLoading(false);
+      setError('Request timed out. Please try again.');
+    }, 12000);
     try {
       const result = await login({ email, password });
       if (result.success && result.user) {
@@ -30,6 +35,7 @@ export function UnifiedLoginPage() {
     } catch {
       setError('An unexpected error occurred. Please try again.');
     } finally {
+      clearTimeout(watchdog);
       setLoading(false);
     }
   };
@@ -97,10 +103,7 @@ export function UnifiedLoginPage() {
           </form>
 
           <div className="mt-6 space-y-3">
-            <button onClick={() => router.push('/alumni/signup')}
-              className="w-full h-11 rounded-lg border-2 border-[#F59E0B] text-[#F59E0B] font-semibold text-sm hover:bg-amber-50 transition-colors">
-              Alumni Registration →
-            </button>
+            {/* Alumni registration removed */}
             <button onClick={() => router.push('/admissions/track')}
               className="w-full h-11 rounded-lg border-2 border-gray-300 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-colors">
               Track Application Status

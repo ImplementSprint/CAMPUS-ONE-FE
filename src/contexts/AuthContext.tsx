@@ -85,19 +85,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Get initial session — if refresh token is invalid, sign out cleanly
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        // Stale/invalid refresh token — clear everything and treat as logged out
+    // Get initial session with a timeout to avoid stalling the app if the client is unresponsive
+    (async () => {
+      try {
+        const timeoutMs = 8000;
+        const timeout = new Promise<{ data: { session: any }; error?: any }>((resolve) =>
+          setTimeout(() => resolve({ data: { session: null }, error: new Error('getSession timed out') }), timeoutMs)
+        );
+        const res = (await Promise.race([supabase.auth.getSession(), timeout])) as any;
+        const { data: { session } = { session: null }, error } = res ?? {};
+        if (error) {
+          // Stale/invalid refresh token — clear everything and treat as logged out
+          supabase.auth.signOut().catch(() => {});
+          if (typeof window !== 'undefined') sessionStorage.removeItem('auth_user');
+          setUser(null);
+          setRole(null);
+          setLoading(false);
+          return;
+        }
+        resolveUser(session?.user ?? null);
+      } catch (e) {
+        // Ensure we don't leave the app stuck
         supabase.auth.signOut().catch(() => {});
         if (typeof window !== 'undefined') sessionStorage.removeItem('auth_user');
         setUser(null);
         setRole(null);
         setLoading(false);
-        return;
       }
-      resolveUser(session?.user ?? null);
-    });
+    })();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'TOKEN_REFRESHED' && !session) {

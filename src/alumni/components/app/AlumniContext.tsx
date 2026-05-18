@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
-import { apiRequest } from '../services/api'
+import { apiRequest } from '../../services/api'
 
 type AlumniProfile = {
   fullName: string

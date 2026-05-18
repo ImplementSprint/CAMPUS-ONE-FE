@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { signOut as apiSignOut } from '@/lib/api';
 
 export type UserRole =
   | 'applicant'
@@ -68,10 +69,22 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
   const { email, password } = credentials;
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    console.debug('[auth] login start', { email });
+    // Protect against network/backend hangs by racing signIn with a timeout
+    const signInPromise = supabase.auth.signInWithPassword({ email, password });
+    const timeoutMs = 8000;
+    const timeoutPromise = new Promise<{ data: any; error: Error | null }>((resolve) => {
+      setTimeout(() => resolve({ data: null, error: new Error('Sign-in timed out') }), timeoutMs);
+    });
+    const { data, error } = await Promise.race([signInPromise, timeoutPromise]);
 
-    if (error) return { success: false, error: error.message };
+    if (error) {
+      console.debug('[auth] signIn response error', error);
+      return { success: false, error: error.message };
+    }
     if (!data.user) return { success: false, error: 'Login failed' };
+
+    console.debug('[auth] login success', { userId: data.user.id });
 
     const role = await detectUserRole(email);
     if (!role) return { success: false, error: 'No account found with this email.' };
@@ -100,10 +113,66 @@ export function getCurrentUser(): AuthUser | null {
   try { return JSON.parse(userJson) as AuthUser; } catch { return null; }
 }
 
-export function logout(): void {
-  if (typeof window !== 'undefined') {
+export async function logout(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  try {
+    // Sign out from Supabase (client)
+    await supabase.auth.signOut();
+  } catch (err) {
+    console.error('Supabase signOut error:', err);
+  }
+
+  // Fire-and-forget backend signout to avoid blocking the UI if the API is slow/unreachable
+  apiSignOut().catch(() => undefined);
+
+  // Clear client-side cached auth and navigate to login
+  try {
+    // remove our cached user
     sessionStorage.removeItem('auth_user');
-    supabase.auth.signOut();
+
+    // remove any localStorage keys that Supabase or related libs may have left behind
+    try {
+      const keys = Object.keys(localStorage);
+      for (const k of keys) {
+        if (!k) continue;
+        const lower = k.toLowerCase();
+        if (lower.includes('supabase') || lower.includes('sb:') || lower.includes('sb-') || lower.includes('auth')) {
+          localStorage.removeItem(k);
+        }
+      }
+      // common explicit key
+      localStorage.removeItem('supabase.auth.token');
+    } catch (e) {
+      console.debug('[auth] clearing localStorage failed', e);
+    }
+
+    // Best-effort: remove Supabase-related IndexedDB databases if available
+    try {
+      if ('indexedDB' in window && typeof (indexedDB as any).databases === 'function') {
+        // indexedDB.databases() is not available in all browsers
+        // wrap in try/catch to avoid throwing
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (indexedDB as any).databases().then((dbs: any[]) => {
+          dbs.forEach((db) => {
+            try {
+              if (db?.name && String(db.name).toLowerCase().includes('supabase')) {
+                indexedDB.deleteDatabase(db.name);
+              }
+            } catch {
+              // ignore
+            }
+          });
+        }).catch(() => {});
+      }
+    } catch (e) {
+      /* ignore */
+    }
+
+    // Force a reload to ensure any in-memory clients reinitialize
+    window.location.replace('/login?ts=' + Date.now());
+  } catch (err) {
+    console.error('Logout cleanup error:', err);
+    // fallback
     window.location.href = '/login';
   }
 }

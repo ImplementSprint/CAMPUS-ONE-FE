@@ -10,21 +10,34 @@ class APIError extends Error {
 
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
-  
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
+  // add an AbortController timeout to avoid fetch hanging indefinitely
+  const controller = new AbortController();
+  const timeoutMs = 8000;
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      signal: controller.signal,
+    });
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-    throw new APIError(response.status, error.error || error.message || 'Request failed');
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new APIError(response.status, error.error || error.message || 'Request failed');
+    }
+
+    return response.json();
+  } catch (err: any) {
+    if (err.name === 'AbortError') {
+      throw new APIError(0, 'Request timed out');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return response.json();
 }
 
 // ─── Profile API ──────────────────────────────────────────────────────────────

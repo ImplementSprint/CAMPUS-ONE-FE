@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAlumni } from '../app/hooks'
 
 type SidebarIcon = 'dashboard' | 'profile' | 'document' | 'card' | 'tracker' | 'requests' | 'payments' | 'settings' | 'logout'
@@ -113,6 +113,7 @@ function NavIcon({ type }: { type: SidebarIcon }) {
 
 export function Sidebar() {
   const router = useRouter()
+  const pathname = usePathname()
   const { profile } = useAlumni()
   const profileName = profile.fullName.trim() || 'Pio Felipe Ramirez'
   const sidebarName = profileName.length > 15 ? `${profileName.slice(0, 15)}...` : profileName
@@ -125,16 +126,16 @@ export function Sidebar() {
 
   const isActivePath = (path: string) => {
     if (path === '/') {
-      return router.pathname === '/'
+      return pathname === '/'
     }
 
     // Handle requests path with query parameters
     if (path.includes('?')) {
       const basePath = path.split('?')[0]
-      return router.pathname === basePath
+      return pathname === basePath
     }
 
-    return router.pathname === path || router.pathname.startsWith(`${path}/`)
+    return pathname === path || pathname.startsWith(`${path}/`)
   }
 
   return (

@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react";
-import { supabase } from "../../lib/supabase";
+import { login, getRedirectPath } from '@/services/auth.service';
 
 interface FormState {
   email: string;
@@ -36,16 +36,23 @@ export function LoginPage() {
   const handleLogin = async () => {
     if (!validate()) return;
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: form.email,
-      password: form.password,
-    });
-    setLoading(false);
-    if (error) {
-      setErrors({ general: "Invalid email or password. Please try again." });
-    } else {
-      // Redirect to student portal dashboard after successful login (enrolled students only)
-      window.location.href = "/desktop";
+    const watchdog = setTimeout(() => {
+      setLoading(false);
+      setErrors({ general: 'Request timed out. Please try again.' });
+    }, 12000);
+    try {
+      const result = await login({ email: form.email, password: form.password });
+      if (!result.success) {
+        setErrors({ general: result.error || 'Invalid email or password. Please try again.' });
+      } else if (result.user) {
+        // Use redirect path from role when available
+        window.location.href = getRedirectPath(result.user.role) || '/desktop';
+      }
+    } catch (err) {
+      setErrors({ general: 'An unexpected error occurred. Please try again.' });
+    } finally {
+      clearTimeout(watchdog);
+      setLoading(false);
     }
   };
 

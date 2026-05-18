@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { logout } from '@/services/auth.service';
 import { useState } from 'react';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
@@ -10,7 +11,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const [enrollOpen, setEnrollOpen] = useState(true);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await logout();
     router.refresh();
     router.push('/login');
   };
