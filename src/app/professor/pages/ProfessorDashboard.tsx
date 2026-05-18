@@ -15,7 +15,7 @@ import { ProfessorSchedule } from "./ProfessorSchedule";
 import { ProfessorStudents } from "./ProfessorStudents";
 import { ProfessorHelp } from "./ProfessorHelp";
 import { ProfessorSettings } from "./ProfessorSettings";
-import NotificationBell from '../components/NotificationBell';
+import NotificationBell from '@/components/NotificationBell';
 
 type View =
   | "dashboard" | "classes" | "class-detail"
@@ -158,8 +158,6 @@ export function ProfessorDashboard() {
           </div>
           <div className="flex items-center gap-4">
             <NotificationBell />
-
-
             <div className="w-9 h-9 rounded-full bg-[#F59E0B] flex items-center justify-center">
               <span className="text-sm font-bold text-white">
                 {(user?.name || user?.email || "P").charAt(0).toUpperCase()}
