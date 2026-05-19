@@ -23,7 +23,11 @@ const data = [
   { month: 'Apr', enrolled: 3842, newStudents: 62 },
 ]
 
+<<<<<<< HEAD
+function CustomTooltip({ active, payload, label }: TooltipProps<number, string> & { payload?: Array<{ name?: string; value?: number | string; color?: string }>; label?: string | number }) {
+=======
 function CustomTooltip({ active, payload, label }: TooltipProps<number, string>) {
+>>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
   if (!active || !payload?.length) return null
   return (
     <div className="bg-[#0B0F14] border border-white/10 rounded-xl px-4 py-3 shadow-2xl">
