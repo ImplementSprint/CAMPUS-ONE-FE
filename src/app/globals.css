@@ -28,7 +28,7 @@ body {
   }
 
   /* Transform the fixed bottom mobile button bars into elegant desktop card footers */
-  .admissions-desktop-layout div.fixed.bottom-0.left-1\/2.\-translate-x-1\/2 {
+  .admissions-desktop-layout div.fixed.bottom-0.left-1/2.-translate-x-1/2 {
     position: static !important;
     transform: none !important;
     width: 100% !important;
