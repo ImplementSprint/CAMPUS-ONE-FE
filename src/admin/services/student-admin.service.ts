@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from "@/shared/lib/supabase";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -9,14 +9,11 @@ export interface StudentRecord {
   applicant_id: string;
   enrollment_status: string;
   enrolled_at: string;
-  password_hash?: string | null;
   full_name: string;
   school_level: string;
   applicant_type: string;
   mobile_number?: string;
   address?: string;
-  birthdate?: string;
-  program?: string;
 }
 
 export interface StudentStats {
@@ -26,86 +23,39 @@ export interface StudentStats {
   pending: number;
 }
 
-export interface EnrollmentRecord {
-  id: string;
-  student_number: string;
-  full_name: string;
-  email: string;
-  school_level: string;
-  enrollment_status: string;
-  enrolled_at: string;
-  subjects_count: number;
-}
-
-export interface GradeRecord {
-  student_number: string;
-  full_name: string;
-  subject_code: string;
-  subject_name: string;
-  units: number;
-  grade: string | null;
-  remarks: string | null;
-  semester: string;
-  school_year: string;
-}
-
-export interface HonorsRecord {
-  student_number: string;
-  full_name: string;
-  email: string;
-  gwa: number;
-  honors_title: string;
-  school_level: string;
-}
-
-export interface DeficiencyRecord {
-  student_number: string;
-  full_name: string;
-  email: string;
-  subject_code: string;
-  subject_name: string;
-  grade: string | null;
-  remarks: string | null;
-}
-
-export interface SubjectRecord {
-  id: string;
-  subject_code: string;
-  subject_name: string;
-  units: number;
-  description?: string;
-  prerequisites?: string;
-  department?: string;
-}
-
-export interface ServiceRequest {
-  id: string;
-  student_number: string;
-  full_name: string;
-  email: string;
-  request_type: string;
-  status: string;
-  created_at: string;
-  details?: string;
-}
-
 // ─── Fetch Student Stats ──────────────────────────────────────────────────────
 
 export async function fetchStudentStats() {
   try {
-    const [total, active, inactive, pending] = await Promise.all([
-      supabase.from('student_accounts').select('*', { count: 'exact', head: true }),
-      supabase.from('student_accounts').select('*', { count: 'exact', head: true }).eq('enrollment_status', 'active'),
-      supabase.from('student_accounts').select('*', { count: 'exact', head: true }).eq('enrollment_status', 'inactive'),
-      supabase.from('student_accounts').select('*', { count: 'exact', head: true }).is('password_hash', null),
-    ]);
+    // Total students
+    const { count: total } = await supabase
+      .from("student_accounts")
+      .select("*", { count: "exact", head: true });
+
+    // Active students
+    const { count: active } = await supabase
+      .from("student_accounts")
+      .select("*", { count: "exact", head: true })
+      .eq("enrollment_status", "active");
+
+    // Inactive students
+    const { count: inactive } = await supabase
+      .from("student_accounts")
+      .select("*", { count: "exact", head: true })
+      .eq("enrollment_status", "inactive");
+
+    // Pending activation
+    const { count: pending } = await supabase
+      .from("student_accounts")
+      .select("*", { count: "exact", head: true })
+      .is("password_hash", null);
 
     return {
       data: {
-        total: total.count ?? 0,
-        active: active.count ?? 0,
-        inactive: inactive.count ?? 0,
-        pending: pending.count ?? 0,
+        total: total || 0,
+        active: active || 0,
+        inactive: inactive || 0,
+        pending: pending || 0,
       },
       error: null,
     };
@@ -119,7 +69,7 @@ export async function fetchStudentStats() {
 export async function fetchAllStudents() {
   try {
     const { data, error } = await supabase
-      .from('student_accounts')
+      .from("student_accounts")
       .select(`
         id,
         email,
@@ -127,43 +77,31 @@ export async function fetchAllStudents() {
         applicant_id,
         enrollment_status,
         enrolled_at,
-        password_hash,
         applicant_profiles (
           full_name,
           school_level,
           applicant_type,
           mobile_number,
-          address,
-          birthdate,
-          program
+          address
         )
       `)
-      .order('enrolled_at', { ascending: false });
+      .order("enrolled_at", { ascending: false });
 
     if (error) throw error;
 
-    const students: StudentRecord[] = (data ?? []).map((s: any) => {
-      // applicant_profiles can be array or object depending on Supabase version
-      const profile = Array.isArray(s.applicant_profiles)
-        ? s.applicant_profiles[0]
-        : s.applicant_profiles;
-      return {
-        id: s.id,
-        email: s.email,
-        student_number: s.student_number,
-        applicant_id: s.applicant_id,
-        enrollment_status: s.enrollment_status ?? 'pending',
-        enrolled_at: s.enrolled_at,
-        password_hash: s.password_hash,
-        full_name: profile?.full_name ?? 'N/A',
-        school_level: profile?.school_level ?? 'N/A',
-        applicant_type: profile?.applicant_type ?? 'N/A',
-        mobile_number: profile?.mobile_number,
-        address: profile?.address,
-        birthdate: profile?.birthdate,
-        program: profile?.program,
-      };
-    });
+    const students: StudentRecord[] = (data || []).map((student: any) => ({
+      id: student.id,
+      email: student.email,
+      student_number: student.student_number,
+      applicant_id: student.applicant_id,
+      enrollment_status: student.enrollment_status,
+      enrolled_at: student.enrolled_at,
+      full_name: student.applicant_profiles?.full_name || "N/A",
+      school_level: student.applicant_profiles?.school_level || "N/A",
+      applicant_type: student.applicant_profiles?.applicant_type || "N/A",
+      mobile_number: student.applicant_profiles?.mobile_number,
+      address: student.applicant_profiles?.address,
+    }));
 
     return { data: students, error: null };
   } catch (error: any) {
@@ -176,228 +114,77 @@ export async function fetchAllStudents() {
 export async function fetchStudentDetails(studentId: string) {
   try {
     const { data, error } = await supabase
-      .from('student_accounts')
-      .select(`*, applicant_profiles (*)`)
-      .eq('id', studentId)
+      .from("student_accounts")
+      .select(`
+        *,
+        applicant_profiles (*)
+      `)
+      .eq("id", studentId)
       .single();
 
     if (error) throw error;
+
     return { data, error: null };
   } catch (error: any) {
     return { data: null, error };
   }
 }
 
-// ─── Activate / Deactivate ────────────────────────────────────────────────────
+// ─── Activate Student Account ─────────────────────────────────────────────────
 
 export async function activateStudentAccount(studentId: string) {
   try {
-    const { data, error } = await supabase
-      .from('student_accounts')
-      .update({ enrollment_status: 'active' })
-      .eq('id', studentId)
+    const { data, error} = await supabase
+      .from("student_accounts")
+      .update({
+        enrollment_status: "active",
+      })
+      .eq("id", studentId)
       .select()
       .single();
+
     if (error) throw error;
+
     return { data, error: null };
   } catch (error: any) {
     return { data: null, error };
   }
 }
+
+// ─── Deactivate Student Account ───────────────────────────────────────────────
 
 export async function deactivateStudentAccount(studentId: string) {
   try {
     const { data, error } = await supabase
-      .from('student_accounts')
-      .update({ enrollment_status: 'inactive' })
-      .eq('id', studentId)
+      .from("student_accounts")
+      .update({
+        enrollment_status: "inactive",
+      })
+      .eq("id", studentId)
       .select()
       .single();
+
     if (error) throw error;
+
     return { data, error: null };
   } catch (error: any) {
     return { data: null, error };
   }
 }
 
-// ─── Enrollment Center ────────────────────────────────────────────────────────
+// ─── Update Student Information ───────────────────────────────────────────────
 
-export async function fetchEnrollments() {
+export async function updateStudentInfo(studentId: string, updates: any) {
   try {
     const { data, error } = await supabase
-      .from('student_accounts')
-      .select(`
-        id,
-        student_number,
-        email,
-        enrollment_status,
-        enrolled_at,
-        applicant_profiles ( full_name, school_level )
-      `)
-      .order('enrolled_at', { ascending: false });
-
-    if (error) throw error;
-
-    const enrollments = (data ?? []).map((s: any) => {
-      const profile = Array.isArray(s.applicant_profiles) ? s.applicant_profiles[0] : s.applicant_profiles;
-      return {
-        id: s.id,
-        student_number: s.student_number,
-        full_name: profile?.full_name ?? 'N/A',
-        email: s.email,
-        school_level: profile?.school_level ?? 'N/A',
-        enrollment_status: s.enrollment_status ?? 'pending',
-        enrolled_at: s.enrolled_at,
-        subjects_count: 0,
-      };
-    });
-
-    return { data: enrollments, error: null };
-  } catch (error: any) {
-    return { data: null, error };
-  }
-}
-
-// ─── Academic Hub (Grades) ────────────────────────────────────────────────────
-
-export async function fetchGrades() {
-  try {
-    const { data, error } = await supabase
-      .from('exam_scores')
-      .select(`
-        id,
-        student_id,
-        subject_code,
-        score,
-        remarks,
-        student_accounts ( student_number, email, applicant_profiles ( full_name ) )
-      `)
-      .order('subject_code', { ascending: true });
-
-    if (error) throw error;
-    return { data: data ?? [], error: null };
-  } catch (error: any) {
-    return { data: null, error };
-  }
-}
-
-// ─── Honors Tracker ───────────────────────────────────────────────────────────
-
-export async function fetchHonors() {
-  try {
-    const { data, error } = await supabase
-      .from('student_accounts')
-      .select(`
-        student_number,
-        email,
-        applicant_profiles ( full_name, school_level )
-      `);
-
-    if (error) throw error;
-    return { data: data ?? [], error: null };
-  } catch (error: any) {
-    return { data: null, error };
-  }
-}
-
-// ─── Clearance & Deficiencies ─────────────────────────────────────────────────
-
-export async function fetchDeficiencies() {
-  try {
-    const { data, error } = await supabase
-      .from('exam_scores')
-      .select(`
-        id,
-        student_id,
-        subject_code,
-        score,
-        remarks,
-        student_accounts ( student_number, email, applicant_profiles ( full_name ) )
-      `)
-      .eq('remarks', 'Failed');
-
-    if (error) throw error;
-    return { data: data ?? [], error: null };
-  } catch (error: any) {
-    return { data: null, error };
-  }
-}
-
-// ─── Subject Catalog ──────────────────────────────────────────────────────────
-
-export async function fetchSubjects() {
-  try {
-    const { data, error } = await supabase
-      .from('subjects')
-      .select('*')
-      .order('subject_code', { ascending: true });
-
-    if (error) throw error;
-    return { data: data ?? [], error: null };
-  } catch (error: any) {
-    return { data: null, error };
-  }
-}
-
-// ─── Service Requests ─────────────────────────────────────────────────────────
-
-export async function fetchServiceRequests() {
-  try {
-    const { data, error } = await supabase
-      .from('documents')
-      .select(`
-        id,
-        student_id,
-        document_type,
-        status,
-        created_at,
-        student_accounts ( student_number, email, applicant_profiles ( full_name ) )
-      `)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return { data: data ?? [], error: null };
-  } catch (error: any) {
-    return { data: null, error };
-  }
-}
-
-// ─── Reports ──────────────────────────────────────────────────────────────────
-
-export async function fetchReportStats() {
-  try {
-    const [total, college, shs, irregular] = await Promise.all([
-      supabase.from('student_accounts').select('*', { count: 'exact', head: true }),
-      supabase.from('applicant_profiles').select('*', { count: 'exact', head: true }).eq('school_level', 'College'),
-      supabase.from('applicant_profiles').select('*', { count: 'exact', head: true }).eq('school_level', 'Senior High School'),
-      supabase.from('applicant_profiles').select('*', { count: 'exact', head: true }).eq('applicant_type', 'Irregular'),
-    ]);
-
-    return {
-      data: {
-        total: total.count ?? 0,
-        college: college.count ?? 0,
-        shs: shs.count ?? 0,
-        irregular: irregular.count ?? 0,
-      },
-      error: null,
-    };
-  } catch (error: any) {
-    return { data: null, error };
-  }
-}
-
-// ─── Update Student Info ──────────────────────────────────────────────────────
-
-export async function updateStudentInfo(studentId: string, updates: { email?: string; student_number?: string }) {
-  try {
-    const { data, error } = await supabase
-      .from('student_accounts')
+      .from("student_accounts")
       .update(updates)
-      .eq('id', studentId)
+      .eq("id", studentId)
       .select()
       .single();
+
     if (error) throw error;
+
     return { data, error: null };
   } catch (error: any) {
     return { data: null, error };

@@ -1,148 +1,71 @@
-﻿'use client';
+'use client';
 
-import { useState } from 'react';
-import {
-  clearanceRecords, registryRecords, idCardApplications,
-  documentRequestQueue, privacyComplianceRecords, dataDownloadRequests,
-  activityTrackingRecords, notificationEngineRecords,
-} from '../../data/admin-modules';
-import { GraduateExitOnboardingPage } from './views/GraduateExitOnboardingPage';
-import { MembershipIdServicesPage } from './views/MembershipIdServicesPage';
-import { RecordDocumentFulfillmentPage } from './views/RecordDocumentFulfillmentPage';
-import { EngagementCommunicationPage } from './views/EngagementCommunicationPage';
-import { DataGovernancePrivacyPage } from './views/DataGovernancePrivacyPage';
+import React, { useState } from 'react';
 
-type Module =
-  | 'dashboard'
-  | 'graduate-exit'
-  | 'membership-id'
-  | 'record-document'
-  | 'engagement'
-  | 'data-governance';
+type AlumniRecord = {
+  log_id: string;
+  actor_uuid: string;
+  full_name: string;
+  email: string;
+  graduation_year: number;
+  academic_unit: string;
+  program: string;
+  is_legacy_registration: boolean;
+  action_type: string;
+  status_code: number;
+  created_at: string;
+};
 
-const NAV: { id: Module; label: string; icon: string }[] = [
-  { id: 'dashboard',        label: 'Dashboard',                    icon: 'ðŸ ' },
-  { id: 'graduate-exit',    label: 'Graduate Exit & Onboarding',   icon: 'ðŸŽ“' },
-  { id: 'membership-id',    label: 'Membership & ID Services',     icon: 'ðŸªª' },
-  { id: 'record-document',  label: 'Record & Document Fulfillment',icon: 'ðŸ“„' },
-  { id: 'engagement',       label: 'Engagement & Communication',   icon: 'ðŸ“£' },
-  { id: 'data-governance',  label: 'Data Governance & Privacy',    icon: 'ðŸ”’' },
+type RecordRequest = {
+  log_id: string;
+  actor_uuid: string;
+  document_type: string;
+  fee_amount: number;
+  payment_status: string;
+  created_at: string;
+};
+
+type Tab = 'registrations' | 'records' | 'notifications';
+
+// ─── Mock data for demo ───────────────────────────────────────────────────────
+const MOCK_ALUMNI: AlumniRecord[] = [
+  { log_id: '1', actor_uuid: 'uuid-001', full_name: 'Juan dela Cruz', email: 'juan@example.com', graduation_year: 2023, academic_unit: 'College of Information and Computing Sciences', program: 'BS Information Systems', is_legacy_registration: false, action_type: 'alumni.registration.submitted.v1', status_code: 100, created_at: new Date().toISOString() },
+  { log_id: '2', actor_uuid: 'uuid-002', full_name: 'Maria Santos', email: 'maria@example.com', graduation_year: 2019, academic_unit: 'Faculty of Engineering', program: 'BS Civil Engineering', is_legacy_registration: true, action_type: 'alumni.registration.submitted.v1', status_code: 100, created_at: new Date(Date.now() - 86400000).toISOString() },
+  { log_id: '3', actor_uuid: 'uuid-003', full_name: 'Pedro Reyes', email: 'pedro@example.com', graduation_year: 2024, academic_unit: 'College of Nursing', program: 'BS Nursing', is_legacy_registration: false, action_type: 'alumni.graduation.verified.v1', status_code: 100, created_at: new Date(Date.now() - 172800000).toISOString() },
 ];
 
-// â”€â”€â”€ Dashboard landing page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function DashboardHome({ onNavigate }: { onNavigate: (m: Module) => void }) {
-  const pendingClearance   = clearanceRecords.filter((r) => r.status !== 'Released').length;
-  const activeMembers      = registryRecords.filter((r) => r.member_status === 'Active Member').length;
-  const openServiceWork    = idCardApplications.filter((r) => r.application_status !== 'Completed').length +
-                             documentRequestQueue.filter((r) => r.request_status !== 'Completed').length;
-  const privacyItems       = privacyComplianceRecords.filter((r) => r.status !== 'Compliant').length +
-                             dataDownloadRequests.filter((r) => r.request_status !== 'Delivered').length;
+const MOCK_REQUESTS: RecordRequest[] = [
+  { log_id: 'r1', actor_uuid: 'uuid-001', document_type: 'TOR', fee_amount: 150, payment_status: 'PENDING', created_at: new Date().toISOString() },
+  { log_id: 'r2', actor_uuid: 'uuid-002', document_type: 'DIPLOMA', fee_amount: 200, payment_status: 'PAID', created_at: new Date(Date.now() - 3600000).toISOString() },
+  { log_id: 'r3', actor_uuid: 'uuid-003', document_type: 'GOOD_MORAL', fee_amount: 100, payment_status: 'PENDING', created_at: new Date(Date.now() - 7200000).toISOString() },
+];
 
-  const moduleCards = [
-    { id: 'graduate-exit'   as Module, title: 'Graduate Exit & Onboarding',    description: 'Clearance approvals and member registry governance.' },
-    { id: 'membership-id'   as Module, title: 'Membership & ID Services',       description: 'ID application handling and benefit fulfillment tracking.' },
-    { id: 'record-document' as Module, title: 'Record & Document Fulfillment',  description: 'Request queue operations and release logistics.' },
-    { id: 'engagement'      as Module, title: 'Engagement & Communication',     description: 'Notification engine controls and activity analytics.' },
-    { id: 'data-governance' as Module, title: 'Data Governance & Privacy',      description: 'Compliance review and data export fulfillment.' },
-  ];
-
-  return (
-    <section className="dashboard-screen">
-      <header className="dashboard-hero">
-        <div>
-          <h2>Alumni Admin Operations</h2>
-          <p>Five-module admin workspace aligned to alumni registration, profile, card, record request, and graduation verification fields.</p>
-        </div>
-      </header>
-
-      <section className="dashboard-stats" aria-label="Operations summary">
-        <article className="dashboard-stat">
-          <strong className="tone-blue">{activeMembers}</strong>
-          <span>Active registry members</span>
-        </article>
-        <article className="dashboard-stat">
-          <strong className="tone-amber">{pendingClearance}</strong>
-          <span>Exit approvals in progress</span>
-        </article>
-        <article className="dashboard-stat">
-          <strong className="tone-green">{openServiceWork}</strong>
-          <span>ID and document tasks open</span>
-        </article>
-        <article className="dashboard-stat">
-          <strong className="tone-violet">{privacyItems}</strong>
-          <span>Privacy actions pending</span>
-        </article>
-      </section>
-
-      <section className="module-card-grid" aria-label="Admin modules">
-        {moduleCards.map((card) => (
-          <button
-            key={card.id}
-            id={`module-${card.id}`}
-            className="module-card"
-            type="button"
-            onClick={() => onNavigate(card.id)}
-          >
-            <strong>{card.title}</strong>
-            <span>{card.description}</span>
-          </button>
-        ))}
-      </section>
-
-      <section className="admin-section" style={{ marginTop: '2rem' }}>
-        <h3 style={{ color: '#F5A623', fontSize: 13, marginBottom: 12 }}>Recent Activity</h3>
-        <div className="admin-notif-list">
-          {activityTrackingRecords.map((r) => (
-            <div key={r.activity_id} className={`admin-notif-item ${r.outcome === 'Escalated' ? 'admin-notif--warning' : r.outcome === 'Completed' ? 'admin-notif--success' : 'admin-notif--info'}`}>
-              <div className="admin-notif-icon">{r.outcome === 'Escalated' ? 'âš ï¸' : r.outcome === 'Completed' ? 'âœ…' : 'â³'}</div>
-              <div>
-                <div className="admin-notif-title">{r.full_name}</div>
-                <div className="admin-notif-body">{r.event_name} â€” {r.touchpoint}</div>
-                <div className="admin-notif-time">{r.event_time}</div>
-              </div>
-            </div>
-          ))}
-          {notificationEngineRecords.filter((r) => r.status === 'Live').map((r) => (
-            <div key={r.notification_id} className="admin-notif-item admin-notif--info">
-              <div className="admin-notif-icon">ðŸ“£</div>
-              <div>
-                <div className="admin-notif-title">{r.campaign_name}</div>
-                <div className="admin-notif-body">{r.audience} â€” {r.channel}</div>
-                <div className="admin-notif-time">{r.schedule_at}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <style>{moduleStyles}</style>
-    </section>
-  );
-}
-
-// â”€â”€â”€ Main dashboard shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AlumniAdminPage() {
-  const [activeModule, setActiveModule] = useState<Module>('dashboard');
+  const [activeTab, setActiveTab] = useState<Tab>('registrations');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredAlumni = MOCK_ALUMNI.filter((a) =>
+    `${a.full_name} ${a.email} ${a.academic_unit}`.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <main className="admin-page">
       <aside className="admin-sidebar">
         <div className="admin-logo">
-          <span className="admin-logo-mark">AA</span>
-          <span className="admin-logo-text">Alumni Admin</span>
+          <span className="admin-logo-mark">C1</span>
+          <span className="admin-logo-text">Campus One</span>
         </div>
         <nav className="admin-nav">
-          {NAV.map(({ id, label, icon }) => (
-            <button
-              key={id}
-              id={`nav-${id}`}
-              className={`admin-nav-item ${activeModule === id ? 'active' : ''}`}
-              type="button"
-              onClick={() => setActiveModule(id)}
-            >
-              {icon} {label}
-            </button>
-          ))}
+          <button id="tab-registrations" className={`admin-nav-item ${activeTab === 'registrations' ? 'active' : ''}`} onClick={() => setActiveTab('registrations')}>
+            👤 Alumni Registrations
+          </button>
+          <button id="tab-records" className={`admin-nav-item ${activeTab === 'records' ? 'active' : ''}`} onClick={() => setActiveTab('records')}>
+            📄 Record Requests
+          </button>
+          <button id="tab-notifications" className={`admin-nav-item ${activeTab === 'notifications' ? 'active' : ''}`} onClick={() => setActiveTab('notifications')}>
+            🔔 Notifications
+          </button>
         </nav>
         <div className="admin-sidebar-footer">
           <div className="admin-avatar">AA</div>
@@ -154,12 +77,137 @@ export default function AlumniAdminPage() {
       </aside>
 
       <div className="admin-content">
-        {activeModule === 'dashboard'        && <DashboardHome onNavigate={setActiveModule} />}
-        {activeModule === 'graduate-exit'    && <GraduateExitOnboardingPage />}
-        {activeModule === 'membership-id'    && <MembershipIdServicesPage />}
-        {activeModule === 'record-document'  && <RecordDocumentFulfillmentPage />}
-        {activeModule === 'engagement'       && <EngagementCommunicationPage />}
-        {activeModule === 'data-governance'  && <DataGovernancePrivacyPage />}
+        {/* Header */}
+        <header className="admin-header">
+          <div>
+            <h1 className="admin-page-title">
+              {activeTab === 'registrations' && 'Alumni Registrations'}
+              {activeTab === 'records' && 'Record Requests'}
+              {activeTab === 'notifications' && 'Notifications'}
+            </h1>
+            <p className="admin-page-sub">Alumni Admin Portal — Campus One</p>
+          </div>
+          <div className="admin-stats-row">
+            <div className="admin-stat"><span className="admin-stat-val">{MOCK_ALUMNI.length}</span><span className="admin-stat-label">Total Alumni</span></div>
+            <div className="admin-stat"><span className="admin-stat-val">{MOCK_REQUESTS.filter(r => r.payment_status === 'PENDING').length}</span><span className="admin-stat-label">Pending Requests</span></div>
+            <div className="admin-stat admin-stat--accent"><span className="admin-stat-val">{MOCK_ALUMNI.filter(a => a.is_legacy_registration).length}</span><span className="admin-stat-label">Legacy Verifications</span></div>
+          </div>
+        </header>
+
+        {/* Registrations Tab */}
+        {activeTab === 'registrations' && (
+          <section className="admin-section">
+            <div className="admin-toolbar">
+              <input
+                id="alumni-search"
+                type="search"
+                placeholder="Search by name, email, or unit…"
+                className="admin-search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Alumni</th>
+                    <th>Academic Unit</th>
+                    <th>Grad Year</th>
+                    <th>Type</th>
+                    <th>Event</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAlumni.map((a) => (
+                    <tr key={a.log_id}>
+                      <td>
+                        <div className="admin-cell-name">{a.full_name}</div>
+                        <div className="admin-cell-sub">{a.email}</div>
+                      </td>
+                      <td className="admin-cell-unit">{a.academic_unit}</td>
+                      <td>{a.graduation_year}</td>
+                      <td>
+                        <span className={`admin-badge ${a.is_legacy_registration ? 'badge-legacy' : 'badge-standard'}`}>
+                          {a.is_legacy_registration ? 'Legacy' : 'Standard'}
+                        </span>
+                      </td>
+                      <td><code className="admin-event-code">{a.action_type}</code></td>
+                      <td><span className={`admin-badge ${a.status_code === 100 ? 'badge-success' : 'badge-error'}`}>{a.status_code === 100 ? '100 OK' : '501 Error'}</span></td>
+                      <td className="admin-cell-date">{new Date(a.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* Record Requests Tab */}
+        {activeTab === 'records' && (
+          <section className="admin-section">
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Actor UUID</th>
+                    <th>Document</th>
+                    <th>Fee (PHP)</th>
+                    <th>Payment</th>
+                    <th>Event</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {MOCK_REQUESTS.map((r) => (
+                    <tr key={r.log_id}>
+                      <td><code className="admin-uuid">{r.actor_uuid}</code></td>
+                      <td><span className="admin-badge badge-doc">{r.document_type}</span></td>
+                      <td>₱ {r.fee_amount}</td>
+                      <td><span className={`admin-badge ${r.payment_status === 'PAID' ? 'badge-success' : 'badge-pending'}`}>{r.payment_status}</span></td>
+                      <td><code className="admin-event-code">alumni.record.requested.v1</code></td>
+                      <td className="admin-cell-date">{new Date(r.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* Notifications Tab */}
+        {activeTab === 'notifications' && (
+          <section className="admin-section">
+            <div className="admin-notif-list">
+              <div className="admin-notif-item admin-notif--info">
+                <div className="admin-notif-icon">🎓</div>
+                <div>
+                  <div className="admin-notif-title">Graduation event received</div>
+                  <div className="admin-notif-body">actor_uuid: uuid-003 — graduation.verified.v1 processed via Kafka. Alumni log created.</div>
+                  <div className="admin-notif-time">Just now</div>
+                </div>
+              </div>
+              <div className="admin-notif-item admin-notif--warning">
+                <div className="admin-notif-icon">📋</div>
+                <div>
+                  <div className="admin-notif-title">Legacy verification pending</div>
+                  <div className="admin-notif-body">Maria Santos (uuid-002) submitted a legacy registration. Manual identity verification required by Registrar.</div>
+                  <div className="admin-notif-time">1 day ago</div>
+                </div>
+              </div>
+              <div className="admin-notif-item admin-notif--success">
+                <div className="admin-notif-icon">✅</div>
+                <div>
+                  <div className="admin-notif-title">New alumni registered</div>
+                  <div className="admin-notif-body">Juan dela Cruz successfully registered via standard student ID verification.</div>
+                  <div className="admin-notif-time">2 hours ago</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
       </div>
 
       <style>{adminStyles}</style>
@@ -167,78 +215,59 @@ export default function AlumniAdminPage() {
   );
 }
 
-// â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const moduleStyles = `
-  .module-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 28px; }
-  .module-card { background: #111; border: 1.5px solid #1f1f1f; border-radius: 14px; padding: 20px 22px; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 8px; transition: all 0.15s; font-family: 'Inter', sans-serif; }
-  .module-card:hover { border-color: #F5A623; background: rgba(245,166,35,0.05); }
-  .module-card strong { font-size: 14px; font-weight: 700; color: #fff; }
-  .module-card span { font-size: 12px; color: #888; line-height: 1.5; }
-  .dashboard-stats { display: flex; gap: 20px; margin: 28px 0 0; flex-wrap: wrap; }
-  .dashboard-stat { background: #111; border: 1px solid #1f1f1f; border-radius: 12px; padding: 16px 20px; display: flex; flex-direction: column; gap: 4px; }
-  .dashboard-stat strong { font-size: 28px; font-weight: 800; }
-  .dashboard-stat span { font-size: 12px; color: #888; }
-  .tone-blue { color: #38bdf8; } .tone-amber { color: #F5A623; } .tone-green { color: #4ade80; } .tone-violet { color: #a78bfa; }
-`;
-
 const adminStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
   .admin-page { display: flex; min-height: 100vh; background: #0a0a0a; font-family: 'Inter', sans-serif; color: #fff; }
-  .admin-sidebar { width: 256px; background: #111; border-right: 1px solid #1f1f1f; display: flex; flex-direction: column; padding: 24px 0; flex-shrink: 0; }
+  .admin-sidebar { width: 240px; background: #111; border-right: 1px solid #1f1f1f; display: flex; flex-direction: column; padding: 24px 0; flex-shrink: 0; }
   .admin-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 28px; border-bottom: 1px solid #1f1f1f; margin-bottom: 16px; }
   .admin-logo-mark { background: #F5A623; color: #111; font-weight: 800; font-size: 14px; border-radius: 8px; padding: 6px 10px; }
   .admin-logo-text { font-weight: 700; font-size: 15px; color: #fff; }
   .admin-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
-  .admin-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: none; border: none; border-radius: 10px; color: #888; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; text-align: left; transition: all 0.15s; white-space: nowrap; overflow: hidden; }
+  .admin-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: none; border: none; border-radius: 10px; color: #888; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; text-align: left; transition: all 0.15s; }
   .admin-nav-item:hover { background: #1a1a1a; color: #fff; }
   .admin-nav-item.active { background: rgba(245,166,35,0.12); color: #F5A623; font-weight: 600; }
   .admin-sidebar-footer { padding: 20px; border-top: 1px solid #1f1f1f; display: flex; align-items: center; gap: 10px; }
   .admin-avatar { width: 36px; height: 36px; background: #F5A623; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: #111; flex-shrink: 0; }
   .admin-name { font-size: 13px; font-weight: 600; color: #fff; }
   .admin-role { font-size: 11px; color: #F5A623; }
-  .admin-content { flex: 1; overflow-y: auto; padding: 28px 32px; }
-  .dashboard-screen { max-width: 1100px; }
-  .dashboard-hero { margin-bottom: 8px; }
-  .dashboard-hero h2 { font-size: 22px; font-weight: 800; margin: 0 0 6px; }
-  .dashboard-hero p { font-size: 13px; color: #888; margin: 0; }
-  .resource-screen { max-width: 1100px; }
-  .resource-hero { margin-bottom: 24px; }
-  .resource-hero h1 { font-size: 20px; font-weight: 800; margin: 0 0 6px; }
-  .resource-hero p { font-size: 13px; color: #888; margin: 0; }
-  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-  .summary-card { background: #111; border: 1px solid #1f1f1f; border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; }
-  .summary-card strong { font-size: 26px; font-weight: 800; color: #F5A623; }
-  .summary-card span { font-size: 11px; color: #888; }
-  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .section-card { background: #111; border: 1px solid #1f1f1f; border-radius: 14px; overflow: hidden; }
-  .section-card-head { padding: 18px 20px; border-bottom: 1px solid #1f1f1f; }
-  .section-card-head h2 { font-size: 14px; font-weight: 700; margin: 0 0 4px; color: #fff; }
-  .section-card-head p { font-size: 12px; color: #888; margin: 0; }
-  .resource-table-wrap { overflow-x: auto; }
-  .resource-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .resource-table th { background: #0f0f0f; color: #666; font-weight: 600; padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .resource-table td { padding: 12px 14px; border-top: 1px solid #1a1a1a; color: #ccc; vertical-align: middle; }
-  .resource-table tr:hover td { background: #0f0f0f; }
-  .muted { font-size: 11px; color: #666; margin-top: 2px; }
-  .empty-state { padding: 32px; text-align: center; color: #666; font-size: 13px; }
-  .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-  .row-action-btn { background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.2); border-radius: 6px; color: #F5A623; font-size: 11px; font-weight: 600; padding: 4px 10px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
-  .row-action-btn:hover { background: rgba(245,166,35,0.2); }
-  .status-pill { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
-  .status-pill.success { background: rgba(34,197,94,0.12); color: #4ade80; }
-  .status-pill.warning { background: rgba(245,166,35,0.12); color: #F5A623; }
-  .status-pill.info    { background: rgba(14,165,233,0.12); color: #38bdf8; }
-  .status-pill.danger  { background: rgba(239,68,68,0.12); color: #f87171; }
-  .status-pill.neutral { background: rgba(156,163,175,0.12); color: #9ca3af; }
-  .admin-notif-list { display: flex; flex-direction: column; gap: 10px; }
-  .admin-notif-item { display: flex; gap: 14px; padding: 14px 18px; border-radius: 12px; border: 1px solid #1f1f1f; align-items: flex-start; }
+  .admin-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .admin-header { padding: 28px 32px; border-bottom: 1px solid #1f1f1f; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .admin-page-title { font-size: 22px; font-weight: 800; margin: 0 0 4px; }
+  .admin-page-sub { font-size: 12px; color: #666; margin: 0; }
+  .admin-stats-row { display: flex; gap: 20px; }
+  .admin-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .admin-stat-val { font-size: 24px; font-weight: 800; color: #fff; }
+  .admin-stat-label { font-size: 11px; color: #888; }
+  .admin-stat--accent .admin-stat-val { color: #F5A623; }
+  .admin-section { flex: 1; padding: 24px 32px; overflow-y: auto; }
+  .admin-toolbar { margin-bottom: 16px; }
+  .admin-search { background: #111; border: 1.5px solid #2a2a2a; border-radius: 10px; padding: 10px 16px; color: #fff; font-size: 13px; font-family: 'Inter', sans-serif; width: 320px; }
+  .admin-search:focus { outline: none; border-color: #F5A623; }
+  .admin-table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid #1f1f1f; }
+  .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .admin-table th { background: #111; color: #666; font-weight: 600; padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .admin-table td { padding: 14px 16px; border-top: 1px solid #1a1a1a; color: #ccc; vertical-align: middle; }
+  .admin-table tr:hover td { background: #0f0f0f; }
+  .admin-cell-name { font-weight: 600; color: #fff; margin-bottom: 2px; }
+  .admin-cell-sub { font-size: 11px; color: #666; }
+  .admin-cell-unit { font-size: 12px; max-width: 180px; }
+  .admin-cell-date { font-size: 11px; color: #888; white-space: nowrap; }
+  .admin-event-code { font-family: monospace; font-size: 11px; color: #888; background: #111; padding: 3px 6px; border-radius: 4px; }
+  .admin-uuid { font-family: monospace; font-size: 11px; color: #888; }
+  .admin-badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+  .badge-success { background: rgba(34,197,94,0.12); color: #4ade80; }
+  .badge-error { background: rgba(239,68,68,0.12); color: #f87171; }
+  .badge-pending { background: rgba(245,166,35,0.12); color: #F5A623; }
+  .badge-legacy { background: rgba(139,92,246,0.12); color: #a78bfa; }
+  .badge-standard { background: rgba(99,102,241,0.12); color: #818cf8; }
+  .badge-doc { background: rgba(14,165,233,0.12); color: #38bdf8; }
+  .admin-notif-list { display: flex; flex-direction: column; gap: 12px; }
+  .admin-notif-item { display: flex; gap: 16px; padding: 18px 20px; border-radius: 14px; border: 1px solid #1f1f1f; align-items: flex-start; }
   .admin-notif--info { background: rgba(14,165,233,0.05); border-color: rgba(14,165,233,0.15); }
   .admin-notif--warning { background: rgba(245,166,35,0.05); border-color: rgba(245,166,35,0.15); }
   .admin-notif--success { background: rgba(34,197,94,0.05); border-color: rgba(34,197,94,0.15); }
-  .admin-notif-icon { font-size: 20px; }
-  .admin-notif-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 3px; }
-  .admin-notif-body { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 4px; }
-  .admin-notif-time { font-size: 10px; color: #666; }
-  .admin-section { padding: 0; }
+  .admin-notif-icon { font-size: 24px; }
+  .admin-notif-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .admin-notif-body { font-size: 12px; color: #888; line-height: 1.5; margin-bottom: 6px; }
+  .admin-notif-time { font-size: 11px; color: #666; }
 `;
-

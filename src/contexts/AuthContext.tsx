@@ -17,35 +17,17 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 async function detectRole(email: string): Promise<UserRole | null> {
-  // Check student accounts
-  const { data: student } = await supabase.from('student_accounts').select('id').eq('email', email).maybeSingle();
-  if (student) return 'student';
-
-  // Check admin_users — role column determines which admin type
-  const { data: admin } = await supabase.from('admin_users').select('id, role').eq('email', email).maybeSingle();
-  if (admin) {
-    const roleMap: Record<string, UserRole> = {
-      student_admin:    'student_admin',
-      applicant_admin:  'applicant_admin',
-      alumni_admin:     'alumni_admin',
-      super_admin:      'super_admin',
-      admin:            'applicant_admin', // fallback for legacy rows
-    };
-    return roleMap[admin.role] ?? 'applicant_admin';
+  const checks: { table: string; role: UserRole }[] = [
+    { table: 'student_accounts',   role: 'student' },
+    { table: 'admin_users',        role: 'admin' },
+    { table: 'professor_users',    role: 'professor' },
+    { table: 'alumni',             role: 'alumni' },
+    { table: 'applicant_profiles', role: 'applicant' },
+  ];
+  for (const { table, role } of checks) {
+    const { data } = await supabase.from(table).select('id').eq('email', email).maybeSingle();
+    if (data) return role;
   }
-
-  // Check professor
-  const { data: professor } = await supabase.from('professor_users').select('id').eq('email', email).maybeSingle();
-  if (professor) return 'professor';
-
-  // Check alumni
-  const { data: alumni } = await supabase.from('alumni').select('id').eq('email', email).maybeSingle();
-  if (alumni) return 'alumni';
-
-  // Check applicant
-  const { data: applicant } = await supabase.from('applicant_profiles').select('id').eq('email', email).maybeSingle();
-  if (applicant) return 'applicant';
-
   return null;
 }
 
@@ -85,34 +67,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Get initial session with a timeout to avoid stalling the app if the client is unresponsive
-    (async () => {
-      try {
-        const timeoutMs = 8000;
-        const timeout = new Promise<{ data: { session: any }; error?: any }>((resolve) =>
-          setTimeout(() => resolve({ data: { session: null }, error: new Error('getSession timed out') }), timeoutMs)
-        );
-        const res = (await Promise.race([supabase.auth.getSession(), timeout])) as any;
-        const { data: { session } = { session: null }, error } = res ?? {};
-        if (error) {
-          // Stale/invalid refresh token — clear everything and treat as logged out
-          supabase.auth.signOut().catch(() => {});
-          if (typeof window !== 'undefined') sessionStorage.removeItem('auth_user');
-          setUser(null);
-          setRole(null);
-          setLoading(false);
-          return;
-        }
-        resolveUser(session?.user ?? null);
-      } catch (e) {
-        // Ensure we don't leave the app stuck
+    // Get initial session — if refresh token is invalid, sign out cleanly
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        // Stale/invalid refresh token — clear everything and treat as logged out
         supabase.auth.signOut().catch(() => {});
         if (typeof window !== 'undefined') sessionStorage.removeItem('auth_user');
         setUser(null);
         setRole(null);
         setLoading(false);
+        return;
       }
-    })();
+      resolveUser(session?.user ?? null);
+    });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'TOKEN_REFRESHED' && !session) {

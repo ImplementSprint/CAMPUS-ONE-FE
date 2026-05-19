@@ -42,6 +42,8 @@ function InputField({
   type = "text",
   error,
   optional = false,
+  subLabel,
+  icon,
 }: {
   label: string;
   value: string;
@@ -50,23 +52,36 @@ function InputField({
   type?: string;
   error?: string;
   optional?: boolean;
+  subLabel?: string;
+  icon?: React.ReactNode;
 }) {
   return (
-    <div>
-      <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 mb-1.5">
-        {label}
-        {optional && <span className="text-gray-400 font-normal">(optional)</span>}
+    <div className="w-full">
+      <label className="flex flex-col mb-1.5">
+        <span className="flex items-center gap-1 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+          {label}
+          {!optional && <span className="text-red-500 ml-0.5">*</span>}
+          {optional && <span className="text-gray-400 font-normal lowercase ml-1">(optional)</span>}
+        </span>
+        {subLabel && <span className="text-[10px] text-gray-400 font-normal normal-case mt-0.5">{subLabel}</span>}
       </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className={`w-full h-12 px-4 rounded-xl border text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all ${
-          error ? "border-red-400 bg-red-50" : "border-gray-200"
-        }`}
-      />
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      <div className="relative">
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className={`w-full h-12 px-4 rounded-xl border text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all ${
+            error ? "border-red-400 bg-red-50" : "border-gray-200"
+          } ${icon ? "pr-10" : ""}`}
+        />
+        {icon && (
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            {icon}
+          </div>
+        )}
+      </div>
+      {error && <p className="text-[10px] text-red-500 mt-1 ml-1">{error}</p>}
     </div>
   );
 }
@@ -87,10 +102,11 @@ function TextAreaField({
   optional?: boolean;
 }) {
   return (
-    <div>
-      <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 mb-1.5">
+    <div className="w-full">
+      <label className="flex items-center gap-1 text-[11px] font-bold text-gray-500 mb-1.5 uppercase tracking-wider">
         {label}
-        {optional && <span className="text-gray-400 font-normal">(optional)</span>}
+        {!optional && <span className="text-red-500 ml-0.5">*</span>}
+        {optional && <span className="text-gray-400 font-normal lowercase ml-1">(optional)</span>}
       </label>
       <textarea
         value={value}
@@ -101,7 +117,7 @@ function TextAreaField({
           error ? "border-red-400 bg-red-50" : "border-gray-200"
         }`}
       />
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      {error && <p className="text-[10px] text-red-500 mt-1 ml-1">{error}</p>}
     </div>
   );
 }
@@ -221,7 +237,8 @@ export function ParentInformation({
           label="Father's Name"
           value={form.fatherName}
           onChange={set("fatherName")}
-          placeholder="Enter father's full name"
+          placeholder="Juan Santos, Dela Cruz"
+          subLabel="Format: First Name Middle Name, Last Name"
           error={errors.fatherName}
         />
 
@@ -299,7 +316,8 @@ export function ParentInformation({
           label="Mother's Name"
           value={form.motherName}
           onChange={set("motherName")}
-          placeholder="Enter mother's full name"
+          placeholder="Maria Santos, Dela Cruz"
+          subLabel="Format: First Name Middle Name, Last Name"
           error={errors.motherName}
         />
 
@@ -322,7 +340,7 @@ export function ParentInformation({
       </div>
 
         {/* Bottom Action Buttons */}
-      <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 space-y-2.5 z-20">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 space-y-2.5 z-20">
         {errors.general && (
           <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-600 mb-2">
             {errors.general}

@@ -76,7 +76,7 @@ export function CreateAccount({ schoolLevel, applicantType, onSuccess }: CreateA
         {/* Email */}
         <div>
           <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-            Email Address
+            Email Address <span className="text-red-500">*</span>
             <span className="ml-1 text-gray-400 font-normal">(used to track your application)</span>
           </label>
           <input
@@ -95,7 +95,7 @@ export function CreateAccount({ schoolLevel, applicantType, onSuccess }: CreateA
       </div>
 
       {/* Fixed Bottom */}
-      <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 space-y-3 z-20">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 space-y-3 z-20">
         <button
           onClick={handleSubmit}
           disabled={loading}

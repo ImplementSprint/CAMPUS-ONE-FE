@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react";
-import { login, getRedirectPath } from '@/services/auth.service';
+import { supabase } from "../../lib/supabase";
 
 interface FormState {
   email: string;
@@ -36,23 +36,16 @@ export function LoginPage() {
   const handleLogin = async () => {
     if (!validate()) return;
     setLoading(true);
-    const watchdog = setTimeout(() => {
-      setLoading(false);
-      setErrors({ general: 'Request timed out. Please try again.' });
-    }, 12000);
-    try {
-      const result = await login({ email: form.email, password: form.password });
-      if (!result.success) {
-        setErrors({ general: result.error || 'Invalid email or password. Please try again.' });
-      } else if (result.user) {
-        // Use redirect path from role when available
-        window.location.href = getRedirectPath(result.user.role) || '/desktop';
-      }
-    } catch (err) {
-      setErrors({ general: 'An unexpected error occurred. Please try again.' });
-    } finally {
-      clearTimeout(watchdog);
-      setLoading(false);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: form.email,
+      password: form.password,
+    });
+    setLoading(false);
+    if (error) {
+      setErrors({ general: "Invalid email or password. Please try again." });
+    } else {
+      // Redirect to student portal dashboard after successful login (enrolled students only)
+      window.location.href = "/desktop";
     }
   };
 
@@ -70,8 +63,8 @@ export function LoginPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+    <div className="w-screen h-screen bg-gray-100 flex items-start justify-center">
+      <div className="w-full max-w-[430px] h-screen flex flex-col bg-gray-100">
         {/* Header */}
         <header className="bg-[#1a1a1a] text-white h-14 flex items-center justify-center px-4 flex-shrink-0">
           <div className="flex items-center gap-0.5">

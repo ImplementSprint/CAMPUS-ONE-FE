@@ -124,4 +124,3 @@ export function AlumniCreateAccount({ onSuccess, onBack }: AlumniCreateAccountPr
     </div>
   );
 }
-

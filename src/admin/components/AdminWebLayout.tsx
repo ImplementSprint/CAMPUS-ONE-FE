@@ -1,6 +1,6 @@
 'use client'
 import { ReactNode } from "react";
-import { logout, getCurrentUser } from "@/services/auth.service";
+import { logout, getCurrentUser } from "@/shared/auth.service";
 import { LogOut, LayoutDashboard, FileText, Users, Settings } from "lucide-react";
 
 interface AdminWebLayoutProps {

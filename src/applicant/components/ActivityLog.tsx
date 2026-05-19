@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import type { SchoolLevel, ApplicantType, AdmissionStatus } from "../types/admissions.types";
 import { SelectionTags } from "./SelectionTags";
 import { CheckCircle2, CreditCard, ListTodo, Clock } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/shared/lib/supabase";
 
 interface ActivityLogProps {
   schoolLevel: SchoolLevel;

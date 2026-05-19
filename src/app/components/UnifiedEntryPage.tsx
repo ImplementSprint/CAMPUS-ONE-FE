@@ -6,24 +6,22 @@ export function UnifiedEntryPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a1a1a] via-[#2d2d2d] to-[#1a1a1a] flex flex-col">
-      {/* Header */}
-      <header className="bg-transparent text-white h-16 flex items-center justify-center px-6 flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <GraduationCap className="w-8 h-8 text-[#F59E0B]" />
-          <div className="flex items-center gap-1">
-            <span className="text-[#F59E0B] font-bold text-xl tracking-tight">CAMPUS</span>
-            <span className="text-white font-light text-xl tracking-tight">Portal</span>
+    <div className="w-screen h-screen overflow-hidden bg-gradient-to-br from-[#1a1a1a] via-[#2d2d2d] to-[#1a1a1a]">
+      <div className="relative h-screen w-full max-w-[430px] mx-auto flex flex-col">
+        <header className="bg-transparent text-white h-16 flex items-center justify-center px-4 flex-shrink-0 pt-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#F59E0B] font-bold text-xl tracking-tight">CAMPUS</span>
+              <span className="text-white font-light text-xl tracking-tight">Portal</span>
+            </div>
+            <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain rounded-md" />
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main content */}
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-lg">
-          <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-white mb-3">Welcome</h1>
-            <p className="text-lg text-gray-300">Your gateway to education</p>
+        <div className="flex-1 overflow-y-auto px-6 flex flex-col justify-center pb-8">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl font-bold text-white mb-3">Welcome</h1>
+            <p className="text-base text-gray-300">Your gateway to education</p>
           </div>
 
           <div className="mb-6">
@@ -31,7 +29,7 @@ export function UnifiedEntryPage() {
             <div className="space-y-4">
               <button
                 onClick={() => router.push('/admissions')}
-                className="w-full bg-[#F59E0B] text-white rounded-2xl p-6 shadow-2xl hover:bg-[#D97706] transition-all group relative overflow-hidden"
+                className="w-full bg-[#F59E0B] text-white rounded-2xl p-6 shadow-2xl hover:bg-[#D97706] active:scale-[0.98] transition-all group relative overflow-hidden"
               >
                 <div className="relative flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -49,7 +47,7 @@ export function UnifiedEntryPage() {
 
               <button
                 onClick={() => router.push('/alumni/register')}
-                className="w-full bg-[#2d3748] text-white rounded-2xl p-6 border-2 border-[#F59E0B] hover:bg-[#374151] transition-all group"
+                className="w-full bg-[#2d3748] text-white rounded-2xl p-6 border-2 border-[#F59E0B] hover:bg-[#374151] active:scale-[0.98] transition-all group"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -71,7 +69,7 @@ export function UnifiedEntryPage() {
             <p className="text-xs font-bold text-gray-400 tracking-wider uppercase mb-3">ALREADY HAVE AN ACCOUNT?</p>
             <button
               onClick={() => router.push('/login')}
-              className="w-full bg-white/10 backdrop-blur-sm text-white rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all group"
+              className="w-full bg-white/10 backdrop-blur-sm text-white rounded-2xl p-6 border border-white/20 hover:bg-white/15 active:scale-[0.98] transition-all group"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -88,17 +86,19 @@ export function UnifiedEntryPage() {
             </button>
           </div>
 
-          <div className="text-center space-y-3">
-            <button onClick={() => router.push('/admissions/track')}
-              className="text-sm text-gray-300 hover:text-white transition-colors">
+          <div className="space-y-3">
+            <button
+              onClick={() => router.push('/admissions/track')}
+              className="w-full text-center py-3 text-sm text-gray-300 hover:text-white transition-colors"
+            >
               Track Application Status →
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="px-6 pb-6 text-center">
-        <p className="text-xs text-gray-400">Need help? Contact admissions office</p>
+        <div className="px-6 pb-6 text-center">
+          <p className="text-xs text-gray-400">Need help? Contact admissions office</p>
+        </div>
       </div>
     </div>
   );

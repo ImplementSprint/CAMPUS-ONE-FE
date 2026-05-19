@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { SchoolLevel, ApplicantType } from "../types/admissions.types";
 import { SelectionTags } from "./SelectionTags";
 import { saveApplicantProfile, logEvent } from "../services/admissions.service";
+import { Calendar } from "lucide-react";
 
 interface FormState {
   firstName: string;
@@ -20,6 +21,7 @@ interface FormState {
 interface FormErrors {
   firstName?: string;
   lastName?: string;
+  middleName?: string;
   birthdate?: string;
   mobileNumber?: string;
   street?: string;
@@ -46,6 +48,9 @@ function InputField({
   type = "text",
   error,
   optional = false,
+  icon,
+  onFocus,
+  onBlur,
 }: {
   label: string;
   value: string;
@@ -54,23 +59,37 @@ function InputField({
   type?: string;
   error?: string;
   optional?: boolean;
+  icon?: React.ReactNode;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <div>
-      <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 mb-1.5">
+    <div className="w-full">
+      <label className="flex items-center gap-1 text-[11px] font-bold text-gray-500 mb-1.5 uppercase tracking-wider">
         {label}
-        {optional && <span className="text-gray-400 font-normal">(optional)</span>}
+        {!optional && <span className="text-red-500 ml-0.5">*</span>}
+        {optional && <span className="text-gray-400 font-normal lowercase ml-1">(optional)</span>}
       </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className={`w-full h-12 px-4 rounded-xl border text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all ${
-          error ? "border-red-400 bg-red-50" : "border-gray-200"
-        }`}
-      />
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      <div className="relative">
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onClick={onClick}
+          placeholder={placeholder}
+          className={`w-full h-12 px-4 rounded-xl border text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all ${
+            error ? "border-red-400 bg-red-50" : "border-gray-200"
+          } ${icon ? "pr-10" : ""}`}
+        />
+        {icon && (
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            {icon}
+          </div>
+        )}
+      </div>
+      {error && <p className="text-[10px] text-red-500 mt-1 ml-1">{error}</p>}
     </div>
   );
 }
@@ -97,6 +116,7 @@ export function PersonalProfile({
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
+  const [birthdateType, setBirthdateType] = useState<"text" | "date">("text");
 
   const set = (field: keyof FormState) => (v: string) => {
     setForm((p) => ({ ...p, [field]: v }));
@@ -105,10 +125,21 @@ export function PersonalProfile({
 
   const validate = (): boolean => {
     const errs: FormErrors = {};
+    const currentYear = new Date().getFullYear();
 
     if (!form.firstName.trim()) errs.firstName = "First name is required";
     if (!form.lastName.trim()) errs.lastName = "Last name is required";
-    if (!form.birthdate) errs.birthdate = "Birthdate is required";
+    if (!form.middleName.trim()) errs.middleName = "Middle name is required";
+    
+    if (!form.birthdate) {
+      errs.birthdate = "Birthdate is required";
+    } else {
+      const birthDateObj = new Date(form.birthdate);
+      const birthYear = birthDateObj.getFullYear();
+      if (isNaN(birthDateObj.getTime()) || birthYear < 1920 || birthYear > currentYear - 2) {
+        errs.birthdate = "Invalid date";
+      }
+    }
 
     if (!form.mobileNumber.trim()) {
       errs.mobileNumber = "Mobile number is required";
@@ -198,16 +229,39 @@ export function PersonalProfile({
           value={form.middleName}
           onChange={set("middleName")}
           placeholder="Santos"
-          optional
+          error={errors.middleName}
         />
 
         <InputField
           label="Birthdate"
           value={form.birthdate}
           onChange={set("birthdate")}
-          placeholder=""
-          type="date"
+          placeholder="Select birthdate"
+          type={birthdateType}
+          onFocus={() => {
+            setBirthdateType("date");
+          }}
+          onBlur={() => {
+            if (!form.birthdate) setBirthdateType("text");
+          }}
+          onClick={(e: any) => {
+            setBirthdateType("date");
+            // Use a small timeout to ensure the type change has registered
+            setTimeout(() => {
+              if (e.target.showPicker) {
+                e.target.showPicker();
+              }
+            }, 10);
+          }}
           error={errors.birthdate}
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          }
         />
 
         <InputField
@@ -271,7 +325,7 @@ export function PersonalProfile({
         )}
       </div>
 
-      <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 space-y-2.5 z-20">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 space-y-2.5 z-20">
         <button
           onClick={handleSave}
           disabled={loading}

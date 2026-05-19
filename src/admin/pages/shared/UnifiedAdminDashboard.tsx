@@ -11,7 +11,7 @@ export function UnifiedAdminDashboard() {
       {currentPortal === "applicant" ? (
         <ApplicantAdminDashboard onSwitchPortal={setCurrentPortal} />
       ) : (
-        <StudentAdminDashboard />
+        <StudentAdminDashboard onSwitchPortal={setCurrentPortal} />
       )}
     </>
   );

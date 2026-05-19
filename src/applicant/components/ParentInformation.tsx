@@ -42,6 +42,7 @@ function InputField({
   type = "text",
   error,
   optional = false,
+  subLabel,
 }: {
   label: string;
   value: string;
@@ -50,12 +51,17 @@ function InputField({
   type?: string;
   error?: string;
   optional?: boolean;
+  subLabel?: string;
 }) {
   return (
     <div>
-      <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 mb-1.5">
-        {label}
-        {optional && <span className="text-gray-400 font-normal">(optional)</span>}
+      <label className="flex flex-col mb-1.5">
+        <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-600">
+          {label}
+          {!optional && <span className="text-red-500 ml-0.5">*</span>}
+          {optional && <span className="text-gray-400 font-normal">(optional)</span>}
+        </span>
+        {subLabel && <span className="text-[10px] text-gray-400 font-normal mt-0.5">{subLabel}</span>}
       </label>
       <input
         type={type}
@@ -90,6 +96,7 @@ function TextAreaField({
     <div>
       <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 mb-1.5">
         {label}
+        {!optional && <span className="text-red-500 ml-0.5">*</span>}
         {optional && <span className="text-gray-400 font-normal">(optional)</span>}
       </label>
       <textarea
@@ -221,7 +228,8 @@ export function ParentInformation({
           label="Father's Name"
           value={form.fatherName}
           onChange={set("fatherName")}
-          placeholder="Enter father's full name"
+          placeholder="Juan Santos, Dela Cruz"
+          subLabel="Format: First Name Middle Name, Last Name"
           error={errors.fatherName}
         />
 
@@ -299,7 +307,8 @@ export function ParentInformation({
           label="Mother's Name"
           value={form.motherName}
           onChange={set("motherName")}
-          placeholder="Enter mother's full name"
+          placeholder="Maria Santos, Dela Cruz"
+          subLabel="Format: First Name Middle Name, Last Name"
           error={errors.motherName}
         />
 

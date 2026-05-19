@@ -18,9 +18,12 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       </button>
 
       {/* Center: branding */}
-      <div className="flex items-center gap-0.5">
-        <span className="text-[#F59E0B] font-bold text-base tracking-tight">CAMPUS</span>
-        <span className="text-white font-light text-base tracking-tight">Admin</span>
+      <div className="flex items-center gap-1.5">
+        <img src="/logo.png" alt="Logo" className="w-5 h-5 object-contain" />
+        <div className="flex items-baseline gap-0.5">
+          <span className="text-[#F59E0B] font-bold text-base tracking-tight">CAMPUS</span>
+          <span className="text-white font-light text-base tracking-tight">Admin</span>
+        </div>
       </div>
 
       {/* Right: admin avatar */}

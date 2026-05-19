@@ -1,5 +1,3 @@
-import { ApplicantAdminDashboard } from '@/admin/pages/applicant-admin/ApplicantAdminDashboard';
+import { AdminDashboard } from '@/admin/pages/admin-dashboard/AdminDashboard';
 
-export default function AdminDashboardPage() {
-  return <ApplicantAdminDashboard onSwitchPortal={() => {}} />;
-}
+export default AdminDashboard;

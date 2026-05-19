@@ -1,153 +1,293 @@
 'use client';
 
-import { useState } from 'react';
-import { schemaRooms, kafkaAlerts, masterUsers, securityControls, journeyMetrics } from '../../data/super-admin-modules';
-import { InfrastructurePage } from './views/InfrastructurePage';
-import { IAMPage } from './views/IAMPage';
-import { SystemOpsPage } from './views/SystemOpsPage';
-import { AnalyticsPage } from './views/AnalyticsPage';
+import React, { useState } from 'react';
 
-type Module = 'dashboard' | 'infrastructure' | 'iam' | 'system-ops' | 'analytics';
+type ServiceModule = 'alumni' | 'enrollment' | 'application' | 'graduation';
+type ModuleStatus = 'online' | 'degraded' | 'offline';
 
-const NAV: { id: Module; icon: string; label: string; group: string }[] = [
-  { id: 'dashboard',      icon: '🏠', label: 'System Overview',           group: 'Home' },
-  { id: 'infrastructure', icon: '🗄️', label: 'Infrastructure & Services', group: 'Operations' },
-  { id: 'iam',            icon: '🔐', label: 'Identity & Access (IAM)',    group: 'Operations' },
-  { id: 'system-ops',     icon: '⚙️', label: 'System Ops & Compliance',   group: 'Operations' },
-  { id: 'analytics',      icon: '📊', label: 'Master Analytics',           group: 'Intelligence' },
-];
-
-const GROUP_ORDER = ['Home', 'Operations', 'Intelligence'];
-
-// ─── Dashboard Overview ───────────────────────────────────────────────────────
-function DashboardOverview({ onNavigate }: { onNavigate: (m: Module) => void }) {
-  const degradedSchemas = schemaRooms.filter(s => s.health !== 'healthy').length;
-  const criticalAlerts = kafkaAlerts.filter(a => a.severity === 'critical' && !a.resolved).length;
-  const mfaIssues = masterUsers.filter(u => !u.mfa_enabled && u.status === 'active' && u.role !== 'SUPER_ADMIN').length;
-  const securityFails = securityControls.filter(s => s.status === 'fail').length;
-  const totalStudents = journeyMetrics.find(m => m.stage === 'Active Students')?.count ?? 0;
-  const totalAlumni = journeyMetrics.find(m => m.stage === 'Registered Alumni')?.count ?? 0;
-
-  const kpis = [
-    { label: 'Schema Rooms',      value: `${schemaRooms.length - degradedSchemas}/${schemaRooms.length}`, sub: 'healthy',          color: '#4ade80', alert: degradedSchemas > 0 },
-    { label: 'Kafka Alerts',      value: criticalAlerts,  sub: 'critical unresolved', color: criticalAlerts > 0 ? '#f87171' : '#4ade80', alert: criticalAlerts > 0 },
-    { label: 'MFA Gaps',          value: mfaIssues,       sub: 'admin accounts',      color: mfaIssues > 0 ? '#F5A623' : '#4ade80',   alert: mfaIssues > 0 },
-    { label: 'Security Failures', value: securityFails,   sub: 'controls failing',    color: securityFails > 0 ? '#f87171' : '#4ade80', alert: securityFails > 0 },
-    { label: 'Active Students',   value: totalStudents.toLocaleString(), sub: 'platform-wide', color: '#38bdf8', alert: false },
-    { label: 'Registered Alumni', value: totalAlumni,     sub: 'total registered',    color: '#a78bfa', alert: false },
-  ];
-
-  const moduleCards: { id: Module; icon: string; title: string; desc: string }[] = [
-    { id: 'infrastructure', icon: '🗄️', title: 'Infrastructure & Services', desc: 'Schema Registry · Module Manifest · Kafka Gateway' },
-    { id: 'iam',            icon: '🔐', title: 'Identity & Access Management', desc: 'Role Permissions · User Directory · MFA Governance' },
-    { id: 'system-ops',     icon: '⚙️', title: 'System Ops & Compliance', desc: 'Global Config · Audit Trail · Security Controls' },
-    { id: 'analytics',      icon: '📊', title: 'Master Analytics', desc: 'Journey Funnel · Cross-Service Reports' },
-  ];
-
-  return (
-    <section>
-      <header style={{ marginBottom: 28 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 6px', color: '#fff' }}>Campus One — Super Admin</h2>
-        <p style={{ fontSize: 13, color: '#888', margin: 0 }}>System Governance & Infrastructure · Global view across all schemas, services, and users.</p>
-      </header>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14, marginBottom: 32 }}>
-        {kpis.map(k => (
-          <div key={k.label} style={{ background: '#111', border: `1px solid ${k.alert ? k.color + '30' : '#1f1f1f'}`, borderRadius: 14, padding: '18px 16px' }}>
-            <div style={{ fontSize: 28, fontWeight: 800, color: k.color }}>{k.value}</div>
-            <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>{k.sub}</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#ccc', marginTop: 6 }}>{k.label}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
-        {moduleCards.map(mc => (
-          <button key={mc.id} id={`overview-${mc.id}`} type="button" onClick={() => onNavigate(mc.id)}
-            style={{ background: '#111', border: '1.5px solid #1f1f1f', borderRadius: 14, padding: '22px 20px', textAlign: 'left', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 8, transition: 'border-color 0.15s', fontFamily: 'inherit' }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = '#F5A623')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = '#1f1f1f')}>
-            <span style={{ fontSize: 24 }}>{mc.icon}</span>
-            <strong style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{mc.title}</strong>
-            <span style={{ fontSize: 11, color: '#666', lineHeight: 1.5 }}>{mc.desc}</span>
-          </button>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-// ─── Page title map ───────────────────────────────────────────────────────────
-const PAGE_TITLE: Record<Module, string> = {
-  dashboard:      'System Overview',
-  infrastructure: 'Infrastructure & Service Orchestration',
-  iam:            'Identity & Access Management',
-  'system-ops':   'System Operations & Compliance',
-  analytics:      'Master System Analytics',
+type ServiceHealth = {
+  module: ServiceModule;
+  status: ModuleStatus;
+  port: number;
+  version: string;
+  lastChecked: string;
 };
 
-// ─── Shell ────────────────────────────────────────────────────────────────────
+type AdminUser = {
+  id: string;
+  full_name: string;
+  email: string;
+  role: string;
+  tenant_id: string;
+  status: 'active' | 'suspended';
+};
+
+type Tab = 'dashboard' | 'services' | 'users' | 'tenants';
+
+const MOCK_HEALTH: ServiceHealth[] = [
+  { module: 'alumni', status: 'online', port: 3002, version: '1.0.0', lastChecked: new Date().toISOString() },
+  { module: 'enrollment', status: 'online', port: 3001, version: '1.0.0', lastChecked: new Date().toISOString() },
+  { module: 'application', status: 'online', port: 3003, version: '1.0.0', lastChecked: new Date().toISOString() },
+  { module: 'graduation', status: 'degraded', port: 3004, version: '1.0.0', lastChecked: new Date().toISOString() },
+];
+
+const MOCK_USERS: AdminUser[] = [
+  { id: 'su-001', full_name: 'Super Admin', email: 'super@campus-one.edu', role: 'SUPER_ADMIN', tenant_id: 'global', status: 'active' },
+  { id: 'aa-001', full_name: 'Alumni Admin', email: 'alumni.admin@campus-one.edu', role: 'ALUMNI_ADMIN', tenant_id: 'campus-one', status: 'active' },
+  { id: 'sa-001', full_name: 'Student Admin', email: 'student.admin@campus-one.edu', role: 'STUDENT_ADMIN', tenant_id: 'campus-one', status: 'active' },
+  { id: 'aa-002', full_name: 'Applicant Admin', email: 'app.admin@campus-one.edu', role: 'APPLICANT_ADMIN', tenant_id: 'campus-one', status: 'suspended' },
+];
+
+const MOCK_TENANTS = [
+  { id: 'campus-one', name: 'Campus One (UST)', modules: ['alumni', 'enrollment', 'application', 'graduation'], status: 'active', plan: 'enterprise' },
+];
+
 export default function SuperAdminPage() {
-  const [active, setActive] = useState<Module>('dashboard');
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
 
   return (
-    <main style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: "'Inter', sans-serif", color: '#fff' }}>
-      {/* Sidebar */}
-      <aside style={{ width: 256, background: '#0f0f0f', borderRight: '1px solid #1a1a1a', display: 'flex', flexDirection: 'column', padding: '24px 0', flexShrink: 0, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px 24px', borderBottom: '1px solid #1a1a1a', marginBottom: 16 }}>
-          <span style={{ background: '#F5A623', color: '#111', fontWeight: 800, fontSize: 14, borderRadius: 8, padding: '6px 10px' }}>C1</span>
+    <main className="sa-page">
+      <aside className="sa-sidebar">
+        <div className="sa-logo">
+          <span className="sa-logo-mark">C1</span>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 14, color: '#fff', lineHeight: 1.2 }}>Campus One</div>
-            <div style={{ fontSize: 11, color: '#F5A623', fontWeight: 600 }}>Super Admin</div>
+            <div className="sa-logo-text">Campus One</div>
+            <div className="sa-logo-sub">Super Admin</div>
           </div>
         </div>
 
-        <nav style={{ flex: 1, padding: '0 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {GROUP_ORDER.map(group => {
-            const items = NAV.filter(n => n.group === group);
-            return (
-              <div key={group}>
-                <div style={{ fontSize: 10, color: '#444', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', padding: '12px 12px 6px' }}>{group}</div>
-                {items.map(item => (
-                  <button key={item.id} id={`nav-sa-${item.id}`} type="button" onClick={() => setActive(item.id)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: active === item.id ? 'rgba(245,166,35,0.1)' : 'none', border: 'none', borderRadius: 10, color: active === item.id ? '#F5A623' : '#777', fontSize: 12, fontWeight: active === item.id ? 600 : 500, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', width: '100%', transition: 'all 0.15s' }}>
-                    {item.icon} {item.label}
-                  </button>
-                ))}
-              </div>
-            );
-          })}
+        <nav className="sa-nav">
+          <button id="tab-dashboard" className={`sa-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>🏠 Dashboard</button>
+          <button id="tab-services" className={`sa-nav-item ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>⚙️ Services</button>
+          <button id="tab-users" className={`sa-nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>👥 Admin Users</button>
+          <button id="tab-tenants" className={`sa-nav-item ${activeTab === 'tenants' ? 'active' : ''}`} onClick={() => setActiveTab('tenants')}>🏫 Tenants</button>
         </nav>
 
-        <div style={{ padding: '20px', borderTop: '1px solid #1a1a1a', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg,#F5A623,#e8940f)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 12, color: '#111', flexShrink: 0 }}>SA</div>
+        <div className="sa-sidebar-footer">
+          <div className="sa-avatar">SA</div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>Super Admin</div>
-            <div style={{ fontSize: 11, color: '#F5A623' }}>SUPER_ADMIN</div>
+            <div className="sa-name">Super Admin</div>
+            <div className="sa-role">SUPER_ADMIN</div>
           </div>
         </div>
       </aside>
 
-      {/* Content */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
-        <header style={{ padding: '24px 32px', borderBottom: '1px solid #1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: '#080808', zIndex: 10 }}>
+      <div className="sa-content">
+        {/* Header */}
+        <header className="sa-header">
           <div>
-            <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: '#fff' }}>{PAGE_TITLE[active]}</h1>
-            <p style={{ fontSize: 12, color: '#555', margin: '2px 0 0' }}>Super Admin Portal — Campus One Platform</p>
+            <h1 className="sa-page-title">
+              {activeTab === 'dashboard' && 'System Overview'}
+              {activeTab === 'services' && 'Microservice Health'}
+              {activeTab === 'users' && 'Admin Users'}
+              {activeTab === 'tenants' && 'Tenant Management'}
+            </h1>
+            <p className="sa-page-sub">Super Admin Portal — Campus One Platform</p>
           </div>
-          <span style={{ background: 'rgba(245,166,35,0.12)', color: '#F5A623', fontSize: 11, fontWeight: 700, padding: '6px 14px', borderRadius: 20, border: '1px solid rgba(245,166,35,0.2)' }}>SUPER_ADMIN</span>
+          <div className="sa-header-badge">SUPER_ADMIN</div>
         </header>
 
-        <div style={{ padding: '32px', maxWidth: 1200 }}>
-          {active === 'dashboard'      && <DashboardOverview onNavigate={setActive} />}
-          {active === 'infrastructure' && <InfrastructurePage />}
-          {active === 'iam'            && <IAMPage />}
-          {active === 'system-ops'     && <SystemOpsPage />}
-          {active === 'analytics'      && <AnalyticsPage />}
-        </div>
+        {/* Dashboard Tab */}
+        {activeTab === 'dashboard' && (
+          <section className="sa-section">
+            <div className="sa-kpi-grid">
+              <div className="sa-kpi sa-kpi--accent">
+                <div className="sa-kpi-icon">⚙️</div>
+                <div className="sa-kpi-val">{MOCK_HEALTH.filter(h => h.status === 'online').length}/{MOCK_HEALTH.length}</div>
+                <div className="sa-kpi-label">Services Online</div>
+              </div>
+              <div className="sa-kpi">
+                <div className="sa-kpi-icon">👥</div>
+                <div className="sa-kpi-val">{MOCK_USERS.filter(u => u.status === 'active').length}</div>
+                <div className="sa-kpi-label">Active Admins</div>
+              </div>
+              <div className="sa-kpi">
+                <div className="sa-kpi-icon">🏫</div>
+                <div className="sa-kpi-val">{MOCK_TENANTS.length}</div>
+                <div className="sa-kpi-label">Active Tenants</div>
+              </div>
+              <div className="sa-kpi sa-kpi--warn">
+                <div className="sa-kpi-icon">⚠️</div>
+                <div className="sa-kpi-val">{MOCK_HEALTH.filter(h => h.status === 'degraded').length}</div>
+                <div className="sa-kpi-label">Services Degraded</div>
+              </div>
+            </div>
+
+            <h2 className="sa-section-title">Service Status</h2>
+            <div className="sa-service-grid">
+              {MOCK_HEALTH.map((s) => (
+                <div key={s.module} className={`sa-service-card sa-service--${s.status}`}>
+                  <div className="sa-service-top">
+                    <span className="sa-service-name">{s.module}</span>
+                    <span className={`sa-badge sa-badge--${s.status}`}>{s.status}</span>
+                  </div>
+                  <div className="sa-service-detail">Port: {s.port}</div>
+                  <div className="sa-service-detail">v{s.version}</div>
+                  <div className="sa-service-health-url">
+                    <code>/api/v1/{s.module}/health</code>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <h2 className="sa-section-title">Event Bus Topics (Kafka)</h2>
+            <div className="sa-table-wrap">
+              <table className="sa-table">
+                <thead><tr><th>Topic</th><th>Module</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr><td><code>graduation.verified.v1</code></td><td>graduation → alumni</td><td>Triggers alumni log creation and push notification</td></tr>
+                  <tr><td><code>enrollment.subject.selected.v1</code></td><td>enrollment</td><td>Student adds subject to cart</td></tr>
+                  <tr><td><code>enrollment.checkout.submitted.v1</code></td><td>enrollment</td><td>Enrollment confirmed button clicked</td></tr>
+                  <tr><td><code>alumni.registration.submitted.v1</code></td><td>alumni</td><td>Alumni registration submitted (internal or legacy)</td></tr>
+                  <tr><td><code>alumni.record.requested.v1</code></td><td>alumni</td><td>Document request (TOR, Diploma, etc.) submitted</td></tr>
+                  <tr><td><code>auth.user.login.v1</code></td><td>auth</td><td>User login attempt</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* Services Tab */}
+        {activeTab === 'services' && (
+          <section className="sa-section">
+            <div className="sa-table-wrap">
+              <table className="sa-table">
+                <thead><tr><th>Service</th><th>Port</th><th>Version</th><th>Health Endpoint</th><th>Status</th><th>Last Checked</th></tr></thead>
+                <tbody>
+                  {MOCK_HEALTH.map((s) => (
+                    <tr key={s.module}>
+                      <td><strong>{s.module}</strong></td>
+                      <td>{s.port}</td>
+                      <td>v{s.version}</td>
+                      <td><code className="sa-code">/api/v1/{s.module}/health</code></td>
+                      <td><span className={`sa-badge sa-badge--${s.status}`}>{s.status}</span></td>
+                      <td className="sa-muted">{new Date(s.lastChecked).toLocaleTimeString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* Users Tab */}
+        {activeTab === 'users' && (
+          <section className="sa-section">
+            <div className="sa-table-wrap">
+              <table className="sa-table">
+                <thead><tr><th>Admin User</th><th>Role</th><th>Tenant</th><th>Status</th></tr></thead>
+                <tbody>
+                  {MOCK_USERS.map((u) => (
+                    <tr key={u.id}>
+                      <td>
+                        <div className="sa-user-name">{u.full_name}</div>
+                        <div className="sa-muted">{u.email}</div>
+                      </td>
+                      <td><code className="sa-code">{u.role}</code></td>
+                      <td>{u.tenant_id}</td>
+                      <td><span className={`sa-badge ${u.status === 'active' ? 'sa-badge--online' : 'sa-badge--offline'}`}>{u.status}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* Tenants Tab */}
+        {activeTab === 'tenants' && (
+          <section className="sa-section">
+            {MOCK_TENANTS.map((t) => (
+              <div key={t.id} className="sa-tenant-card">
+                <div className="sa-tenant-header">
+                  <div>
+                    <div className="sa-tenant-name">{t.name}</div>
+                    <div className="sa-muted">tenant_id: {t.id}</div>
+                  </div>
+                  <div className="sa-tenant-badges">
+                    <span className={`sa-badge sa-badge--${t.status === 'active' ? 'online' : 'offline'}`}>{t.status}</span>
+                    <span className="sa-badge sa-badge--plan">{t.plan}</span>
+                  </div>
+                </div>
+                <div className="sa-tenant-modules">
+                  <div className="sa-modules-label">Enabled Modules:</div>
+                  <div className="sa-modules-list">
+                    {t.modules.map((m) => (
+                      <span key={m} className="sa-module-tag">{m}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </section>
+        )}
       </div>
 
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');`}</style>
+      <style>{superAdminStyles}</style>
     </main>
   );
 }
+
+const superAdminStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  .sa-page { display: flex; min-height: 100vh; background: #080808; font-family: 'Inter', sans-serif; color: #fff; }
+  .sa-sidebar { width: 240px; background: #0f0f0f; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 24px 0; flex-shrink: 0; }
+  .sa-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 24px; border-bottom: 1px solid #1a1a1a; margin-bottom: 16px; }
+  .sa-logo-mark { background: #F5A623; color: #111; font-weight: 800; font-size: 14px; border-radius: 8px; padding: 6px 10px; }
+  .sa-logo-text { font-weight: 700; font-size: 14px; color: #fff; line-height: 1.2; }
+  .sa-logo-sub { font-size: 11px; color: #F5A623; font-weight: 600; }
+  .sa-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
+  .sa-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: none; border: none; border-radius: 10px; color: #666; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; text-align: left; transition: all 0.15s; }
+  .sa-nav-item:hover { background: #1a1a1a; color: #fff; }
+  .sa-nav-item.active { background: rgba(245,166,35,0.1); color: #F5A623; font-weight: 600; }
+  .sa-sidebar-footer { padding: 20px; border-top: 1px solid #1a1a1a; display: flex; align-items: center; gap: 10px; }
+  .sa-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #F5A623, #e8940f); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: #111; flex-shrink: 0; }
+  .sa-name { font-size: 13px; font-weight: 600; }
+  .sa-role { font-size: 11px; color: #F5A623; }
+  .sa-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .sa-header { padding: 28px 32px; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: space-between; }
+  .sa-page-title { font-size: 22px; font-weight: 800; margin: 0 0 4px; }
+  .sa-page-sub { font-size: 12px; color: #555; margin: 0; }
+  .sa-header-badge { background: rgba(245,166,35,0.12); color: #F5A623; font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(245,166,35,0.2); }
+  .sa-section { flex: 1; padding: 28px 32px; overflow-y: auto; }
+  .sa-section-title { font-size: 16px; font-weight: 700; margin: 28px 0 16px; color: #ccc; }
+  .sa-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .sa-kpi { background: #111; border: 1px solid #1a1a1a; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .sa-kpi--accent { border-color: rgba(245,166,35,0.2); background: rgba(245,166,35,0.04); }
+  .sa-kpi--warn { border-color: rgba(239,68,68,0.2); background: rgba(239,68,68,0.04); }
+  .sa-kpi-icon { font-size: 28px; }
+  .sa-kpi-val { font-size: 32px; font-weight: 800; }
+  .sa-kpi--accent .sa-kpi-val { color: #F5A623; }
+  .sa-kpi--warn .sa-kpi-val { color: #f87171; }
+  .sa-kpi-label { font-size: 12px; color: #888; }
+  .sa-service-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+  .sa-service-card { background: #111; border: 1px solid #1a1a1a; border-radius: 14px; padding: 18px; }
+  .sa-service--online { border-color: rgba(34,197,94,0.2); }
+  .sa-service--degraded { border-color: rgba(245,166,35,0.2); }
+  .sa-service--offline { border-color: rgba(239,68,68,0.2); }
+  .sa-service-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .sa-service-name { font-size: 14px; font-weight: 700; text-transform: capitalize; }
+  .sa-service-detail { font-size: 12px; color: #666; }
+  .sa-service-health-url { margin-top: 8px; font-family: monospace; font-size: 11px; color: #555; background: #0a0a0a; border-radius: 6px; padding: 4px 8px; }
+  .sa-table-wrap { border-radius: 14px; border: 1px solid #1a1a1a; overflow: hidden; }
+  .sa-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .sa-table th { background: #0f0f0f; color: #555; font-weight: 600; padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .sa-table td { padding: 14px 16px; border-top: 1px solid #141414; color: #bbb; vertical-align: middle; }
+  .sa-table code { font-family: monospace; font-size: 11px; }
+  .sa-code { background: #0a0a0a; padding: 3px 7px; border-radius: 4px; color: #888; }
+  .sa-muted { font-size: 11px; color: #555; }
+  .sa-user-name { font-weight: 600; color: #fff; margin-bottom: 2px; }
+  .sa-badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+  .sa-badge--online { background: rgba(34,197,94,0.12); color: #4ade80; }
+  .sa-badge--offline { background: rgba(239,68,68,0.12); color: #f87171; }
+  .sa-badge--degraded { background: rgba(245,166,35,0.12); color: #F5A623; }
+  .sa-badge--plan { background: rgba(99,102,241,0.12); color: #818cf8; }
+  .sa-tenant-card { background: #0f0f0f; border: 1px solid #1a1a1a; border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+  .sa-tenant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .sa-tenant-name { font-size: 18px; font-weight: 700; }
+  .sa-tenant-badges { display: flex; gap: 8px; }
+  .sa-tenant-modules { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .sa-modules-label { font-size: 12px; color: #666; }
+  .sa-modules-list { display: flex; gap: 8px; flex-wrap: wrap; }
+  .sa-module-tag { background: rgba(245,166,35,0.1); color: #F5A623; border: 1px solid rgba(245,166,35,0.2); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; }
+`;

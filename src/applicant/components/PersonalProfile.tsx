@@ -20,6 +20,7 @@ interface FormState {
 interface FormErrors {
   firstName?: string;
   lastName?: string;
+  middleName?: string;
   birthdate?: string;
   mobileNumber?: string;
   street?: string;
@@ -59,6 +60,7 @@ function InputField({
     <div>
       <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 mb-1.5">
         {label}
+        {!optional && <span className="text-red-500 ml-0.5">*</span>}
         {optional && <span className="text-gray-400 font-normal">(optional)</span>}
       </label>
       <input
@@ -105,10 +107,21 @@ export function PersonalProfile({
 
   const validate = (): boolean => {
     const errs: FormErrors = {};
+    const currentYear = new Date().getFullYear();
 
     if (!form.firstName.trim()) errs.firstName = "First name is required";
     if (!form.lastName.trim()) errs.lastName = "Last name is required";
-    if (!form.birthdate) errs.birthdate = "Birthdate is required";
+    if (!form.middleName.trim()) errs.middleName = "Middle name is required";
+    
+    if (!form.birthdate) {
+      errs.birthdate = "Birthdate is required";
+    } else {
+      const birthDateObj = new Date(form.birthdate);
+      const birthYear = birthDateObj.getFullYear();
+      if (isNaN(birthDateObj.getTime()) || birthYear < 1920 || birthYear > currentYear - 2) {
+        errs.birthdate = "Invalid date";
+      }
+    }
 
     if (!form.mobileNumber.trim()) {
       errs.mobileNumber = "Mobile number is required";
@@ -198,7 +211,7 @@ export function PersonalProfile({
           value={form.middleName}
           onChange={set("middleName")}
           placeholder="Santos"
-          optional
+          error={errors.middleName}
         />
 
         <InputField

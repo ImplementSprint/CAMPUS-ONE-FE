@@ -152,7 +152,7 @@ export function ProgramSelection({
           </div>
         </div>
 
-        <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
           <button
             onClick={handleContinue}
             className="w-full h-12 rounded-xl bg-[#F59E0B] text-white font-bold text-sm tracking-wide shadow-lg shadow-amber-100 active:bg-[#D97706] transition-all"
@@ -182,7 +182,7 @@ export function ProgramSelection({
           {/* Department Selection */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2.5">
-              College Department
+              College Department <span className="text-red-500">*</span>
             </p>
             <select
               aria-label="College Department"
@@ -205,7 +205,7 @@ export function ProgramSelection({
           {/* Program Selection */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2.5">
-              Program / Course
+              Program / Course <span className="text-red-500">*</span>
             </p>
             <select
               aria-label="Program / Course"
@@ -239,7 +239,7 @@ export function ProgramSelection({
           )}
         </div>
 
-        <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
           <button
             onClick={handleContinue}
             disabled={!canContinue()}
@@ -272,7 +272,7 @@ export function ProgramSelection({
           {/* Track Selection */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2.5">
-              Track
+              Track <span className="text-red-500">*</span>
             </p>
             <div className="space-y-2.5">
               {SENIOR_HIGH_TRACKS.map((track) => (
@@ -298,7 +298,7 @@ export function ProgramSelection({
           {seniorHighTrack === "TVL" && (
             <div>
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2.5">
-                Strand (TVL)
+                Strand (TVL) <span className="text-red-500">*</span>
               </p>
               <div className="space-y-2.5">
                 {TVL_STRANDS.map((strand) => (
@@ -319,7 +319,7 @@ export function ProgramSelection({
           )}
         </div>
 
-        <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
           <button
             onClick={handleContinue}
             disabled={!canContinue()}

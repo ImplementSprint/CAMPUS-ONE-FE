@@ -1,4 +1,4 @@
-import { supabase, STORAGE_BUCKET } from "@/lib/supabase";
+import { supabase, STORAGE_BUCKET } from "@/shared/lib/supabase";
 import { getRequirements } from "./requirements.config";
 import type {
   SchoolLevel, ApplicantType, AdmissionActivityLogDTO, AdmissionEventType,
@@ -9,7 +9,7 @@ import type {
 // ─── Activity Logging ─────────────────────────────────────────────────────────
 export async function logAdmissionEvent(dto: AdmissionActivityLogDTO): Promise<SupabaseResponse<{ id: string }>> {
   const { data, error } = await supabase
-    .from("Admissions_Activity_Logs")
+    .from("admissions_activity_logs")
     .insert({ event_type: dto.event_type, applicant_type: dto.applicant_type, school_level: dto.school_level, metadata: dto.metadata })
     .select("id").single();
   if (error) return { data: null, error: { message: error.message, code: error.code } };
@@ -71,7 +71,7 @@ export async function submitApplication(applicantId: string): Promise<SupabaseRe
   
   // Send confirmation email with reference number
   try {
-    const { sendApplicationConfirmationEmail } = await import("@/services/email.service");
+    const { sendApplicationConfirmationEmail } = await import("@/shared/email.service");
     
     console.log("📤 Sending confirmation email...");
     const emailResult = await sendApplicationConfirmationEmail({

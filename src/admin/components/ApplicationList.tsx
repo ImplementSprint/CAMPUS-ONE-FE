@@ -1,6 +1,6 @@
-﻿'use client'
+'use client'
 import { useState, useEffect } from "react";
-import { Search, Eye, ArrowLeft, FileText, ArrowUpDown } from "lucide-react";
+import { Search, Eye, ArrowLeft, FileText } from "lucide-react";
 import type { AdmissionStatus } from "@/applicant/types/admissions.types";
 import { fetchAllApplications, type AdminApplication } from "@/admin/services/admin.service";
 
@@ -15,7 +15,6 @@ export function ApplicationList({ onSelectApplication, onRefresh, onBack }: Appl
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("");
 
   useEffect(() => {
     fetchApplications();
@@ -25,62 +24,21 @@ export function ApplicationList({ onSelectApplication, onRefresh, onBack }: Appl
     setLoading(true);
     const result = await fetchAllApplications();
     if (result.data) {
-      // Sanitize data to ensure no null values in required fields
-      const sanitizedData = result.data.map(app => {
-        // Construct full_name from individual name fields if full_name is null
-        let displayName = app.full_name || "";
-        if (!displayName) {
-          const parts = [app.first_name, app.middle_name, app.last_name].filter(Boolean);
-          displayName = parts.join(" ");
-        }
-        
-        return {
-          ...app,
-          full_name: displayName || "",
-          email: app.email || "",
-          reference_number: app.reference_number || "",
-        };
-      });
-      setApplications(sanitizedData);
+      setApplications(result.data);
       if (onRefresh) onRefresh();
     }
     setLoading(false);
   };
 
   const filteredApplications = applications.filter((app) => {
-    try {
-      // Ensure all values are strings before calling toLowerCase
-      const fullName = String(app?.full_name ?? "");
-      const email = String(app?.email ?? "");
-      const refNumber = String(app?.reference_number ?? "");
-      const search = String(searchTerm ?? "").toLowerCase();
-      
-      const matchesSearch =
-        fullName.toLowerCase().includes(search) ||
-        email.toLowerCase().includes(search) ||
-        refNumber.toLowerCase().includes(search);
+    const matchesSearch =
+      app.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.reference_number.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesStatus = statusFilter === "all" || app?.status === statusFilter;
+    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
 
-      return matchesSearch && matchesStatus;
-    } catch (error) {
-      console.error("Filter error:", error, app);
-      return false;
-    }
-  }).sort((a, b) => {
-    const currentSort = sortBy || "recent";
-    switch (currentSort) {
-      case "a-z":
-        return (a.full_name || "").localeCompare(b.full_name || "");
-      case "z-a":
-        return (b.full_name || "").localeCompare(a.full_name || "");
-      case "recent":
-        return new Date(b.application_submitted_at).getTime() - new Date(a.application_submitted_at).getTime();
-      case "oldest":
-        return new Date(a.application_submitted_at).getTime() - new Date(b.application_submitted_at).getTime();
-      default:
-        return 0;
-    }
+    return matchesSearch && matchesStatus;
   });
 
   const getStatusBadge = (status: AdmissionStatus) => {
@@ -91,7 +49,7 @@ export function ApplicationList({ onSelectApplication, onRefresh, onBack }: Appl
     };
 
     return (
-      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap ${styles[status]}`}>
+      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold border ${styles[status]}`}>
         {status}
       </span>
     );
@@ -132,9 +90,9 @@ export function ApplicationList({ onSelectApplication, onRefresh, onBack }: Appl
 
       {/* Search and Filters */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm mb-6">
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Search */}
-          <div className="relative flex-1">
+          <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
@@ -149,7 +107,7 @@ export function ApplicationList({ onSelectApplication, onRefresh, onBack }: Appl
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-3.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all appearance-none bg-white cursor-pointer w-40"
+            className="w-full px-4 py-3.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all appearance-none bg-white cursor-pointer"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
               backgroundPosition: 'right 0.75rem center',
@@ -162,26 +120,6 @@ export function ApplicationList({ onSelectApplication, onRefresh, onBack }: Appl
             <option value="Under Review">Under Review</option>
             <option value="Passed">Passed</option>
             <option value="Not Accepted">Not Accepted</option>
-          </select>
-
-          {/* Sort */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-3.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all appearance-none bg-white cursor-pointer w-40"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-              backgroundPosition: 'right 0.75rem center',
-              backgroundRepeat: 'no-repeat',
-              backgroundSize: '1.5em 1.5em',
-              paddingRight: '2.5rem'
-            }}
-          >
-            <option value="" disabled>Sort</option>
-            <option value="recent">Most Recent</option>
-            <option value="oldest">Oldest</option>
-            <option value="a-z">A - Z</option>
-            <option value="z-a">Z - A</option>
           </select>
         </div>
       </div>
@@ -207,29 +145,29 @@ export function ApplicationList({ onSelectApplication, onRefresh, onBack }: Appl
             <p className="text-sm text-gray-400 mt-1">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div>
+          <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-1/4">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Applicant
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-1/6">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Reference
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-1/12">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Level
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-1/12">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-1/12">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-1/12">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Submitted
                   </th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider w-1/12">
+                  <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -237,40 +175,38 @@ export function ApplicationList({ onSelectApplication, onRefresh, onBack }: Appl
               <tbody className="divide-y divide-gray-100">
                 {filteredApplications.map((app) => (
                   <tr key={app.id} className="hover:bg-gray-50 transition-colors group">
-                    <td className="px-6 py-4 w-1/4">
+                    <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#F59E0B] to-[#D97706] flex items-center justify-center font-bold text-white text-sm shadow-md flex-shrink-0">
-                          {(app.full_name || "?").charAt(0).toUpperCase()}
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#F59E0B] to-[#D97706] flex items-center justify-center font-bold text-white text-sm shadow-md">
+                          {app.full_name.charAt(0).toUpperCase()}
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-gray-900 truncate">{app.full_name || "N/A"}</p>
-                          <p className="text-xs text-gray-500 truncate">{app.email || "N/A"}</p>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{app.full_name}</p>
+                          <p className="text-xs text-gray-500">{app.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 w-1/6">
-                      <span className="text-sm font-mono font-medium text-gray-900 whitespace-nowrap">
-                        {app.reference_number || "N/A"}
+                    <td className="px-6 py-5">
+                      <span className="text-sm font-mono font-medium text-gray-900 bg-gray-50 px-3 py-1 rounded-lg">
+                        {app.reference_number}
                       </span>
                     </td>
-                    <td className="px-6 py-4 w-1/12">
+                    <td className="px-6 py-5">
                       <span className="text-sm text-gray-900">{app.school_level}</span>
                     </td>
-                    <td className="px-6 py-4 w-1/12">
+                    <td className="px-6 py-5">
                       <span className="text-sm text-gray-900">{app.applicant_type}</span>
                     </td>
-                    <td className="px-6 py-4 w-1/12">
-                      <div className="flex items-center">
-                        {getStatusBadge(app.status)}
-                      </div>
+                    <td className="px-6 py-5">
+                      {getStatusBadge(app.status)}
                     </td>
-                    <td className="px-6 py-4 w-1/12">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">{formatDate(app.application_submitted_at)}</span>
+                    <td className="px-6 py-5">
+                      <span className="text-sm text-gray-600">{formatDate(app.application_submitted_at)}</span>
                     </td>
-                    <td className="px-6 py-4 w-1/12 text-center">
+                    <td className="px-6 py-5 text-right">
                       <button
                         onClick={() => onSelectApplication(app.id)}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[#F59E0B] hover:bg-amber-50 rounded-lg transition-all"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-[#F59E0B] hover:bg-amber-50 rounded-xl transition-all group-hover:shadow-md"
                       >
                         <Eye className="w-4 h-4" />
                         View

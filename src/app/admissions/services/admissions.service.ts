@@ -9,7 +9,7 @@ import type {
 // ─── Activity Logging ─────────────────────────────────────────────────────────
 export async function logAdmissionEvent(dto: AdmissionActivityLogDTO): Promise<SupabaseResponse<{ id: string }>> {
   const { data, error } = await supabase
-    .from("Admissions_Activity_Logs")
+    .from("admissions_activity_logs")
     .insert({ event_type: dto.event_type, applicant_type: dto.applicant_type, school_level: dto.school_level, metadata: dto.metadata })
     .select("id").single();
   if (error) return { data: null, error: { message: error.message, code: error.code } };

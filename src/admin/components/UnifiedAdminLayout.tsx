@@ -1,7 +1,7 @@
 'use client'
 import { ReactNode } from "react";
-import { logout, getCurrentUser } from "@/services/auth.service";
-import { LogOut, LayoutDashboard, FileText, GraduationCap, Bell, BookOpen, ClipboardList, Award, AlertTriangle, BarChart2, Library, HeadphonesIcon, BellRing } from "lucide-react";
+import { logout, getCurrentUser } from "@/shared/auth.service";
+import { LogOut, LayoutDashboard, FileText, GraduationCap, Bell } from "lucide-react";
 
 interface UnifiedAdminLayoutProps {
   children: ReactNode;
@@ -26,16 +26,8 @@ export function UnifiedAdminLayout({
   ];
 
   const studentMenuItems = [
-    { id: "dashboard",     label: "Dashboard",              icon: LayoutDashboard },
-    { id: "directory",     label: "Student Directory",      icon: GraduationCap   },
-    { id: "enrollment",    label: "Enrollment Center",      icon: ClipboardList   },
-    { id: "academics",     label: "Academic Hub",           icon: BookOpen        },
-    { id: "honors",        label: "Honors Tracker",         icon: Award           },
-    { id: "clearance",     label: "Clearance & Deficiencies", icon: AlertTriangle },
-    { id: "reports",       label: "Reports",                icon: BarChart2       },
-    { id: "catalog",       label: "Subject Catalog",        icon: Library         },
-    { id: "requests",      label: "Service Requests",       icon: HeadphonesIcon  },
-    { id: "notifications", label: "Notification Center",    icon: BellRing        },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "students", label: "Students", icon: GraduationCap },
   ];
 
   const menuItems = currentPortal === "applicant" ? applicantMenuItems : studentMenuItems;
@@ -60,6 +52,33 @@ export function UnifiedAdminLayout({
           <p className="text-xs text-gray-400 ml-12 -mt-1">
             {currentPortal === "applicant" ? "Applicant Management" : "Student Management"}
           </p>
+        </div>
+
+        {/* Portal Switcher */}
+        <div className="p-6 border-b border-gray-800">
+          <p className="text-xs text-gray-400 mb-3 uppercase tracking-wider font-semibold">Switch Portal</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => onSwitchPortal?.("applicant")}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                currentPortal === "applicant"
+                  ? "bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-white shadow-lg shadow-amber-500/30"
+                  : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700"
+              }`}
+            >
+              Applicants
+            </button>
+            <button
+              onClick={() => onSwitchPortal?.("student")}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                currentPortal === "student"
+                  ? "bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-white shadow-lg shadow-amber-500/30"
+                  : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700"
+              }`}
+            >
+              Students
+            </button>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -119,34 +138,16 @@ export function UnifiedAdminLayout({
         <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 h-20 flex items-center justify-between px-10 flex-shrink-0 shadow-sm">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-0.5">
-              {currentView === "dashboard"     && "Dashboard"}
-              {currentView === "applications"  && "Applications"}
-              {currentView === "students"      && "Students"}
-              {currentView === "directory"     && "Student Directory"}
-              {currentView === "enrollment"    && "Enrollment Center"}
-              {currentView === "academics"     && "Academic Hub"}
-              {currentView === "honors"        && "Honors Tracker"}
-              {currentView === "clearance"     && "Clearance & Deficiencies"}
-              {currentView === "reports"       && "Reports"}
-              {currentView === "catalog"       && "Subject Catalog"}
-              {currentView === "requests"      && "Service Requests"}
-              {currentView === "notifications" && "Notification Center"}
-              {currentView === "detail"        && (currentPortal === "applicant" ? "Application Details" : "Student Details")}
+              {currentView === "dashboard" && "Dashboard"}
+              {currentView === "applications" && "Applications"}
+              {currentView === "students" && "Students"}
+              {currentView === "detail" && (currentPortal === "applicant" ? "Application Details" : "Student Details")}
             </h1>
             <p className="text-sm text-gray-500">
-              {currentView === "dashboard"     && `Welcome back, ${user?.name || "Admin"}`}
-              {currentView === "applications"  && "Manage and review all applications"}
-              {currentView === "students"      && "Manage enrolled students"}
-              {currentView === "directory"     && "Search and view all active student profiles"}
-              {currentView === "enrollment"    && "Manage subject loading, class schedules and registration status"}
-              {currentView === "academics"     && "View class rosters, grade encoding progress and semestral results"}
-              {currentView === "honors"        && "Monitor students eligible for Latin Honors and track GWA in real-time"}
-              {currentView === "clearance"     && "Identify students with missing grades or failed subjects"}
-              {currentView === "reports"       && "Generate data summaries and enrollment statistics"}
-              {currentView === "catalog"       && "Manage the master list of subjects, units and pre-requisites"}
-              {currentView === "requests"      && "Manage grade corrections, shift-of-course and document requests"}
-              {currentView === "notifications" && "Send announcements and view automatic alert history"}
-              {currentView === "detail"        && "View and manage details"}
+              {currentView === "dashboard" && `Welcome back, ${user?.name || "Admin"}`}
+              {currentView === "applications" && "Manage and review all applications"}
+              {currentView === "students" && "Manage enrolled students"}
+              {currentView === "detail" && "View and manage details"}
             </p>
           </div>
           <div className="flex items-center gap-4">

@@ -75,4 +75,3 @@ export function AlumniSignUpHome({ onStart }: AlumniSignUpHomeProps) {
     </div>
   );
 }
-

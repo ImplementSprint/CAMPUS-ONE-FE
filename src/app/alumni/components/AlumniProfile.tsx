@@ -183,4 +183,3 @@ export function AlumniProfile({ alumniId, email, onSuccess, onBack }: AlumniProf
     </div>
   );
 }
-

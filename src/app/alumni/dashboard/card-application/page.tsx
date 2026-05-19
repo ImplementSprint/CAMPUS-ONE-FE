@@ -12,14 +12,13 @@ function CardApplicationContent() {
   const [idPhotoFileName, setIdPhotoFileName] = useState('');
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle');
-  const [isPhotoDragActive, setIsPhotoDragActive] = useState(false);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!consentAccepted) { alert('Please accept the data privacy notice.'); return; }
     setStatus('loading');
     try {
-      const res = await fetch(`${API_BASE}/api/alumni/cards/apply`, {
+      const res = await fetch(`${API_BASE}/api/v1/alumni/cards/apply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -40,11 +39,21 @@ function CardApplicationContent() {
   return (
     <section className="section-card">
       <header>
-        <h2>Alumni Card Application</h2>
+        <h2>Card Application</h2>
         <p>Request or renew your alumni ID</p>
       </header>
       <form className="form-grid" onSubmit={onSubmit}>
-        <section className="form-block info-block">
+        <div className="form-block">
+          <h3>Card Preview</h3>
+          <div className="card-preview-shell">
+            <div className="card-preview-face">
+              <p>CAMPUS ONE</p>
+              <strong>ALUMNI CARD</strong>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-block info-block">
           <h3>Card Application Info</h3>
           <ul>
             <li>For new cards or replacements</li>
@@ -52,87 +61,54 @@ function CardApplicationContent() {
             <li>Validity: Lifetime</li>
             <li>Fee: ₱300 (pay upon delivery/pick-up)</li>
           </ul>
-        </section>
+        </div>
 
-        <section className="form-block">
+        <div className="form-block">
           <h3>Application Type</h3>
-          <div className="option-stack" role="radiogroup" aria-label="Application type">
+          <div className="option-stack">
             <label className="option-item">
-              <input type="radio" name="application-type" value="new"
-                checked={applicationType === 'new'} onChange={() => setApplicationType('new')} />
+              <input type="radio" name="appType" value="new" checked={applicationType === 'new'} onChange={() => setApplicationType('new')} />
               <span><strong>New Card Application</strong><small>First-time alumni card</small></span>
             </label>
             <label className="option-item">
-              <input type="radio" name="application-type" value="replacement"
-                checked={applicationType === 'replacement'} onChange={() => setApplicationType('replacement')} />
+              <input type="radio" name="appType" value="replacement" checked={applicationType === 'replacement'} onChange={() => setApplicationType('replacement')} />
               <span><strong>Replacement Card</strong><small>Lost or damaged card</small></span>
             </label>
           </div>
-        </section>
+        </div>
 
-        <section className="form-block">
+        <div className="form-block">
           <h3>Delivery Method</h3>
-          <div className="option-stack" role="radiogroup" aria-label="Delivery method">
+          <div className="option-stack">
             <label className="option-item">
-              <input type="radio" name="card-delivery" value="pickup"
-                checked={deliveryMethod === 'pickup'} onChange={() => setDeliveryMethod('pickup')} />
+              <input type="radio" name="delivery" value="pickup" checked={deliveryMethod === 'pickup'} onChange={() => setDeliveryMethod('pickup')} />
               <span><strong>Pick-up at Office</strong><small>FREE</small></span>
             </label>
             <label className="option-item">
-              <input type="radio" name="card-delivery" value="delivery"
-                checked={deliveryMethod === 'delivery'} onChange={() => setDeliveryMethod('delivery')} />
+              <input type="radio" name="delivery" value="delivery" checked={deliveryMethod === 'delivery'} onChange={() => setDeliveryMethod('delivery')} />
               <span><strong>Delivery</strong><small>₱150 shipping fee</small></span>
             </label>
           </div>
-        </section>
+        </div>
 
-        <section className="form-block">
+        <div className="form-block">
           <h3>ID Photo</h3>
-          <label
-            className={`upload-label upload-card ${isPhotoDragActive ? 'is-drag-active' : ''} ${idPhotoFileName ? 'has-file' : ''}`}
-            onDragOver={(e) => { e.preventDefault(); setIsPhotoDragActive(true); }}
-            onDragLeave={() => setIsPhotoDragActive(false)}
-            onDrop={(e) => {
-              e.preventDefault();
-              setIsPhotoDragActive(false);
-              const droppedFile = e.dataTransfer.files?.[0];
-              setIdPhotoFileName(droppedFile ? droppedFile.name : '');
-            }}
-          >
-            <input type="file" accept="image/jpeg,image/png" aria-label="Upload ID photo"
-              onChange={(e) => setIdPhotoFileName(e.target.files?.[0]?.name ?? '')} />
-            <span className="upload-card-head">
-              <span className="upload-card-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M14 3H8.8C7.12 3 6.28 3 5.64 3.33A4 4 0 0 0 3.33 5.64C3 6.28 3 7.12 3 8.8v6.4c0 1.68 0 2.52.33 3.16a4 4 0 0 0 2.31 2.31c.64.33 1.48.33 3.16.33h6.4c1.68 0 2.52 0 3.16-.33a4 4 0 0 0 2.31-2.31c.33-.64.33-1.48.33-3.16V10zm0 0v5h5m-9 8 2.4-2.4a1 1 0 0 1 1.4 0L16 16m-6-1 1.2-1.2a1 1 0 0 1 1.4 0l.4.4" />
-                </svg>
-              </span>
-              <span className="upload-card-copy">
-                <strong>{idPhotoFileName ? 'Photo selected' : 'Upload file'}</strong>
-                <span>Drag and drop your 2×2 photo here or <em>Choose file</em></span>
-              </span>
-            </span>
-            <span className="upload-card-meta">
-              <small>Supported formats: JPG, PNG</small>
-              <small>Maximum size: 5MB</small>
-            </span>
-            <span className="upload-card-file" aria-live="polite">
-              {idPhotoFileName || 'No file selected yet'}
-            </span>
+          <label className="upload-label">
+            <input type="file" accept="image/jpeg,image/png" onChange={(e) => setIdPhotoFileName(e.target.files?.[0]?.name ?? '')} />
+            <span>{idPhotoFileName || 'Upload 2x2 Photo (JPG, PNG – Max. 5MB)'}</span>
           </label>
-        </section>
+        </div>
 
-        <label className="checkbox-row consent-row">
-          <input type="checkbox" checked={consentAccepted} onChange={(e) => setConsentAccepted(e.target.checked)} />
+        <label className="consent-row">
+          <input type="checkbox" checked={consentAccepted} onChange={(e) => setConsentAccepted(e.target.checked)} style={{ width: 18, height: 18, accentColor: '#f5a623', flexShrink: 0 }} />
           <span>
-            <strong className="required-inline">DATA PRIVACY NOTICE<span className="required-mark">*</span></strong>
-            {' '}I authorize Campus One to collect and process my personal information for alumni card
-            application purposes in accordance with the Data Privacy Act of 2012.
+            <strong>DATA PRIVACY NOTICE</strong>
+            I authorize Campus One to collect and process my personal information for alumni card application purposes in accordance with the Data Privacy Act of 2012.
           </span>
         </label>
 
         <button className="primary-btn" type="submit" disabled={status === 'loading'}>
-          {status === 'loading' ? 'Submitting...' : 'Submit Application'}
+          {status === 'loading' ? 'Submitting...' : 'Submit Card Application'}
         </button>
       </form>
     </section>

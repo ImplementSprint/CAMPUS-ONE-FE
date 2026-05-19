@@ -140,6 +140,7 @@ export function AcademicBackground({
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
+    const currentYear = new Date().getFullYear();
 
     form.grades.forEach((grade) => {
       if (!grade.level.trim()) {
@@ -148,8 +149,15 @@ export function AcademicBackground({
       if (!grade.schoolName.trim()) {
         newErrors[`${grade.id}-schoolName`] = "Required";
       }
-      if (!grade.completionYear.trim()) {
+      
+      const yr = grade.completionYear.trim();
+      if (!yr) {
         newErrors[`${grade.id}-completionYear`] = "Required";
+      } else {
+        const parsedYear = parseInt(yr, 10);
+        if (isNaN(parsedYear) || parsedYear < 1950 || parsedYear > currentYear + 1) {
+          newErrors[`${grade.id}-completionYear`] = "Invalid year";
+        }
       }
     });
 
@@ -202,9 +210,9 @@ export function AcademicBackground({
 
         {/* Table Header */}
         <div className="grid grid-cols-[100px_1fr_110px_50px] gap-2 mb-3">
-          <div className="text-xs font-bold text-gray-700">Level</div>
-          <div className="text-xs font-bold text-gray-700">School Name</div>
-          <div className="text-xs font-bold text-gray-700">Year</div>
+          <div className="text-xs font-bold text-gray-700">Level <span className="text-red-500">*</span></div>
+          <div className="text-xs font-bold text-gray-700">School Name <span className="text-red-500">*</span></div>
+          <div className="text-xs font-bold text-gray-700">Year <span className="text-red-500">*</span></div>
           <div className="text-xs font-bold text-gray-700 text-center"></div>
         </div>
 
@@ -246,23 +254,48 @@ export function AcademicBackground({
                   />
                 </div>
 
-                {/* Completion Year Dropdown */}
+                {/* Completion Year Input with Calendar Date Picker */}
                 <div className="relative">
-                  <select
+                  <input
+                    type="text"
                     value={grade.completionYear}
-                    onChange={(e) => updateGrade(grade.id, "completionYear", e.target.value)}
-                    className={`w-full h-11 px-2 pr-6 rounded-lg border text-sm bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all ${
-                      errors[`${grade.id}-completionYear`] ? "border-red-400" : "border-gray-200"
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 4);
+                      updateGrade(grade.id, "completionYear", val);
+                    }}
+                    placeholder="YYYY"
+                    className={`w-full h-11 pl-2 pr-8 rounded-lg border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all ${
+                      errors[`${grade.id}-completionYear`] ? "border-red-400 bg-red-50" : "border-gray-200"
                     }`}
+                  />
+                  <input
+                    type="date"
+                    className="absolute inset-0 opacity-0 pointer-events-none w-0 h-0"
+                    id={`date-picker-${grade.id}`}
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        const yr = e.target.value.split("-")[0];
+                        updateGrade(grade.id, "completionYear", yr);
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const picker = document.getElementById(`date-picker-${grade.id}`) as HTMLInputElement;
+                      if (picker && picker.showPicker) {
+                        picker.showPicker();
+                      }
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#F59E0B] transition-colors"
                   >
-                    <option value=""></option>
-                    {yearOptions.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </button>
                 </div>
 
                 {/* Actions */}
@@ -302,7 +335,7 @@ export function AcademicBackground({
       </div>
 
       {/* Bottom Action Buttons */}
-      <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 px-4 py-4 space-y-2.5 z-20">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 space-y-2.5 z-20">
         {errors.general && (
           <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-600 mb-2">
             {errors.general}

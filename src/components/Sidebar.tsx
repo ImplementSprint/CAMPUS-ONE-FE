@@ -1,17 +1,49 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
-import { logout } from '@/services/auth.service';
-import { useState } from 'react';
+import { supabase } from '@/shared/lib/supabase';
+import { useAuth } from '@/shared/contexts/AuthContext';
+import { useState, useEffect } from 'react';
+import { getDashboardData, getEnrollmentStatus, getGrades } from '@/shared/lib/api';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { user } = useAuth();
   const [enrollOpen, setEnrollOpen] = useState(true);
+  const [studentData, setStudentData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load student data from backend
+  useEffect(() => {
+    if (user?.id) {
+      loadStudentData();
+    }
+  }, [user?.id]);
+
+  const loadStudentData = async () => {
+    try {
+      setLoading(true);
+      const [dashboardData, enrollmentStatus, gradesData] = await Promise.all([
+        getDashboardData(user?.id || ''),
+        getEnrollmentStatus(user?.id || ''),
+        getGrades(user?.id || ''),
+      ]);
+      
+      setStudentData({
+        dashboard: dashboardData,
+        enrollment: enrollmentStatus,
+        grades: gradesData,
+      });
+    } catch (error) {
+      console.error('Failed to load student data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
-    await logout();
+    await supabase.auth.signOut();
     router.refresh();
     router.push('/login');
   };
@@ -35,27 +67,30 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         )}
       </div>
 
-      <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-1">
+      <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-1 max-h-[calc(100vh-200px)]">
 
         {/* Dashboard */}
-        <NavItem href="/dashboard" active={active('/dashboard')}>
+        <NavItem href="/student/dashboard" active={active('/student/dashboard')}>
           <IconDashboard /> Dashboard
         </NavItem>
 
         {/* Profile */}
-        <NavItem href="/profile" active={active('/profile')}>
+        <NavItem href="/student/profile" active={active('/student/profile')}>
           <IconProfile /> Profile
         </NavItem>
 
         {/* Course Details */}
-        <NavItem href="/courses" active={active('/courses')}>
+        <NavItem href="/student/courses" active={active('/student/courses')}>
           <IconBook /> Course Details
         </NavItem>
 
         {/* Evaluation */}
-        <NavItem href="/evaluation" active={active('/evaluation')}>
+        <NavItem href="/student/evaluation" active={active('/student/evaluation')}>
           <IconClipboard /> Evaluation
         </NavItem>
+
+        {/* Divider */}
+        <div className="h-px bg-gray-700 my-2"></div>
 
         {/* Enrollment group */}
         <button onClick={() => setEnrollOpen(v => !v)}
@@ -71,29 +106,42 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
         {enrollOpen && (
           <div className="ml-4 pl-3 border-l border-gray-700 space-y-0.5">
-            <SubNavItem href="/enrollment" active={active('/enrollment')}>
+            <SubNavItem href="/student/enrollment" active={active('/student/enrollment')}>
               <IconDoc /> Online Enrollment
             </SubNavItem>
-            <SubNavItem href="/payment" active={active('/payment')}>
+            <SubNavItem href="/student/payment" active={active('/student/payment')}>
               <IconWallet /> Balance Payment
             </SubNavItem>
-            <SubNavItem href="/advised" active={active('/advised')}>
+            <SubNavItem href="/student/advised" active={active('/student/advised')}>
               <IconList /> Advised Courses
             </SubNavItem>
-            <SubNavItem href="/deficiencies" active={active('/deficiencies')}>
+            <SubNavItem href="/student/deficiencies" active={active('/student/deficiencies')}>
               <IconAlert /> Deficiencies
             </SubNavItem>
           </div>
         )}
 
+        {/* Divider */}
+        <div className="h-px bg-gray-700 my-2"></div>
+
         {/* View Semestral Grades */}
-        <NavItem href="/grades" active={active('/grades')}>
+        <NavItem href="/student/grades" active={active('/student/grades')}>
           <IconChart /> View Semestral Grades
         </NavItem>
 
         {/* Graduation */}
-        <NavItem href="/graduation" active={active('/graduation')}>
+        <NavItem href="/student/graduation" active={active('/student/graduation')}>
           <IconGradCap /> Graduation
+        </NavItem>
+
+        {/* Subjects */}
+        <NavItem href="/student/subjects" active={active('/student/subjects')}>
+          <IconBook /> Subjects
+        </NavItem>
+
+        {/* Add/Drop */}
+        <NavItem href="/student/add-drop" active={active('/student/add-drop')}>
+          <IconList /> Add/Drop
         </NavItem>
 
       </nav>
