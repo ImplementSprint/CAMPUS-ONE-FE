@@ -4,6 +4,7 @@ import type { SchoolLevel, ApplicantType, AdmissionStatus } from "../types/admis
 import { SelectionTags } from "./SelectionTags";
 import { CheckCircle2, CreditCard, ListTodo, Clock } from "lucide-react";
 import { supabase } from "@/shared/lib/supabase";
+const applicationDb = supabase.schema('application');
 
 interface ActivityLogProps {
   schoolLevel: SchoolLevel;
@@ -39,7 +40,7 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
 
   const fetchApplicationStatus = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await applicationDb
       .from("applicant_profiles")
       .select("status")
       .eq("id", applicantId)

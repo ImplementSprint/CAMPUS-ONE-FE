@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+const applicationDb = supabase.schema('application');
 import type { SchoolLevel, ApplicantType, AdmissionStatus, SupabaseResponse } from "../../admissions/types/admissions.types";
 import { REQUIREMENTS_CONFIG } from "../../admissions/services/requirements.config";
 import { sendEmail } from "../../../services/email.service";
@@ -86,7 +87,7 @@ export interface DashboardStats {
 
 // ─── Fetch Applications ───────────────────────────────────────────────────────
 export async function fetchAllApplications(): Promise<SupabaseResponse<AdminApplication[]>> {
-  const { data, error } = await supabase
+  const { data, error } = await applicationDb
     .from("applicant_profiles")
     .select("*")
     .not("application_submitted_at", "is", null)
@@ -99,7 +100,7 @@ export async function fetchAllApplications(): Promise<SupabaseResponse<AdminAppl
 // ─── Fetch Application Detail ─────────────────────────────────────────────────
 export async function fetchApplicationDetail(applicationId: string): Promise<SupabaseResponse<ApplicationDetail>> {
   // Fetch main profile
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile, error: profileError } = await applicationDb
     .from("applicant_profiles")
     .select("*")
     .eq("id", applicationId)
@@ -108,34 +109,34 @@ export async function fetchApplicationDetail(applicationId: string): Promise<Sup
   if (profileError) return { data: null, error: { message: profileError.message } };
 
   // Fetch parent info
-  const { data: parentInfo } = await supabase
+  const { data: parentInfo } = await applicationDb
     .from("parent_information")
     .select("*")
     .eq("applicant_id", applicationId)
     .single();
 
   // Fetch academic background
-  const { data: academicBg } = await supabase
+  const { data: academicBg } = await applicationDb
     .from("academic_background")
     .select("*")
     .eq("applicant_id", applicationId)
     .order("grade_level", { ascending: true });
 
   // Fetch alumni relatives
-  const { data: alumni } = await supabase
+  const { data: alumni } = await applicationDb
     .from("alumni_relatives")
     .select("*")
     .eq("applicant_id", applicationId);
 
   // Fetch documents
-  const { data: documents } = await supabase
+  const { data: documents } = await applicationDb
     .from("applicant_documents")
     .select("*")
     .eq("applicant_id", applicationId)
     .order("submitted_at", { ascending: false });
 
   // Fetch program selection
-  const { data: programSelection } = await supabase
+  const { data: programSelection } = await applicationDb
     .from("program_selections")
     .select("*")
     .eq("applicant_id", applicationId)
@@ -287,7 +288,7 @@ async function sendStatusUpdateEmail(
 
 // ─── Fetch Dashboard Stats ────────────────────────────────────────────────────
 export async function fetchDashboardStats(): Promise<SupabaseResponse<DashboardStats>> {
-  const { data, error } = await supabase
+  const { data, error } = await applicationDb
     .from("applicant_profiles")
     .select("status")
     .not("application_submitted_at", "is", null);
@@ -317,17 +318,17 @@ export async function fetchLiveTableCounts(): Promise<SupabaseResponse<TableCoun
   try {
     const [
       profilesRes,
-      parentsRes,
-      academicRes,
-      alumniRes,
-      documentsRes
-    ] = await Promise.all([
-      supabase.from("applicant_profiles").select("*", { count: "exact", head: true }),
-      supabase.from("parent_information").select("*", { count: "exact", head: true }),
-      supabase.from("academic_background").select("*", { count: "exact", head: true }),
-      supabase.from("alumni_relatives").select("*", { count: "exact", head: true }),
-      supabase.from("applicant_documents").select("*", { count: "exact", head: true }),
-    ]);
+        parentsRes,
+        academicRes,
+        alumniRes,
+        documentsRes
+      ] = await Promise.all([
+        applicationDb.from("applicant_profiles").select("*", { count: "exact", head: true }),
+        applicationDb.from("parent_information").select("*", { count: "exact", head: true }),
+        applicationDb.from("academic_background").select("*", { count: "exact", head: true }),
+        applicationDb.from("alumni_relatives").select("*", { count: "exact", head: true }),
+        applicationDb.from("applicant_documents").select("*", { count: "exact", head: true }),
+      ]);
 
     return {
       data: {
@@ -352,7 +353,7 @@ export async function updateProgramSelection(
 ): Promise<SupabaseResponse<{ success: boolean }>> {
   try {
     // Update program_selections table
-    const { error } = await supabase
+    const { error } = await applicationDb
       .from("program_selections")
       .update({
         college_department: department,
@@ -372,7 +373,7 @@ export async function updateProgramSelection(
 export async function fetchDocumentVerificationList(): Promise<SupabaseResponse<any[]>> {
   try {
     // 1. Fetch all applicants
-    const { data: applicants, error: appError } = await supabase
+    const { data: applicants, error: appError } = await applicationDb
       .from("applicant_profiles")
       .select("id, full_name, first_name, last_name, reference_number, school_level, applicant_type")
       .not("application_submitted_at", "is", null);
@@ -380,7 +381,7 @@ export async function fetchDocumentVerificationList(): Promise<SupabaseResponse<
     if (appError) throw appError;
 
     // 2. Fetch all documents
-    const { data: allDocs, error: docError } = await supabase
+    const { data: allDocs, error: docError } = await applicationDb
       .from("applicant_documents")
       .select("id, applicant_id, document_name, status, file_url, submitted_at");
 
@@ -479,7 +480,7 @@ export async function fetchSelectionDecisioningList(): Promise<SupabaseResponse<
     if (appError) throw appError;
 
     // 2. Fetch exam logs to see if anyone has real exam scores
-    const { data: examLogs } = await supabase
+    const { data: examLogs } = await applicationDb
       .from("Exam_Logs")
       .select("applicant_id, score, result");
 

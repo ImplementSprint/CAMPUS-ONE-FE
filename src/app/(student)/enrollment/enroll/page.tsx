@@ -45,15 +45,23 @@ export default function EnrollPage() {
     if (authLoading || !user) return;
 
     // Get program info for display
-<<<<<<< HEAD
-    supabase.schema('applicant').from('applicant_profiles')
-=======
-    supabase.from('applicant_profiles')
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
-      .select('program')
+    supabase.schema('student')
+      .from('student_accounts')
+      .select('applicant_id')
       .eq('id', user.id)
       .maybeSingle()
-      .then(({ data: ap }) => { if (ap) setProgram(ap.program ?? ''); });
+      .then(async ({ data: studentAccount }) => {
+        if (!studentAccount?.applicant_id) return;
+
+        const { data: profile } = await supabase
+          .schema('application')
+          .from('applicant_profiles')
+          .select('program')
+          .eq('id', studentAccount.applicant_id)
+          .maybeSingle();
+
+        if (profile) setProgram(profile.program ?? '');
+      });
 
     // Load offerings from backend (uses curriculum table)
     getEnrollmentOfferings({ studentId: user.id })

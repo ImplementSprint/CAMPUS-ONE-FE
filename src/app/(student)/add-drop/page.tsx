@@ -13,16 +13,22 @@ export default function AddDropPage() {
 
   useEffect(() => {
     if (authLoading || !user) return;
-<<<<<<< HEAD
-    supabase.schema('applicant').from('applicant_profiles')
-=======
-    supabase.from('applicant_profiles')
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
-      .select('first_name, last_name, middle_name, program')
+    supabase.schema('student')
+      .from('student_accounts')
+      .select('applicant_id')
       .eq('id', user.id)
       .maybeSingle()
-      .then(({ data: ap }) => {
-        if (ap) setForm(f => ({ ...f, firstName: ap.first_name ?? '', lastName: ap.last_name ?? '', middleName: ap.middle_name ?? '', program: ap.program ?? '' }));
+      .then(async ({ data: studentAccount }) => {
+        if (!studentAccount?.applicant_id) return;
+
+        const { data: profile } = await supabase
+          .schema('application')
+          .from('applicant_profiles')
+          .select('first_name, last_name, middle_name, program')
+          .eq('id', studentAccount.applicant_id)
+          .maybeSingle();
+
+        if (profile) setForm(f => ({ ...f, firstName: profile.first_name ?? '', lastName: profile.last_name ?? '', middleName: profile.middle_name ?? '', program: profile.program ?? '' }));
       });
   }, [user, authLoading]);
 

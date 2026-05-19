@@ -1,4 +1,5 @@
 import { supabase, STORAGE_BUCKET } from "@/shared/lib/supabase";
+const applicationDb = supabase.schema('application');
 import { getRequirements } from "./requirements.config";
 import type {
   SchoolLevel, ApplicantType, AdmissionActivityLogDTO, AdmissionEventType,
@@ -8,7 +9,7 @@ import type {
 
 // ─── Activity Logging ─────────────────────────────────────────────────────────
 export async function logAdmissionEvent(dto: AdmissionActivityLogDTO): Promise<SupabaseResponse<{ id: string }>> {
-  const { data, error } = await supabase
+  const { data, error } = await applicationDb
     .from("admissions_activity_logs")
     .insert({ event_type: dto.event_type, applicant_type: dto.applicant_type, school_level: dto.school_level, metadata: dto.metadata })
     .select("id").single();
@@ -32,7 +33,7 @@ export async function createApplicantProfile(dto: {
 }): Promise<SupabaseResponse<{ id: string }>> {
   const applicantId = crypto.randomUUID();
   
-  const { error } = await supabase.from("applicant_profiles").insert({
+  const { error } = await applicationDb.from("applicant_profiles").insert({
     id: applicantId,
     email: dto.email,
     school_level: dto.school_level,
@@ -51,7 +52,7 @@ export async function createApplicantProfile(dto: {
 export async function submitApplication(applicantId: string): Promise<SupabaseResponse<{ reference_number: string }>> {
   console.log("📝 Submitting application for:", applicantId);
   
-  const { data, error } = await supabase
+  const { data, error } = await applicationDb
     .from("applicant_profiles")
     .update({ 
       application_submitted_at: new Date().toISOString(),
@@ -97,7 +98,7 @@ export async function submitApplication(applicantId: string): Promise<SupabaseRe
 
 // ─── Track Application (Email + Reference Number) ─────────────────────────────
 export async function trackApplication(email: string, referenceNumber: string): Promise<SupabaseResponse<{ id: string }>> {
-  const { data, error } = await supabase
+  const { data, error } = await applicationDb
     .from("applicant_profiles")
     .select("id")
     .eq("email", email)
@@ -114,7 +115,7 @@ export async function saveApplicantProfile(dto: ApplicantProfileDTO): Promise<Su
   console.log("Profile data:", dto);
   
   const fullName = `${dto.first_name} ${dto.last_name}`.trim();
-  const { data, error } = await supabase.from("applicant_profiles").update({
+  const { data, error } = await applicationDb.from("applicant_profiles").update({
     first_name: dto.first_name, 
     last_name: dto.last_name, 
     middle_name: dto.middle_name,
@@ -149,7 +150,7 @@ export async function uploadApplicantDocument(dto: DocumentUploadDTO): Promise<S
   const { error: storageError } = await supabase.storage.from(STORAGE_BUCKET).upload(filePath, dto.file, { upsert: true });
   if (storageError) return { data: null, error: { message: storageError.message } };
   const { data: urlData } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
-  const { data, error: dbError } = await supabase.from("applicant_documents").insert({
+  const { data, error: dbError } = await applicationDb.from("applicant_documents").insert({
     applicant_id: dto.applicant_id, document_name: dto.document_name,
     file_name: dto.file.name, file_url: urlData.publicUrl,
     status: "submitted", school_level: dto.school_level, applicant_type: dto.applicant_type,
@@ -160,7 +161,7 @@ export async function uploadApplicantDocument(dto: DocumentUploadDTO): Promise<S
 
 // ─── Exam Logging ─────────────────────────────────────────────────────────────
 export async function logExamResult(dto: ExamLogDTO): Promise<SupabaseResponse<{ id: string }>> {
-  const { data, error } = await supabase
+  const { data, error } = await applicationDb
     .from("Exam_Logs")
     .insert({
       applicant_id: dto.applicant_id,
@@ -183,8 +184,8 @@ export async function logExamResult(dto: ExamLogDTO): Promise<SupabaseResponse<{
 
 // ─── Admission Result ─────────────────────────────────────────────────────────
 export async function getApplicantAdmissionResult(applicantId: string): Promise<SupabaseResponse<AdmissionResult>> {
-  const { data, error } = await supabase.from("admissions_results")
-    .select(`id, applicant_id, status, noa_url, exam_permit_url, exam_date, exam_time, exam_venue, permit_number, date_issued, applicant_profiles ( full_name, program, school_level, applicant_type )`)
+  const { data, error } = await applicationDb.from("admissions_results")
+    .select(`id, applicant_id, status, noa_url, exam_permit_url, exam_date, exam_time, exam_venue, permit_number, date_issued, application.applicant_profiles ( full_name, program, school_level, applicant_type )`)
     .eq("applicant_id", applicantId).single();
   if (error) return { data: null, error: { message: error.message } };
   const raw = data as Record<string, unknown>;
@@ -216,7 +217,7 @@ export async function saveParentInformation(data: {
   mother_address: string;
   mother_contact: string;
 }): Promise<SupabaseResponse<{ id: string }>> {
-  const { error } = await supabase.from("parent_information").upsert({
+  const { error } = await applicationDb.from("parent_information").upsert({
     applicant_id: data.applicant_id,
     father_name: data.father_name,
     father_address: data.father_address,
@@ -243,7 +244,7 @@ export async function saveAcademicBackground(data: {
   }>;
 }): Promise<SupabaseResponse<{ count: number }>> {
   // Delete existing entries for this applicant
-  await supabase.from("academic_background").delete().eq("applicant_id", data.applicant_id);
+  await applicationDb.from("academic_background").delete().eq("applicant_id", data.applicant_id);
   
   // Insert new entries
   const records = data.entries.map(entry => ({
@@ -253,7 +254,7 @@ export async function saveAcademicBackground(data: {
     completion_year: entry.completion_year,
   }));
   
-  const { error } = await supabase.from("academic_background").insert(records);
+  const { error } = await applicationDb.from("academic_background").insert(records);
   if (error) return { data: null, error: { message: error.message } };
   return { data: { count: records.length }, error: null };
 }
@@ -270,7 +271,7 @@ export async function saveAlumniRelatives(data: {
   }>;
 }): Promise<SupabaseResponse<{ count: number }>> {
   // Delete existing entries for this applicant
-  await supabase.from("alumni_relatives").delete().eq("applicant_id", data.applicant_id);
+  await applicationDb.from("alumni_relatives").delete().eq("applicant_id", data.applicant_id);
   
   // Insert new entries (only if there are relatives)
   if (data.relatives.length === 0) {
@@ -286,7 +287,7 @@ export async function saveAlumniRelatives(data: {
     contact_number: relative.contact_number,
   }));
   
-  const { error } = await supabase.from("alumni_relatives").insert(records);
+  const { error } = await applicationDb.from("alumni_relatives").insert(records);
   if (error) return { data: null, error: { message: error.message } };
   return { data: { count: records.length }, error: null };
 }
@@ -301,7 +302,7 @@ export async function saveProgramSelection(data: {
   senior_high_track?: string;
   tvl_strand?: string;
 }): Promise<SupabaseResponse<{ id: string }>> {
-  const { error } = await supabase.from("program_selections").upsert({
+  const { error } = await applicationDb.from("program_selections").upsert({
     applicant_id: data.applicant_id,
     school_level: data.school_level,
     applicant_type: data.applicant_type,
@@ -314,7 +315,7 @@ export async function saveProgramSelection(data: {
   
   // Also update the program field in applicant_profiles for easy access
   const programName = data.college_program || data.senior_high_track || data.school_level;
-  await supabase.from("applicant_profiles").update({ program: programName }).eq("id", data.applicant_id);
+  await applicationDb.from("applicant_profiles").update({ program: programName }).eq("id", data.applicant_id);
   
   return { data: { id: data.applicant_id }, error: null };
 }

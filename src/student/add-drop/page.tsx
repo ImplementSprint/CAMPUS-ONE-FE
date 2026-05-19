@@ -13,11 +13,8 @@ export default function AddDropPage() {
 
   useEffect(() => {
     if (authLoading || !user) return;
-<<<<<<< HEAD
-    supabase.schema('applicant').from('applicant_profiles')
-=======
-    supabase.from('applicant_profiles')
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
+    supabase.schema('application')
+      .from('applicant_profiles')
       .select('first_name, last_name, middle_name, program')
       .eq('id', user.id)
       .maybeSingle()

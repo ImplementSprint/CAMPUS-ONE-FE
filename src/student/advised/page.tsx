@@ -19,11 +19,8 @@ export default function AdvisedCoursesPage() {
     if (authLoading || !user) return;
 
     // Pre-fill form with profile data
-<<<<<<< HEAD
-    supabase.schema('applicant').from('applicant_profiles')
-=======
-    supabase.from('applicant_profiles')
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
+    supabase.schema('application')
+      .from('applicant_profiles')
       .select('first_name, last_name, middle_name, program')
       .eq('id', user.id)
       .maybeSingle()

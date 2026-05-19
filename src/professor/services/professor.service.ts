@@ -1,5 +1,7 @@
 import { supabase } from "@/shared/lib/supabase";
 
+const facultyDb = supabase.schema("faculty");
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface Subject {
@@ -81,7 +83,7 @@ export interface Submission {
 // ─── Professor Classes ────────────────────────────────────────────────────────
 
 export async function getProfessorClasses(professorId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await facultyDb
     .from("class_assignments")
     .select(`
       id,
@@ -111,7 +113,7 @@ export async function getProfessorClasses(professorId: string) {
   // Count enrollments for each class
   const classesWithCount = await Promise.all(
     (data || []).map(async (classItem: any) => {
-      const { count } = await supabase
+      const { count } = await facultyDb
         .from("class_enrollments")
         .select("*", { count: "exact", head: true })
         .eq("class_assignment_id", classItem.id)
@@ -135,7 +137,7 @@ export async function getProfessorClasses(professorId: string) {
 // ─── Class Students ───────────────────────────────────────────────────────────
 
 export async function getClassStudents(classId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await facultyDb
     .from("class_enrollments")
     .select(`
       id,
@@ -146,7 +148,7 @@ export async function getClassStudents(classId: string) {
         email,
         student_number,
         applicant_id,
-        applicant_profiles (
+        application.applicant_profiles (
           full_name
         )
       )
@@ -179,14 +181,14 @@ export async function getClassStudents(classId: string) {
 // ─── Grades ───────────────────────────────────────────────────────────────────
 
 export async function getClassGrades(classId: string) {
-  const { data: enrollments, error } = await supabase
+  const { data: enrollments, error } = await facultyDb
     .from("class_enrollments")
     .select(`
       id,
       student_accounts (
         id,
         student_number,
-        applicant_profiles (
+        application.applicant_profiles (
           full_name
         )
       ),
@@ -237,7 +239,7 @@ export async function saveGrade(
   }
 ) {
   // Check if grade exists
-  const { data: existing } = await supabase
+  const { data: existing } = await facultyDb
     .from("grades")
     .select("id")
     .eq("enrollment_id", enrollmentId)
@@ -245,7 +247,7 @@ export async function saveGrade(
 
   if (existing) {
     // Update existing grade
-    const { data, error } = await supabase
+    const { data, error } = await facultyDb
       .from("grades")
       .update({
         ...gradeData,
@@ -259,7 +261,7 @@ export async function saveGrade(
     return { data, error };
   } else {
     // Insert new grade
-    const { data, error } = await supabase
+    const { data, error } = await facultyDb
       .from("grades")
       .insert({
         enrollment_id: enrollmentId,

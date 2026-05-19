@@ -1,5 +1,8 @@
 import { supabase } from "@/shared/lib/supabase";
 
+const studentDb = supabase.schema("student");
+const applicationDb = supabase.schema("application");
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface StudentRecord {
@@ -28,24 +31,24 @@ export interface StudentStats {
 export async function fetchStudentStats() {
   try {
     // Total students
-    const { count: total } = await supabase
+    const { count: total } = await studentDb
       .from("student_accounts")
       .select("*", { count: "exact", head: true });
 
     // Active students
-    const { count: active } = await supabase
+    const { count: active } = await studentDb
       .from("student_accounts")
       .select("*", { count: "exact", head: true })
       .eq("enrollment_status", "active");
 
     // Inactive students
-    const { count: inactive } = await supabase
+    const { count: inactive } = await studentDb
       .from("student_accounts")
       .select("*", { count: "exact", head: true })
       .eq("enrollment_status", "inactive");
 
     // Pending activation
-    const { count: pending } = await supabase
+    const { count: pending } = await studentDb
       .from("student_accounts")
       .select("*", { count: "exact", head: true })
       .is("password_hash", null);
@@ -68,7 +71,7 @@ export async function fetchStudentStats() {
 
 export async function fetchAllStudents() {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await studentDb
       .from("student_accounts")
       .select(`
         id,
@@ -77,7 +80,7 @@ export async function fetchAllStudents() {
         applicant_id,
         enrollment_status,
         enrolled_at,
-        applicant_profiles (
+        application.applicant_profiles (
           full_name,
           school_level,
           applicant_type,
@@ -113,11 +116,11 @@ export async function fetchAllStudents() {
 
 export async function fetchStudentDetails(studentId: string) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await studentDb
       .from("student_accounts")
       .select(`
         *,
-        applicant_profiles (*)
+        application.applicant_profiles (*)
       `)
       .eq("id", studentId)
       .single();
@@ -134,7 +137,7 @@ export async function fetchStudentDetails(studentId: string) {
 
 export async function activateStudentAccount(studentId: string) {
   try {
-    const { data, error} = await supabase
+    const { data, error} = await studentDb
       .from("student_accounts")
       .update({
         enrollment_status: "active",
@@ -155,7 +158,7 @@ export async function activateStudentAccount(studentId: string) {
 
 export async function deactivateStudentAccount(studentId: string) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await studentDb
       .from("student_accounts")
       .update({
         enrollment_status: "inactive",
@@ -176,7 +179,7 @@ export async function deactivateStudentAccount(studentId: string) {
 
 export async function updateStudentInfo(studentId: string, updates: any) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await studentDb
       .from("student_accounts")
       .update(updates)
       .eq("id", studentId)

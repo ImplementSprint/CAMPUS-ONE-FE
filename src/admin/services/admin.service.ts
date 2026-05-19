@@ -2,6 +2,8 @@ import { supabase } from "@/shared/lib/supabase";
 import type { SchoolLevel, ApplicantType, AdmissionStatus, SupabaseResponse } from "@/applicant/types/admissions.types";
 import { sendEmail } from "@/shared/email.service";
 
+const applicationDb = supabase.schema("application");
+
 // ─── Admin Types ──────────────────────────────────────────────────────────────
 export interface AdminApplication {
   id: string;
@@ -85,7 +87,7 @@ export interface DashboardStats {
 
 // ─── Fetch Applications ───────────────────────────────────────────────────────
 export async function fetchAllApplications(): Promise<SupabaseResponse<AdminApplication[]>> {
-  const { data, error } = await supabase
+  const { data, error } = await applicationDb
     .from("applicant_profiles")
     .select("*")
     .not("application_submitted_at", "is", null)
@@ -98,7 +100,7 @@ export async function fetchAllApplications(): Promise<SupabaseResponse<AdminAppl
 // ─── Fetch Application Detail ─────────────────────────────────────────────────
 export async function fetchApplicationDetail(applicationId: string): Promise<SupabaseResponse<ApplicationDetail>> {
   // Fetch main profile
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile, error: profileError } = await applicationDb
     .from("applicant_profiles")
     .select("*")
     .eq("id", applicationId)
@@ -107,34 +109,34 @@ export async function fetchApplicationDetail(applicationId: string): Promise<Sup
   if (profileError) return { data: null, error: { message: profileError.message } };
 
   // Fetch parent info
-  const { data: parentInfo } = await supabase
+  const { data: parentInfo } = await applicationDb
     .from("parent_information")
     .select("*")
     .eq("applicant_id", applicationId)
     .single();
 
   // Fetch academic background
-  const { data: academicBg } = await supabase
+  const { data: academicBg } = await applicationDb
     .from("academic_background")
     .select("*")
     .eq("applicant_id", applicationId)
     .order("grade_level", { ascending: true });
 
   // Fetch alumni relatives
-  const { data: alumni } = await supabase
+  const { data: alumni } = await applicationDb
     .from("alumni_relatives")
     .select("*")
     .eq("applicant_id", applicationId);
 
   // Fetch documents
-  const { data: documents } = await supabase
+  const { data: documents } = await applicationDb
     .from("applicant_documents")
     .select("*")
     .eq("applicant_id", applicationId)
     .order("submitted_at", { ascending: false });
 
   // Fetch program selection
-  const { data: programSelection } = await supabase
+  const { data: programSelection } = await applicationDb
     .from("program_selections")
     .select("*")
     .eq("applicant_id", applicationId)
@@ -165,7 +167,7 @@ export async function updateApplicationStatus(
 
   // Generate applicant number if accepted
   if (status === "Passed") {
-    const { data: appNumber } = await supabase.rpc("generate_applicant_number");
+    const { data: appNumber } = await applicationDb.rpc("generate_applicant_number");
     updateData.applicant_number = appNumber;
   }
 
@@ -174,6 +176,7 @@ export async function updateApplicationStatus(
   }
 
   const { error } = await supabase
+    .schema("application")
     .from("applicant_profiles")
     .update(updateData)
     .eq("id", applicationId);
@@ -182,6 +185,7 @@ export async function updateApplicationStatus(
 
   // Send email notification
   const { data: applicant } = await supabase
+    .schema("application")
     .from("applicant_profiles")
     .select("email, full_name, reference_number, applicant_number")
     .eq("id", applicationId)

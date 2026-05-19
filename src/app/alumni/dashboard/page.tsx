@@ -1,5 +1,4 @@
 'use client';
-<<<<<<< HEAD
 
 import Link from 'next/link';
 import { ProtectedRoute } from '../../components/ProtectedRoute';
@@ -44,68 +43,8 @@ function StatCard({ value, label, action, icon: Icon, iconWrap }: { value: strin
   );
 }
 
-function DashboardOverview() {
-  return (
-    <section className="space-y-6">
-      <div>
-        <h1 className="text-[54px] font-black leading-[0.9] tracking-[-0.06em] text-slate-950">Dashboard</h1>
-        <p className="mt-1 text-[18px] text-[#58739b]">Welcome back, John Doe 👋</p>
-      </div>
+ 'use client';
 
-      <div className="grid gap-4 lg:grid-cols-4 md:grid-cols-2">
-        {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">
-        <section className="rounded-[18px] border border-slate-200/70 bg-white px-5 py-5 shadow-[0_1px_2px_rgba(15,23,42,0.03),0_10px_26px_rgba(15,23,42,0.04)]">
-          <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#7182a6]">Your Requests</div>
-          <h2 className="mt-2 text-[20px] font-semibold tracking-[-0.03em] text-slate-950">Application overview</h2>
-
-          <div className="mt-4 divide-y divide-slate-200/80">
-            {requests.map((request) => (
-              <div key={request.title} className="flex items-start justify-between gap-4 py-5 first:pt-0 last:pb-0">
-                <div>
-                  <h3 className="text-[18px] font-semibold leading-none tracking-[-0.02em] text-slate-950">{request.title}</h3>
-                  <p className="mt-2 text-[15px] text-slate-500">{request.type}</p>
-                </div>
-                <span className={`shrink-0 rounded-full px-4 py-2 text-[14px] font-semibold ${request.status === 'Processing' ? 'bg-[#ffe9c8] text-[#d38b00]' : request.status === 'Under Verification' ? 'bg-[#e3efff] text-[#2e63ff]' : 'bg-[#e3ebff] text-[#4167ff]'}`}>
-                  {request.status}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 rounded-[14px] bg-[#f8fbff] px-0 py-0">
-            <div className="flex items-center justify-between px-1 pb-2 text-[14px] font-medium text-slate-500">
-              <span>Most urgent: Alumni Card Application</span>
-              <span className="font-semibold text-slate-900">25%</span>
-            </div>
-            <div className="h-[6px] overflow-hidden rounded-full bg-[#dbe5ff]"><div className="h-full w-1/4 rounded-full bg-[#356dff]" /></div>
-          </div>
-        </section>
-
-        <div className="space-y-4">
-          {sideCards.map((card) => {
-            const Icon = card.icon;
-            return (
-              <Link
-                href={card.href}
-                key={card.title}
-                className="flex min-h-[112px] items-start justify-between gap-4 rounded-[18px] border border-slate-200/70 bg-white px-5 py-5 shadow-[0_1px_2px_rgba(15,23,42,0.03),0_10px_26px_rgba(15,23,42,0.04)]"
-              >
-                <div className="flex min-w-0 items-start gap-3">
-                  <div className="mt-0.5 grid h-9 w-9 place-items-center rounded-2xl bg-slate-50 text-slate-700"><Icon className="h-[18px] w-[18px]" /></div>
-                  <div className="min-w-0">
-                    <h3 className="text-[18px] font-semibold leading-tight tracking-[-0.02em] text-slate-950">{card.title}</h3>
-                    <p className="mt-2 max-w-[230px] text-[14px] leading-relaxed text-slate-500">{card.description}</p>
-                  </div>
-                </div>
-                <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[#356dff]" />
-              </Link>
-            );
-          })}
-        </div>
-=======
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '../../components/ProtectedRoute';
@@ -118,7 +57,6 @@ function DashboardContent() {
   return (
     <section className="dashboard-screen">
       <div className="dashboard-grid">
-        {/* Hero */}
         <section className="dashboard-panel panel-hero">
           <div className="hero-banner">
             <h2>Hello, {displayName.split(' ')[0]}!</h2>
@@ -126,7 +64,6 @@ function DashboardContent() {
           </div>
         </section>
 
-        {/* Overview */}
         <section className="dashboard-panel panel-overview">
           <h3 className="section-head">Overview</h3>
           <div className="overview-grid">
@@ -137,7 +74,6 @@ function DashboardContent() {
           </div>
         </section>
 
-        {/* Quick Actions */}
         <section className="dashboard-panel panel-actions">
           <h3 className="section-head">Quick Actions</h3>
           <div className="quick-stack">
@@ -156,7 +92,6 @@ function DashboardContent() {
           </div>
         </section>
 
-        {/* Profile */}
         <section className="dashboard-panel panel-profile">
           <h3 className="section-head">Profile</h3>
           <article className="profile-box">
@@ -171,7 +106,6 @@ function DashboardContent() {
           </article>
         </section>
 
-        {/* Activity */}
         <section className="dashboard-panel panel-activity">
           <h3 className="section-head">Recent Activity</h3>
           <ul className="status-list activity-list">
@@ -181,20 +115,16 @@ function DashboardContent() {
             <li>Eligible for card application processing.</li>
           </ul>
         </section>
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
       </div>
     </section>
   );
 }
 
 export default function AlumniDashboardPage() {
-<<<<<<< HEAD
-  return <ProtectedRoute allowedRoles={['alumni']}><DashboardOverview /></ProtectedRoute>;
-=======
   return (
     <ProtectedRoute allowedRoles={['alumni']}>
       <DashboardContent />
     </ProtectedRoute>
   );
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
 }
+          <h3 className="section-head">Overview</h3>

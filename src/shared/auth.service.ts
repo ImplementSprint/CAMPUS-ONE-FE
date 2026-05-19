@@ -23,29 +23,24 @@ export interface LoginResponse {
 }
 
 async function detectUserRole(email: string): Promise<UserRole | null> {
-<<<<<<< HEAD
-  const { data: student } = await supabase.schema('student').from('student_accounts').select('id').eq('email', email).maybeSingle();
-  if (student) return 'student';
+  const applicationDb = supabase.schema('application');
+  const studentDb = supabase.schema('student');
+  const facultyDb = supabase.schema('faculty');
+  const alumniDb = supabase.schema('alumni');
 
-  const { data: admin } = await supabase.schema('admin').from('admin_users').select('id').eq('email', email).maybeSingle();
-  if (admin) return 'admin';
-
-  const { data: professor } = await supabase.schema('faculty').from('professor_users').select('id').eq('email', email).maybeSingle();
-  if (professor) return 'professor';
-
-  const { data: applicant } = await supabase.schema('applicant').from('applicant_profiles').select('id').eq('email', email).maybeSingle();
-=======
-  const { data: student } = await supabase.from('student_accounts').select('id').eq('email', email).maybeSingle();
+  const { data: student } = await studentDb.from('student_accounts').select('id').eq('email', email).maybeSingle();
   if (student) return 'student';
 
   const { data: admin } = await supabase.from('admin_users').select('id').eq('email', email).maybeSingle();
   if (admin) return 'admin';
 
-  const { data: professor } = await supabase.from('professor_users').select('id').eq('email', email).maybeSingle();
+  const { data: professor } = await facultyDb.from('professor_users').select('id').eq('email', email).maybeSingle();
   if (professor) return 'professor';
 
-  const { data: applicant } = await supabase.from('applicant_profiles').select('id').eq('email', email).maybeSingle();
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
+  const { data: alumni } = await alumniDb.from('accounts').select('id').eq('email', email).maybeSingle();
+  if (alumni) return 'alumni';
+
+  const { data: applicant } = await applicationDb.from('applicant_profiles').select('id').eq('email', email).maybeSingle();
   if (applicant) return 'applicant';
 
   return null;
@@ -104,7 +99,7 @@ export function getRedirectPath(role: UserRole): string {
     applicant: '/admissions',
     student: '/dashboard',
     professor: '/professor',
-    alumni: '/alumni',
+    alumni: '/alumni/dashboard',
     admin: '/admin',
   };
   return paths[role] || '/';
