@@ -54,7 +54,7 @@ export default function EnrollPage() {
         if (!studentAccount?.applicant_id) return;
 
         const { data: profile } = await supabase
-          .schema('application')
+          .schema('applicant')
           .from('applicant_profiles')
           .select('program')
           .eq('id', studentAccount.applicant_id)

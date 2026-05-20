@@ -1,3 +1,7 @@
+// BACKUP_START
+// File: src/services/auth.service.ts
+// Backup created: 2026-05-20
+
 import { supabase } from '@/lib/supabase';
 
 export type UserRole =
@@ -50,16 +54,8 @@ async function detectUserRole(email: string): Promise<UserRole | null> {
   }
 
 
-  // Professor records are keyed by id/UID in backend runtime queries.
-  // FE must resolve professor by auth UID, not by login email.
-const { data: professor } = await facultyDb
-  .from('professor_users')
-  .select('id')
-  .eq('email', email)
-  .maybeSingle();
-
-if (professor) return 'professor';
-
+  const { data: professor } = await facultyDb.from('professor_users').select('id').eq('email', email).maybeSingle();
+  if (professor) return 'professor';
 
   const { data: alumni } = await alumniDb.from('alumni').select('id').eq('email', email).maybeSingle();
   if (alumni) return 'alumni';
@@ -167,3 +163,6 @@ export function canAccessAdmin(): boolean {
 export function isAdminRole(role: UserRole | null | undefined): role is (typeof adminRoles)[number] {
   return !!role && adminRoles.includes(role as (typeof adminRoles)[number]);
 }
+
+// BACKUP_END
+

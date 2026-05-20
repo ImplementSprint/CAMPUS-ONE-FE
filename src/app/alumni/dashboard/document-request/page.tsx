@@ -104,18 +104,3 @@ export default function DocumentRequestPage() {
     </ProtectedRoute>
   );
 }
-    </section>
-  );
-}
-
-export default function DocumentRequestPage() {
-<<<<<<< HEAD
-  return <ProtectedRoute allowedRoles={['alumni']}><DocumentRequestContent /></ProtectedRoute>;
-=======
-  return (
-    <ProtectedRoute allowedRoles={['alumni']}>
-      <DocumentRequestContent />
-    </ProtectedRoute>
-  );
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
-}

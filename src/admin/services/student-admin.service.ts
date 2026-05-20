@@ -1,7 +1,7 @@
 import { supabase } from "@/shared/lib/supabase";
 
 const studentDb = supabase.schema("student");
-const applicationDb = supabase.schema("application");
+const applicationDb = supabase.schema("applicant");
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -80,7 +80,7 @@ export async function fetchAllStudents() {
         applicant_id,
         enrollment_status,
         enrolled_at,
-        application.applicant_profiles (
+        applicant.applicant_profiles (
           full_name,
           school_level,
           applicant_type,
@@ -120,7 +120,7 @@ export async function fetchStudentDetails(studentId: string) {
       .from("student_accounts")
       .select(`
         *,
-        application.applicant_profiles (*)
+        applicant.applicant_profiles (*)
       `)
       .eq("id", studentId)
       .single();

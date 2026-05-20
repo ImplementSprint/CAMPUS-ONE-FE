@@ -1,6 +1,16 @@
 import { supabase } from '@/shared/lib/supabase';
 
-export type UserRole = 'applicant' | 'student' | 'professor' | 'alumni' | 'admin';
+export type UserRole =
+  | 'applicant'
+  | 'student'
+  | 'professor'
+  | 'alumni'
+  | 'super_admin'
+  | 'applicant_admin'
+  | 'student_admin'
+  | 'alumni_admin';
+
+export const adminRoles = ['super_admin', 'applicant_admin', 'student_admin', 'alumni_admin'] as const;
 
 export interface AuthUser {
   id: string;
@@ -23,7 +33,7 @@ export interface LoginResponse {
 }
 
 async function detectUserRole(email: string): Promise<UserRole | null> {
-  const applicationDb = supabase.schema('application');
+  const applicantDb = supabase.schema('applicant');
   const studentDb = supabase.schema('student');
   const facultyDb = supabase.schema('faculty');
   const alumniDb = supabase.schema('alumni');
@@ -31,17 +41,37 @@ async function detectUserRole(email: string): Promise<UserRole | null> {
   const { data: student } = await studentDb.from('student_accounts').select('id').eq('email', email).maybeSingle();
   if (student) return 'student';
 
-  const { data: admin } = await supabase.from('admin_users').select('id').eq('email', email).maybeSingle();
-  if (admin) return 'admin';
+  // Admin roles: prefer the refactored custom schema data.
+  // Fallback to legacy public `admin_users` only if present.
+  const { data: admin } = await supabase.from('admin_users').select('role').eq('email', email).maybeSingle();
+  if (admin?.role && adminRoles.includes(admin.role as (typeof adminRoles)[number])) return admin.role as UserRole;
 
-  const { data: professor } = await facultyDb.from('professor_users').select('id').eq('email', email).maybeSingle();
-  if (professor) return 'professor';
 
-  const { data: alumni } = await alumniDb.from('accounts').select('id').eq('email', email).maybeSingle();
+  // Professor records are keyed by id/UID in backend runtime queries.
+  // Match against auth UID (Supabase user id), not login email.
+const { data: professor } = await facultyDb
+  .from('professor_users')
+  .select('id')
+  .eq('email', email)
+  .maybeSingle();
+
+if (professor) return 'professor';
+
+  const { data: alumni } = await alumniDb.from('alumni').select('id').eq('email', email).maybeSingle();
   if (alumni) return 'alumni';
 
-  const { data: applicant } = await applicationDb.from('applicant_profiles').select('id').eq('email', email).maybeSingle();
-  if (applicant) return 'applicant';
+  try {
+    const { data: applicant } = await applicantDb
+      .from('applicant_profiles')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+    if (applicant) return 'applicant';
+  } catch {
+    // Non-blocking: applicant_profiles can fail (e.g., 406) for some users.
+    // In that case, continue role detection (e.g., student lookup should still succeed).
+  }
+
 
   return null;
 }
@@ -100,7 +130,10 @@ export function getRedirectPath(role: UserRole): string {
     student: '/dashboard',
     professor: '/professor',
     alumni: '/alumni/dashboard',
-    admin: '/admin',
+    super_admin: '/super-admin/dashboard',
+    applicant_admin: '/applicant-admin/dashboard',
+    student_admin: '/student-admin/dashboard',
+    alumni_admin: '/alumni-admin/dashboard',
   };
   return paths[role] || '/';
 }
@@ -112,7 +145,11 @@ export function isMobileDevice(): boolean {
 
 export function canAccessAdmin(): boolean {
   const user = getCurrentUser();
-  if (user?.role !== 'admin') return false;
+  if (!user || !adminRoles.includes(user.role as (typeof adminRoles)[number])) return false;
   if (typeof window === 'undefined') return false;
   return !('ReactNativeWebView' in window);
+}
+
+export function isAdminRole(role: UserRole | null | undefined): role is (typeof adminRoles)[number] {
+  return !!role && adminRoles.includes(role as (typeof adminRoles)[number]);
 }

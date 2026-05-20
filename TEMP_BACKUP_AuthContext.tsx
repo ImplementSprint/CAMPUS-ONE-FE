@@ -1,3 +1,7 @@
+// BACKUP_START
+// File: src/contexts/AuthContext.tsx
+// Backup created: 2026-05-20
+
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -44,22 +48,34 @@ async function detectRole(email: string): Promise<UserRole | null> {
   const facultyDb = supabase.schema('faculty');
   const alumniDb = supabase.schema('alumni');
 
-  const { data: student } = await studentDb.from('student_accounts').select('id').eq('email', email).maybeSingle();
-  if (student) return 'student';
+  const checks: { table: string; role: UserRole }[] = [
+    { table: 'student_accounts',   role: 'student' },
+    { table: 'professor_users',    role: 'professor' },
+    { table: 'alumni',             role: 'alumni' },
+    { table: 'applicant_profiles', role: 'applicant' },
+    // Admin roles handled separately (see `adminRole` block below)
+  ];
+  for (const { table, role } of checks) {
+    const db =
+      table === 'student_accounts' ? studentDb :
+      table === 'professor_users' ? facultyDb :
+      table === 'alumni' ? alumniDb :
+      table === 'applicant_profiles' ? applicantDb :
+      supabase;
 
-  // Professor: backend/runtime queries appear to key professor_users by `id` (auth UID), not email.
-  const { data: professor } = await facultyDb.from('professor_users').select('id').eq('id', email).maybeSingle();
-  if (professor) return 'professor';
+    if (table === 'admin_users') {
+      const { data } = await db.from(table).select('role').eq('email', email).maybeSingle();
+      if (data?.role && ['super_admin', 'applicant_admin', 'student_admin', 'alumni_admin'].includes(data.role)) {
+        return data.role as UserRole;
+      }
+      continue;
+    }
 
-  const { data: alumni } = await alumniDb.from('alumni').select('id').eq('email', email).maybeSingle();
-  if (alumni) return 'alumni';
-
-  const { data: applicant } = await applicantDb.from('applicant_profiles').select('id').eq('email', email).maybeSingle();
-  if (applicant) return 'applicant';
-
+    const { data } = await db.from(table).select('id').eq('email', email).maybeSingle();
+    if (data) return role;
+  }
   return null;
 }
-
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -186,3 +202,6 @@ export const useAuth = () => {
   }
   return context;
 };
+
+// BACKUP_END
+

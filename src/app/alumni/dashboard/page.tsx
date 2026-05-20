@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '../../components/ProtectedRoute';
 import { BadgeCheck, CalendarDays, ChevronRight, Folder, FolderDown, ShieldCheck } from 'lucide-react';
 
@@ -42,12 +43,6 @@ function StatCard({ value, label, action, icon: Icon, iconWrap }: { value: strin
     </article>
   );
 }
-
- 'use client';
-
-import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
-import { ProtectedRoute } from '../../components/ProtectedRoute';
 
 function DashboardContent() {
   const { user } = useAuth();
@@ -127,4 +122,3 @@ export default function AlumniDashboardPage() {
     </ProtectedRoute>
   );
 }
-          <h3 className="section-head">Overview</h3>

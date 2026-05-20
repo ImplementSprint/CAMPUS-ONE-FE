@@ -19,12 +19,11 @@ import { TransmissionLogsPage } from "./pages/TransmissionLogsPage";
 import { AdmissionsScopeGuidePage } from "./pages/AdmissionsScopeGuidePage";
 
 interface ApplicantAdminDashboardProps {
-  onSwitchPortal: (portal: "applicant" | "student") => void;
 }
 
-export function ApplicantAdminDashboard({ onSwitchPortal }: ApplicantAdminDashboardProps) {
+export function ApplicantAdminDashboard({}: ApplicantAdminDashboardProps) {
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
-  const [view, setView] = useState<"dashboard" | "applications">("dashboard");
+  const [view, setView] = useState<string>("dashboard");
   const [stats, setStats] = useState<DashboardStats>({
     total: 0,
     pending: 0,
@@ -58,7 +57,7 @@ export function ApplicantAdminDashboard({ onSwitchPortal }: ApplicantAdminDashbo
   const currentView = selectedApplicationId ? "detail" : view;
 
   const handleNavigate = (newView: string) => {
-    setView(newView as any);
+    setView(newView);
     setSelectedApplicationId(null);
   };
 
@@ -295,23 +294,6 @@ export function ApplicantAdminDashboard({ onSwitchPortal }: ApplicantAdminDashbo
                 </div>
                 <div className="relative text-2xl text-gray-300 group-hover:text-amber-500 group-hover:translate-x-1 transition-all duration-300">→</div>
               </button>
-
-              <button
-                onClick={() => onSwitchPortal("student")}
-                className="group relative flex items-center justify-between p-6 border-2 border-gray-200 rounded-2xl hover:border-green-500 hover:shadow-lg transition-all duration-300 overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative flex items-center gap-4">
-                  <div className="p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-xl group-hover:from-green-500 group-hover:to-green-600 transition-all duration-300 shadow-sm">
-                    <Users className="w-6 h-6 text-green-500 group-hover:text-white transition-colors" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900 text-base">Manage Students</p>
-                    <p className="text-sm text-gray-500 mt-0.5">Switch to Student Portal</p>
-                  </div>
-                </div>
-                <div className="relative text-2xl text-gray-300 group-hover:text-green-500 group-hover:translate-x-1 transition-all duration-300">→</div>
-              </button>
             </div>
           </div>
 
@@ -344,7 +326,6 @@ export function ApplicantAdminDashboard({ onSwitchPortal }: ApplicantAdminDashbo
       currentPortal="applicant"
       currentView={currentView}
       onNavigate={handleNavigate}
-      onSwitchPortal={onSwitchPortal}
     >
       {renderPageContent()}
     </UnifiedAdminLayout>

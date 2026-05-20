@@ -148,7 +148,7 @@ export async function getClassStudents(classId: string) {
         email,
         student_number,
         applicant_id,
-        application.applicant_profiles (
+        applicant.applicant_profiles (
           full_name
         )
       )
@@ -188,7 +188,7 @@ export async function getClassGrades(classId: string) {
       student_accounts (
         id,
         student_number,
-        application.applicant_profiles (
+        applicant.applicant_profiles (
           full_name
         )
       ),

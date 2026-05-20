@@ -12,7 +12,7 @@ export async function createAlumniProfile(dto: {
 }): Promise<SupabaseResponse<{ id: string }>> {
   const alumniId = crypto.randomUUID();
 
-  const { error } = await alumniDb.from("accounts").insert({
+  const { error } = await alumniDb.from("alumni").insert({
     id: alumniId,
     email: dto.email,
     first_name: "",
@@ -38,7 +38,7 @@ export async function updateAlumniProfile(
   const referenceNumber = `ALM-${new Date().getFullYear()}-${alumniId.slice(0, 8).toUpperCase()}`;
 
   const { error } = await alumniDb
-    .from("accounts")
+    .from("alumni")
     .update({
       first_name: dto.first_name,
       last_name: dto.last_name,

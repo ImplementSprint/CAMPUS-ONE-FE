@@ -1,6 +1,6 @@
 'use client';
-import { ApplicantAdminDashboard } from '@/admin/pages/applicant-admin/ApplicantAdminDashboard';
+import { ApplicantAdminDashboard } from '../pages/ApplicantAdminDashboard';
 
 export default function ApplicantAdminPage() {
-  return <ApplicantAdminDashboard onSwitchPortal={() => {}} />;
+  return <ApplicantAdminDashboard />;
 }

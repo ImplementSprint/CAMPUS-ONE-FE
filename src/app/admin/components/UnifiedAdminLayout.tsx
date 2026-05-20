@@ -1,22 +1,20 @@
 'use client'
 import { ReactNode, useState, useEffect } from "react";
 import { logout, getCurrentUser } from "@/services/auth.service";
-import { LogOut, LayoutDashboard, FileText, GraduationCap, Bell, ChevronDown, ChevronRight, Inbox, FileCheck, CheckCircle, ClipboardList, Calendar, Shield, Users, BarChart3, HelpCircle, FileText as FileTextIcon, BookOpen } from "lucide-react";
+import { LogOut, LayoutDashboard, FileText, GraduationCap, Bell, ChevronDown, ChevronRight, Inbox, FileCheck, CheckCircle, ClipboardList, Calendar, Shield, Users, BarChart3, HelpCircle, FileText as FileTextIcon, BookOpen, Award, AlertTriangle, BarChart2, Library, HeadphonesIcon, BellRing } from "lucide-react";
 
 interface UnifiedAdminLayoutProps {
   children: ReactNode;
   currentPortal: "applicant" | "student";
   currentView: string;
   onNavigate?: (view: string) => void;
-  onSwitchPortal?: (portal: "applicant" | "student") => void;
 }
 
 export function UnifiedAdminLayout({ 
   children, 
   currentPortal, 
   currentView, 
-  onNavigate,
-  onSwitchPortal 
+  onNavigate
 }: UnifiedAdminLayoutProps) {
   const user = getCurrentUser();
   const [expandedSections, setExpandedSections] = useState<string[]>([
@@ -104,7 +102,15 @@ export function UnifiedAdminLayout({
 
   const studentMenuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "students", label: "Students", icon: GraduationCap },
+    { id: "directory", label: "Student Directory", icon: GraduationCap },
+    { id: "enrollment", label: "Enrollment Center", icon: ClipboardList },
+    { id: "academics", label: "Academic Hub", icon: BookOpen },
+    { id: "honors", label: "Honors Tracker", icon: Award },
+    { id: "clearance", label: "Clearance & Deficiencies", icon: AlertTriangle },
+    { id: "reports", label: "Reports", icon: BarChart2 },
+    { id: "catalog", label: "Subject Catalog", icon: Library },
+    { id: "requests", label: "Service Requests", icon: HeadphonesIcon },
+    { id: "notifications", label: "Notification Center", icon: BellRing },
   ];
 
   const menuStructure = currentPortal === "applicant" ? applicantMenuStructure : studentMenuItems;
@@ -128,35 +134,6 @@ export function UnifiedAdminLayout({
             {currentPortal === "applicant" ? "Applicant Management" : "Student Management"}
           </p>
         </div>
-
-        {/* Portal Switcher - Only for Super Admin */}
-        {isMounted && isSuperAdmin && (
-          <div className="p-6 border-b border-gray-800">
-            <p className="text-xs text-gray-400 mb-3 uppercase tracking-wider font-semibold">Switch Portal</p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => onSwitchPortal?.("applicant")}
-                className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                  currentPortal === "applicant"
-                    ? "bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-white shadow-lg shadow-amber-500/30"
-                    : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700"
-                }`}
-              >
-                Applicants
-              </button>
-              <button
-                onClick={() => onSwitchPortal?.("student")}
-                className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                  currentPortal === "student"
-                    ? "bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-white shadow-lg shadow-amber-500/30"
-                    : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700"
-                }`}
-              >
-                Students
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-6 px-4">
@@ -299,6 +276,15 @@ export function UnifiedAdminLayout({
               {currentView === "admissions-analytics" && "Admissions Analytics"}
               {currentView === "applicant-helpdesk" && "Applicant Help Desk"}
               {currentView === "transmission-logs" && "Transmission Logs"}
+              {currentView === "directory" && "Student Directory"}
+              {currentView === "enrollment" && "Enrollment Center"}
+              {currentView === "academics" && "Academic Hub"}
+              {currentView === "honors" && "Honors Tracker"}
+              {currentView === "clearance" && "Clearance & Deficiencies"}
+              {currentView === "reports" && "Reports"}
+              {currentView === "catalog" && "Subject Catalog"}
+              {currentView === "requests" && "Service Requests"}
+              {currentView === "notifications" && "Notification Center"}
               {currentView === "students" && "Students"}
               {currentView === "detail" && (currentPortal === "applicant" ? "Application Details" : "Student Details")}
             </h1>
@@ -316,6 +302,15 @@ export function UnifiedAdminLayout({
               {currentView === "admissions-analytics" && "Visual reports on application traffic"}
               {currentView === "applicant-helpdesk" && "Resolve issues and inquiries from applicants"}
               {currentView === "transmission-logs" && "Audit trail of alerts and emails"}
+              {currentView === "directory" && "Manage enrolled student profiles"}
+              {currentView === "enrollment" && "Review enrollment offerings and schedules"}
+              {currentView === "academics" && "Track grades and academic progress"}
+              {currentView === "honors" && "Monitor honors eligibility and passing marks"}
+              {currentView === "clearance" && "Identify incomplete and failing records"}
+              {currentView === "reports" && "Enrollment and performance summaries"}
+              {currentView === "catalog" && "Browse active subjects and curriculum entries"}
+              {currentView === "requests" && "Process administrative service requests"}
+              {currentView === "notifications" && "Publish announcements and notices"}
               {currentView === "students" && "Manage enrolled students"}
               {currentView === "detail" && "View and manage details"}
             </p>

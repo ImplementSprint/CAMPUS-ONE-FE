@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { login, getRedirectPath } from '@/services/auth.service';
+import { login, getRedirectPath, isAdminRole } from '@/services/auth.service';
 import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 
 export function UnifiedLoginPage() {
@@ -28,7 +28,7 @@ export function UnifiedLoginPage() {
     try {
       const result = await login({ email, password });
       if (result.success && result.user) {
-        if (result.user.role === 'admin' && checkIsMobile()) {
+        if (isAdminRole(result.user.role) && checkIsMobile()) {
           setError('Admin access is only available on desktop/web browsers.');
           setLoading(false);
           return;

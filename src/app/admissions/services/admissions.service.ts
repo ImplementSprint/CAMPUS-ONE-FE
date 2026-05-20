@@ -6,7 +6,7 @@ import type {
   SupabaseResponse, CreateAccountDTO, ApplicantProfileDTO, ExamLogDTO,
 } from "../types/admissions.types";
 
-const applicationDb = supabase.schema("application");
+const applicationDb = supabase.schema("applicant");
 
 // ─── Activity Logging ─────────────────────────────────────────────────────────
 export async function logAdmissionEvent(dto: AdmissionActivityLogDTO): Promise<SupabaseResponse<{ id: string }>> {
@@ -73,7 +73,7 @@ export async function submitApplication(applicantId: string): Promise<SupabaseRe
   
   // Send confirmation email with reference number
   try {
-    const { sendApplicationConfirmationEmail } = await import("../../../services/email.service");
+const { sendApplicationConfirmationEmail } = await import("@/services/email.service");
     
     console.log("📤 Sending confirmation email...");
     const emailResult = await sendApplicationConfirmationEmail({
@@ -186,7 +186,7 @@ export async function logExamResult(dto: ExamLogDTO): Promise<SupabaseResponse<{
 // ─── Admission Result ─────────────────────────────────────────────────────────
 export async function getApplicantAdmissionResult(applicantId: string): Promise<SupabaseResponse<AdmissionResult>> {
   const { data, error } = await applicationDb.from("admissions_results")
-    .select(`id, applicant_id, status, noa_url, exam_permit_url, exam_date, exam_time, exam_venue, permit_number, date_issued, applicant_profiles ( full_name, program, school_level, applicant_type )`)
+    .select(`id, applicant_id, status, noa_url, exam_permit_url, exam_date, exam_time, exam_venue, permit_number, date_issued, applicant.applicant_profiles ( full_name, program, school_level, applicant_type )`)
     .eq("applicant_id", applicantId).single();
   if (error) return { data: null, error: { message: error.message } };
   const raw = data as Record<string, unknown>;

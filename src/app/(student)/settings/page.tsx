@@ -1,36 +1,5 @@
 'use client';
 import { useState } from 'react';
-<<<<<<< HEAD
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
-import DashboardLayout from '@/components/DashboardLayout';
-
-function SettingIcon({ type }: { type: 'lock' | 'bell' | 'mail' | 'shield' | 'download' }) {
-  if (type === 'lock') return <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[14px] w-[14px]"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M8 10V8a4 4 0 0 1 8 0v2" fill="none" stroke="currentColor" strokeWidth="1.8" /></svg>;
-  if (type === 'bell') return <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[14px] w-[14px]"><path d="M8 9a4 4 0 1 1 8 0v3.2c0 .8.3 1.6.9 2.2l1 1.1H6.1l1-1.1c.6-.6.9-1.4.9-2.2V9" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M10 17a2 2 0 0 0 4 0" fill="none" stroke="currentColor" strokeWidth="1.8" /></svg>;
-  if (type === 'mail') return <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[14px] w-[14px]"><rect x="4" y="6" width="16" height="12" rx="2" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m5 8 7 5 7-5" fill="none" stroke="currentColor" strokeWidth="1.8" /></svg>;
-  if (type === 'shield') return <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[14px] w-[14px]"><path d="M12 3 5 6v5c0 4.4 2.7 8.5 7 10 4.3-1.5 7-5.6 7-10V6l-7-3Z" fill="none" stroke="currentColor" strokeWidth="1.8" /></svg>;
-  return <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[14px] w-[14px]"><path d="M12 4v9" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m8.5 10.5 3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M5 18h14" fill="none" stroke="currentColor" strokeWidth="1.8" /></svg>;
-}
-
-function Toggle({ checked, onToggle, label }: { checked: boolean; onToggle: () => void; label: string }) {
-  return (
-    <button
-      type="button"
-      className={`relative h-6 w-11 rounded-full transition-colors ${checked ? 'bg-amber-500' : 'bg-slate-300'}`}
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      onClick={onToggle}
-    >
-      <span
-        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`}
-      />
-    </button>
-  );
-}
- 'use client';
-import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/shared/lib/supabase';
 import DashboardLayout from '@/shared/components/DashboardLayout';
@@ -116,4 +85,4 @@ export default function SettingsPage() {
     </DashboardLayout>
   );
 }
-                </span>
+

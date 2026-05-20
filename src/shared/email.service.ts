@@ -1,7 +1,10 @@
 import { Resend } from 'resend';
 
 // Initialize Resend with API key from environment
-const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
+// NOTE: avoid throwing during module evaluation when env var is missing (e.g. CI/typecheck)
+const resendApiKey = process.env.NEXT_PUBLIC_RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
+
 
 interface SendEmailParams {
   to: string;
@@ -20,6 +23,7 @@ interface SendApplicationConfirmationParams {
 // Generic email sending function
 export async function sendEmail({ to, subject, html }: SendEmailParams) {
   try {
+    if (!resend) return { success: false, error: "Missing NEXT_PUBLIC_RESEND_API_KEY" };
     const { data, error } = await resend.emails.send({
       from: 'Acme <onboarding@resend.dev>', // Resend test domain
       to: [to],

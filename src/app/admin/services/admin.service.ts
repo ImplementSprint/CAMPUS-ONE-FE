@@ -1,8 +1,8 @@
 import { supabase } from "@/lib/supabase";
-const applicationDb = supabase.schema('application');
+const applicationDb = supabase.schema('applicant');
 import type { SchoolLevel, ApplicantType, AdmissionStatus, SupabaseResponse } from "../../admissions/types/admissions.types";
 import { REQUIREMENTS_CONFIG } from "../../admissions/services/requirements.config";
-import { sendEmail } from "../../../services/email.service";
+import { sendEmail } from "@/services/email.service";
 
 // ─── Admin Types ──────────────────────────────────────────────────────────────
 export interface AdminApplication {

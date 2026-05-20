@@ -8,15 +8,13 @@ interface UnifiedAdminLayoutProps {
   currentPortal: "applicant" | "student";
   currentView: string;
   onNavigate?: (view: string) => void;
-  onSwitchPortal?: (portal: "applicant" | "student") => void;
 }
 
 export function UnifiedAdminLayout({ 
   children, 
   currentPortal, 
   currentView, 
-  onNavigate,
-  onSwitchPortal 
+  onNavigate
 }: UnifiedAdminLayoutProps) {
   const user = getCurrentUser();
 
@@ -52,33 +50,6 @@ export function UnifiedAdminLayout({
           <p className="text-xs text-gray-400 ml-12 -mt-1">
             {currentPortal === "applicant" ? "Applicant Management" : "Student Management"}
           </p>
-        </div>
-
-        {/* Portal Switcher */}
-        <div className="p-6 border-b border-gray-800">
-          <p className="text-xs text-gray-400 mb-3 uppercase tracking-wider font-semibold">Switch Portal</p>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => onSwitchPortal?.("applicant")}
-              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                currentPortal === "applicant"
-                  ? "bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-white shadow-lg shadow-amber-500/30"
-                  : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700"
-              }`}
-            >
-              Applicants
-            </button>
-            <button
-              onClick={() => onSwitchPortal?.("student")}
-              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                currentPortal === "student"
-                  ? "bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-white shadow-lg shadow-amber-500/30"
-                  : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-gray-700"
-              }`}
-            >
-              Students
-            </button>
-          </div>
         </div>
 
         {/* Navigation */}

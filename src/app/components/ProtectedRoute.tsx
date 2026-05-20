@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import type { UserRole } from '@/services/auth.service';
+import { adminRoles, type UserRole } from '@/services/auth.service';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -14,7 +14,10 @@ const rolePaths: Record<UserRole, string> = {
   student: '/dashboard',
   professor: '/professor',
   alumni: '/alumni/dashboard',
-  admin: '/admin',
+  super_admin: '/super-admin/dashboard',
+  applicant_admin: '/applicant-admin/dashboard',
+  student_admin: '/student-admin/dashboard',
+  alumni_admin: '/alumni-admin/dashboard',
 };
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
@@ -39,7 +42,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   if (allowedRoles && role && !allowedRoles.includes(role)) return null;
 
   // Admin desktop check
-  if (role === 'admin') {
+  if (role && adminRoles.includes(role as (typeof adminRoles)[number])) {
     const isDesktop = typeof window !== 'undefined' && !('ReactNativeWebView' in window);
     if (!isDesktop) {
       return (

@@ -1,5 +1,5 @@
 import { supabase } from "@/shared/lib/supabase";
-const applicationDb = supabase.schema('application');
+const applicationDb = supabase.schema('applicant');
 import type { SupabaseResponse } from "../types/admissions.types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

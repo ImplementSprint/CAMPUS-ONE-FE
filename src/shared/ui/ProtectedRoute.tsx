@@ -17,7 +17,11 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     if (allowedRoles && !allowedRoles.includes(user.role)) {
       const paths: Record<UserRole, string> = {
         applicant: '/admissions', student: '/dashboard',
-        professor: '/professor', alumni: '/alumni', admin: '/admin',
+        professor: '/professor', alumni: '/alumni/dashboard',
+        super_admin: '/super-admin/dashboard',
+        applicant_admin: '/applicant-admin/dashboard',
+        student_admin: '/student-admin/dashboard',
+        alumni_admin: '/alumni-admin/dashboard',
       };
       router.replace(paths[user.role] || '/');
     }
@@ -26,7 +30,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   if (!user) return null;
   if (allowedRoles && !allowedRoles.includes(user.role)) return null;
 
-  if (user.role === 'admin' && !canAccessAdmin()) {
+  if (!canAccessAdmin() && (user.role === 'super_admin' || user.role === 'applicant_admin' || user.role === 'student_admin' || user.role === 'alumni_admin')) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <div className="bg-white rounded-xl shadow-lg p-6 max-w-md text-center">

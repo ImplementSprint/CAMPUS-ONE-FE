@@ -133,7 +133,7 @@ export function AdmissionsPage() {
       alert(`Error submitting application: ${res.error.message}`);
     } else {
       // Send confirmation email
-      const { sendApplicationConfirmationEmail } = await import("../../../services/email.service");
+const { sendApplicationConfirmationEmail } = await import("@/services/email.service");
       const emailResult = await sendApplicationConfirmationEmail({
         to: session.email,
         applicantName: `${session.firstName} ${session.lastName}`.trim() || "Applicant",

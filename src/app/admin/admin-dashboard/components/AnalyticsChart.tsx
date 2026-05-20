@@ -23,12 +23,13 @@ const data = [
   { month: 'Apr', enrolled: 3842, newStudents: 62 },
 ]
 
-<<<<<<< HEAD
-function CustomTooltip({ active, payload, label }: TooltipProps<number, string> & { payload?: Array<{ name?: string; value?: number | string; color?: string }>; label?: string | number }) {
-=======
-function CustomTooltip({ active, payload, label }: TooltipProps<number, string>) {
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: any) {
   if (!active || !payload?.length) return null
+
   return (
     <div className="bg-[#0B0F14] border border-white/10 rounded-xl px-4 py-3 shadow-2xl">
       <p className="text-[#F59E0B] font-bold text-xs mb-2">{label}</p>
@@ -87,12 +88,7 @@ export function AnalyticsChart() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-            <XAxis
-              dataKey="month"
-              tick={{ fontSize: 11, fill: '#9ca3af' }}
-              axisLine={false}
-              tickLine={false}
-            />
+            <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
             <YAxis
               tick={{ fontSize: 11, fill: '#9ca3af' }}
               axisLine={false}
@@ -124,3 +120,4 @@ export function AnalyticsChart() {
     </div>
   )
 }
+

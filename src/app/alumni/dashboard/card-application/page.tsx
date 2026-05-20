@@ -122,18 +122,3 @@ export default function CardApplicationPage() {
     </ProtectedRoute>
   );
 }
-    </section>
-  );
-}
-
-export default function CardApplicationPage() {
-<<<<<<< HEAD
-  return <ProtectedRoute allowedRoles={['alumni']}><CardApplicationContent /></ProtectedRoute>;
-=======
-  return (
-    <ProtectedRoute allowedRoles={['alumni']}>
-      <CardApplicationContent />
-    </ProtectedRoute>
-  );
->>>>>>> 57fc38d9ff45965d75ad134eebf190823cbbebfe
-}

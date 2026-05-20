@@ -52,7 +52,7 @@ export default function EnrollPage() {
       .maybeSingle()
       .then(async ({ data: studentAccount }) => {
         if (!studentAccount?.applicant_id) return;
-        const { data: profile } = await supabase.schema('application').from('applicant_profiles').select('program').eq('id', studentAccount.applicant_id).maybeSingle();
+        const { data: profile } = await supabase.schema('applicant').from('applicant_profiles').select('program').eq('id', studentAccount.applicant_id).maybeSingle();
         if (profile) setProgram(profile.program ?? '');
       });
 

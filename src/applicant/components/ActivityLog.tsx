@@ -4,7 +4,7 @@ import type { SchoolLevel, ApplicantType, AdmissionStatus } from "../types/admis
 import { SelectionTags } from "./SelectionTags";
 import { CheckCircle2, CreditCard, ListTodo, Clock } from "lucide-react";
 import { supabase } from "@/shared/lib/supabase";
-const applicationDb = supabase.schema('application');
+const applicationDb = supabase.schema('applicant');
 
 interface ActivityLogProps {
   schoolLevel: SchoolLevel;

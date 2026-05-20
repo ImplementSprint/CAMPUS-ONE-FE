@@ -1,8 +1,8 @@
 import { supabase } from "@/shared/lib/supabase";
 import type { SchoolLevel, ApplicantType, AdmissionStatus, SupabaseResponse } from "@/applicant/types/admissions.types";
-import { sendEmail } from "@/shared/email.service";
+import { sendEmail } from "@/services/email.service";
 
-const applicationDb = supabase.schema("application");
+const applicationDb = supabase.schema("applicant");
 
 // ─── Admin Types ──────────────────────────────────────────────────────────────
 export interface AdminApplication {
@@ -175,8 +175,7 @@ export async function updateApplicationStatus(
     updateData.rejection_reason = rejectionReason;
   }
 
-  const { error } = await supabase
-    .schema("application")
+  const { error } = await applicationDb
     .from("applicant_profiles")
     .update(updateData)
     .eq("id", applicationId);
@@ -184,8 +183,7 @@ export async function updateApplicationStatus(
   if (error) return { data: null, error: { message: error.message } };
 
   // Send email notification
-  const { data: applicant } = await supabase
-    .schema("application")
+  const { data: applicant } = await applicationDb
     .from("applicant_profiles")
     .select("email, full_name, reference_number, applicant_number")
     .eq("id", applicationId)
