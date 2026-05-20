@@ -26,7 +26,7 @@ export function GraduateExitOnboardingPage() {
   const [clearances, setClearances] = useState(clearanceRecords)
 
   return (
-    <section className="resource-screen">
+    <section className="resource-screen graduate-exit-screen">
       <header className="resource-hero">
         <div>
           <h1>Graduate Exit &amp; Onboarding</h1>

@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { SectionCard } from '../../components/common/SectionCard'
-import { NavIcon } from '../../components/common/Icons'
+import { SectionCard } from '@/admin/alumni-admin/components/common/SectionCard'
+import { NavIcon } from '@/admin/alumni-admin/components/common/Icons'
 import {
   activityTrackingRecords,
   clearanceRecords,
@@ -11,38 +11,32 @@ import {
   notificationEngineRecords,
   privacyComplianceRecords,
   registryRecords,
-} from '../../../data/admin-modules'
+} from '@/admin/data/admin-modules'
 
 const moduleCards = [
   {
-    href: '/graduate-exit-onboarding',
+    href: '/alumni-admin/graduate-exit-onboarding',
     icon: 'graduate',
     title: 'Graduate Exit & Onboarding',
     description: 'Clearance approvals and member registry governance.',
   },
   {
-    href: '/membership-id-services',
+    href: '/alumni-admin/membership-id-services',
     icon: 'membership',
     title: 'Membership & ID Services',
     description: 'ID application handling and benefit fulfillment tracking.',
   },
   {
-    href: '/record-document-fulfillment',
+    href: '/alumni-admin/record-document-fulfillment',
     icon: 'documents',
     title: 'Record & Document Fulfillment',
     description: 'Request queue operations and release logistics.',
   },
   {
-    href: '/engagement-communication',
+    href: '/alumni-admin/engagement-communication',
     icon: 'engagement',
     title: 'Engagement & Communication',
     description: 'Notification engine controls and activity analytics.',
-  },
-  {
-    href: '/data-governance-privacy',
-    icon: 'privacy',
-    title: 'Data Governance & Privacy',
-    description: 'Compliance review and data export fulfillment.',
   },
 ] as const
 

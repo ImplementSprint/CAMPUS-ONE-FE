@@ -1,12 +1,12 @@
 'use client';
 
 import { ProtectedRoute } from '../../components/ProtectedRoute';
-import { DashboardPage } from '@/admin/alumni-admin/pages';
+import { AdminSettingsPage } from '@/admin/pages/alumni-admin/views/AdminSettingsPage';
 
-export default function AlumniAdminDashboardPage() {
+export default function SettingsPage() {
   return (
     <ProtectedRoute allowedRoles={['alumni_admin']}>
-      <DashboardPage />
+      <AdminSettingsPage />
     </ProtectedRoute>
   );
 }
