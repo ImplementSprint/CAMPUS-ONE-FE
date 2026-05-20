@@ -2,21 +2,43 @@
 import { ReactNode } from "react";
 import { logout, getCurrentUser } from "@/shared/auth.service";
 import { LogOut, LayoutDashboard, FileText, GraduationCap, Bell } from "lucide-react";
+import { Sidebar } from "@/admin/alumni-admin/components/layout/Sidebar";
 
 interface UnifiedAdminLayoutProps {
   children: ReactNode;
-  currentPortal: "applicant" | "student";
-  currentView: string;
+  currentPortal?: "applicant" | "student" | "alumni";
+  currentView?: string;
   onNavigate?: (view: string) => void;
 }
 
 export function UnifiedAdminLayout({ 
   children, 
-  currentPortal, 
-  currentView, 
+  currentPortal = "alumni", 
+  currentView = "dashboard", 
   onNavigate
 }: UnifiedAdminLayoutProps) {
   const user = getCurrentUser();
+
+  if (currentPortal === "alumni") {
+    return (
+      <div className="flex h-screen alumni-admin-shell">
+        <Sidebar />
+
+        <div className="flex-1 flex flex-col overflow-hidden alumni-admin-content">
+          <header className="alumni-admin-topbar h-[68px] flex items-center justify-end px-6 flex-shrink-0">
+            <button className="relative h-10 w-10 rounded-2xl bg-white text-slate-500 shadow-sm transition-colors hover:bg-slate-50">
+              <Bell className="mx-auto h-5 w-5" />
+              <span className="absolute -right-1 -top-1 min-w-[18px] h-[18px] rounded-full bg-blue-500 px-1 text-[11px] font-semibold leading-[18px] text-white">3</span>
+            </button>
+          </header>
+
+          <main className="flex-1 overflow-y-auto alumni-admin-main">
+            {children}
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   const applicantMenuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
