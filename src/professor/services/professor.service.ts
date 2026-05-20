@@ -311,7 +311,36 @@ export async function createAnnouncement(
     .select()
     .single();
 
-  return { data, error };
+  if (error || !data) {
+    return { data, error };
+  }
+
+  const { data: classStudents, error: studentsError } = await getClassStudents(classId);
+
+  if (studentsError) {
+    console.error("Error fetching students for announcement notifications:", studentsError);
+    return { data, error: null };
+  }
+
+  const notificationRows = (classStudents || [])
+    .map((entry: any) => entry?.student?.applicant_id)
+    .filter(Boolean)
+    .map((profileId: string) => ({
+      profile_id: profileId,
+      title: `New announcement: ${announcementData.title}`,
+      body: announcementData.content,
+      is_read: false,
+    }));
+
+  if (notificationRows.length) {
+    const { error: notificationError } = await supabase.from("notifications").insert(notificationRows);
+
+    if (notificationError) {
+      console.error("Error creating announcement notifications:", notificationError);
+    }
+  }
+
+  return { data, error: null };
 }
 
 export async function updateAnnouncement(

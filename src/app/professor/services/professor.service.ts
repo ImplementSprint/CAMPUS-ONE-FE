@@ -1,5 +1,8 @@
 import { supabase } from "@/lib/supabase";
 
+const facultyDb = supabase.schema("faculty");
+const studentDb = supabase.schema("student");
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface Subject {
@@ -81,23 +84,15 @@ export interface Submission {
 // ─── Professor Classes ────────────────────────────────────────────────────────
 
 export async function getProfessorClasses(professorId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await facultyDb
     .from("class_assignments")
     .select(`
       id,
+      subject_id,
       section,
       schedule,
       room,
-      max_students,
-      subjects (
-        id,
-        code,
-        name,
-        description,
-        units,
-        semester,
-        school_year
-      )
+      max_students
     `)
     .eq("professor_id", professorId)
     .eq("is_active", true)
@@ -108,10 +103,63 @@ export async function getProfessorClasses(professorId: string) {
     return { data: null, error };
   }
 
+  const subjectIds = [...new Set((data || []).map((classItem: any) => classItem.subject_id).filter(Boolean))];
+  let subjects: Subject[] = [];
+  let subjectsError: any = null;
+
+  if (subjectIds.length) {
+    const academicsResult = await supabase
+      .schema("academics")
+      .from("subjects")
+      .select(`
+        id,
+        code,
+        name,
+        description,
+        units,
+        semester,
+        school_year
+      `)
+      .in("id", subjectIds);
+
+    subjects = (academicsResult.data || []) as Subject[];
+    subjectsError = academicsResult.error;
+
+    if (subjectsError || subjects.length === 0) {
+      const publicResult = await supabase
+        .from("subjects")
+        .select(`
+          id,
+          code,
+          name,
+          description,
+          units,
+          semester,
+          school_year
+        `)
+        .in("id", subjectIds);
+
+      if (publicResult.data?.length) {
+        subjects = publicResult.data as Subject[];
+        subjectsError = null;
+      } else if (publicResult.error && !subjectsError) {
+        subjectsError = publicResult.error;
+      }
+    }
+  }
+
+  if (subjectsError) {
+    console.error("Error fetching subjects:", subjectsError);
+    return { data: null, error: subjectsError };
+  }
+
+  const subjectById = new Map((subjects || []).map((subject: any) => [subject.id, subject]));
+
   // Count enrollments for each class
   const classesWithCount = await Promise.all(
     (data || []).map(async (classItem: any) => {
       const { count } = await supabase
+        .schema("student")
         .from("class_enrollments")
         .select("*", { count: "exact", head: true })
         .eq("class_assignment_id", classItem.id)
@@ -119,7 +167,7 @@ export async function getProfessorClasses(professorId: string) {
 
       return {
         id: classItem.id,
-        subject: classItem.subjects,
+        subject: subjectById.get(classItem.subject_id) ?? null,
         section: classItem.section,
         schedule: classItem.schedule,
         room: classItem.room,
@@ -135,7 +183,7 @@ export async function getProfessorClasses(professorId: string) {
 // ─── Class Students ───────────────────────────────────────────────────────────
 
 export async function getClassStudents(classId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await studentDb
     .from("class_enrollments")
     .select(`
       id,
@@ -179,7 +227,7 @@ export async function getClassStudents(classId: string) {
 // ─── Grades ───────────────────────────────────────────────────────────────────
 
 export async function getClassGrades(classId: string) {
-  const { data: enrollments, error } = await supabase
+  const { data: enrollments, error } = await studentDb
     .from("class_enrollments")
     .select(`
       id,
@@ -237,7 +285,7 @@ export async function saveGrade(
   }
 ) {
   // Check if grade exists
-  const { data: existing } = await supabase
+  const { data: existing } = await studentDb
     .from("grades")
     .select("id")
     .eq("enrollment_id", enrollmentId)
@@ -245,7 +293,7 @@ export async function saveGrade(
 
   if (existing) {
     // Update existing grade
-    const { data, error } = await supabase
+    const { data, error } = await studentDb
       .from("grades")
       .update({
         ...gradeData,
@@ -259,7 +307,7 @@ export async function saveGrade(
     return { data, error };
   } else {
     // Insert new grade
-    const { data, error } = await supabase
+    const { data, error } = await studentDb
       .from("grades")
       .insert({
         enrollment_id: enrollmentId,
@@ -278,7 +326,7 @@ export async function saveGrade(
 // ─── Announcements ────────────────────────────────────────────────────────────
 
 export async function getClassAnnouncements(classId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await facultyDb
     .from("announcements")
     .select("*")
     .eq("class_assignment_id", classId)
@@ -299,7 +347,7 @@ export async function createAnnouncement(
     is_pinned?: boolean;
   }
 ) {
-  const { data, error } = await supabase
+  const { data, error } = await facultyDb
     .from("announcements")
     .insert({
       class_assignment_id: classId,
@@ -309,7 +357,36 @@ export async function createAnnouncement(
     .select()
     .single();
 
-  return { data, error };
+  if (error || !data) {
+    return { data, error };
+  }
+
+  const { data: classStudents, error: studentsError } = await getClassStudents(classId);
+
+  if (studentsError) {
+    console.error("Error fetching students for announcement notifications:", studentsError);
+    return { data, error: null };
+  }
+
+  const notificationRows = (classStudents || [])
+    .map((entry: any) => entry?.student?.applicant_id)
+    .filter(Boolean)
+    .map((profileId: string) => ({
+      profile_id: profileId,
+      title: `New announcement: ${announcementData.title}`,
+      body: announcementData.content,
+      is_read: false,
+    }));
+
+  if (notificationRows.length) {
+    const { error: notificationError } = await supabase.from("notifications").insert(notificationRows);
+
+    if (notificationError) {
+      console.error("Error creating announcement notifications:", notificationError);
+    }
+  }
+
+  return { data, error: null };
 }
 
 export async function updateAnnouncement(
@@ -321,7 +398,7 @@ export async function updateAnnouncement(
     is_pinned?: boolean;
   }
 ) {
-  const { data, error } = await supabase
+  const { data, error } = await facultyDb
     .from("announcements")
     .update({
       ...updates,
@@ -336,6 +413,7 @@ export async function updateAnnouncement(
 
 export async function deleteAnnouncement(announcementId: string) {
   const { error } = await supabase
+    .schema("faculty")
     .from("announcements")
     .delete()
     .eq("id", announcementId);
@@ -346,7 +424,7 @@ export async function deleteAnnouncement(announcementId: string) {
 // ─── Submissions ──────────────────────────────────────────────────────────────
 
 export async function getClassSubmissions(classId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await studentDb
     .from("submissions")
     .select(`
       *,
@@ -395,7 +473,7 @@ export async function gradeSubmission(
     status?: string;
   }
 ) {
-  const { data, error } = await supabase
+  const { data, error } = await studentDb
     .from("submissions")
     .update({
       ...gradeData,
@@ -413,46 +491,66 @@ export async function gradeSubmission(
 // ─── Dashboard Stats ──────────────────────────────────────────────────────────
 
 export async function getProfessorStats(professorId: string) {
-  // Total classes
-  const { count: totalClasses } = await supabase
-    .from("class_assignments")
-    .select("*", { count: "exact", head: true })
-    .eq("professor_id", professorId)
-    .eq("is_active", true);
+  try {
+    // Total classes
+    const { count: totalClasses, error: classesError } = await supabase
+      .schema("faculty")
+      .from("class_assignments")
+      .select("*", { count: "exact", head: true })
+      .eq("professor_id", professorId)
+      .eq("is_active", true);
 
-  // Total students across all classes
-  const { data: classes } = await supabase
-    .from("class_assignments")
-    .select("id")
-    .eq("professor_id", professorId)
-    .eq("is_active", true);
+    if (classesError) {
+      return { data: null, error: classesError };
+    }
 
-  let totalStudents = 0;
-  if (classes) {
-    for (const cls of classes) {
+    // Total students across all classes
+    const { data: classes, error: classIdsError } = await facultyDb
+      .from("class_assignments")
+      .select("id")
+      .eq("professor_id", professorId)
+      .eq("is_active", true);
+
+    if (classIdsError) {
+      return { data: null, error: classIdsError };
+    }
+
+    let totalStudents = 0;
+    for (const cls of classes || []) {
       const { count } = await supabase
+        .schema("student")
         .from("class_enrollments")
         .select("*", { count: "exact", head: true })
         .eq("class_assignment_id", cls.id)
         .eq("enrollment_status", "enrolled");
       totalStudents += count || 0;
     }
+
+    // Pending submissions
+    const classIds = classes?.map((c) => c.id) || [];
+    const { count: pendingSubmissions, error: pendingError } = classIds.length
+      ? await supabase
+          .schema("student")
+          .from("submissions")
+          .select("*", { count: "exact", head: true })
+          .in("class_assignment_id", classIds)
+          .eq("status", "submitted")
+      : { count: 0, error: null };
+
+    if (pendingError) {
+      return { data: null, error: pendingError };
+    }
+
+    return {
+      data: {
+        totalClasses: totalClasses || 0,
+        totalStudents,
+        pendingSubmissions: pendingSubmissions || 0,
+      },
+      error: null,
+    };
+  } catch (error) {
+    console.error("Error fetching professor stats:", error);
+    return { data: null, error };
   }
-
-  // Pending submissions
-  const classIds = classes?.map((c) => c.id) || [];
-  const { count: pendingSubmissions } = await supabase
-    .from("submissions")
-    .select("*", { count: "exact", head: true })
-    .in("class_assignment_id", classIds)
-    .eq("status", "submitted");
-
-  return {
-    data: {
-      totalClasses: totalClasses || 0,
-      totalStudents,
-      pendingSubmissions: pendingSubmissions || 0,
-    },
-    error: null,
-  };
 }

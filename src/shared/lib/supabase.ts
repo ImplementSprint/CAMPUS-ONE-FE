@@ -1,8 +1,2 @@
-import { createBrowserClient } from '@supabase/ssr';
-
-export const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-export const STORAGE_BUCKET = 'applicant-documents';
+// Re-export the singleton Supabase client from the canonical location
+export { supabase, STORAGE_BUCKET } from '@/lib/supabase';

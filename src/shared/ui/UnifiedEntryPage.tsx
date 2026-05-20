@@ -9,8 +9,8 @@ export function UnifiedEntryPage() {
     <div className="w-screen h-screen overflow-hidden bg-gradient-to-br from-[#1a1a1a] via-[#2d2d2d] to-[#1a1a1a]">
       <div className="relative h-screen w-full max-w-[430px] mx-auto flex flex-col">
         <header className="bg-transparent text-white h-16 flex items-center justify-center px-4 flex-shrink-0 pt-4">
-          <div className="flex items-center gap-2">
-            <GraduationCap className="w-8 h-8 text-[#F59E0B]" />
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Campus One" className="w-10 h-10 object-contain" />
             <div className="flex items-center gap-1">
               <span className="text-[#F59E0B] font-bold text-xl tracking-tight">CAMPUS</span>
               <span className="text-white font-light text-xl tracking-tight">Portal</span>

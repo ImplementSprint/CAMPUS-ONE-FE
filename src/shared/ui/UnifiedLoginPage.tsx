@@ -42,16 +42,12 @@ export function UnifiedLoginPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent pointer-events-none" />
         
         {/* Brand Logo */}
-        <div className="flex items-center gap-2.5 z-10">
+        <div className="flex items-center gap-3 z-10">
+          <img src="/logo.png" alt="Campus One Logo" className="w-10 h-10 object-contain rounded-md" />
           <div className="flex items-center gap-1.5">
             <span className="text-[#F59E0B] font-bold text-2xl tracking-tight">CAMPUS</span>
             <span className="text-white font-light text-2xl tracking-tight">Portal</span>
           </div>
-          <img 
-            src="/logo.png" 
-            alt="CAMPUS One Logo" 
-            className="w-7 h-7 object-contain rounded-md"
-          />
         </div>
 
         {/* Hero Content */}
@@ -86,7 +82,8 @@ export function UnifiedLoginPage() {
             className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="Campus One Logo" className="w-6 h-6 object-contain" />
             <span className="text-[#F59E0B] font-bold text-base tracking-tight">CAMPUS</span>
             <span className="text-white font-light text-base tracking-tight">Portal</span>
           </div>

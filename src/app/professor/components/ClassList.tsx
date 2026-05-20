@@ -12,6 +12,7 @@ interface ClassListProps {
 export function ClassList({ professorId, onViewClass, onBack }: ClassListProps) {
   const [classes, setClasses] = useState<ClassAssignment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     loadClasses();
@@ -19,7 +20,15 @@ export function ClassList({ professorId, onViewClass, onBack }: ClassListProps) 
 
   const loadClasses = async () => {
     setLoading(true);
+    setErrorMsg(null);
     const result = await getProfessorClasses(professorId);
+    if (result.error) {
+      console.error('Error loading classes (UI):', result.error);
+      setErrorMsg(result.error.message || JSON.stringify(result.error));
+      setClasses([]);
+      setLoading(false);
+      return;
+    }
     if (result.data) {
       setClasses(result.data);
     }
@@ -51,8 +60,17 @@ export function ClassList({ professorId, onViewClass, onBack }: ClassListProps) 
       ) : classes.length === 0 ? (
         <div className="bg-white rounded-xl p-8 text-center border border-gray-100">
           <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-sm font-medium text-gray-900 mb-1">No Classes Assigned</p>
-          <p className="text-xs text-gray-600">You don't have any classes assigned yet.</p>
+          {errorMsg ? (
+            <>
+              <p className="text-sm font-medium text-gray-900 mb-1">Error loading classes</p>
+              <p className="text-xs text-red-600">{errorMsg}</p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-medium text-gray-900 mb-1">No Classes Assigned</p>
+              <p className="text-xs text-gray-600">You don't have any classes assigned yet.</p>
+            </>
+          )}
         </div>
       ) : (
         <div className="space-y-3">

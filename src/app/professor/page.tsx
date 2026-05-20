@@ -1,5 +1,5 @@
 'use client';
-import { ProtectedRoute } from '../components/ProtectedRoute';
+import { ProtectedRoute } from '@/shared/ui/ProtectedRoute';
 import { ProfessorDashboard } from './pages/ProfessorDashboard';
 
 export default function ProfessorPage() {

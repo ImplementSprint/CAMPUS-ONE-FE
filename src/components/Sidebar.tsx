@@ -54,10 +54,13 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     <aside className="w-64 min-h-screen bg-black flex flex-col flex-shrink-0">
       {/* Logo + X */}
       <div className="px-5 py-5 flex items-center justify-between border-b border-gray-800">
-        <span className="text-lg font-extrabold">
-          <span className="text-amber-500">CAMPUS</span>
-          <span className="text-white"> Portal</span>
-        </span>
+        <div className="flex items-center gap-3">
+          <img src="/logo.png" alt="Campus One" className="w-10 h-10 object-contain rounded-sm" />
+          <div className="text-sm font-extrabold">
+            <span className="text-amber-500">CAMPUS</span>
+            <span className="text-white"> Portal</span>
+          </div>
+        </div>
         {onClose && (
           <button onClick={onClose} className="text-white hover:text-amber-400 transition">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

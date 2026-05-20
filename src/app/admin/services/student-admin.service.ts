@@ -79,7 +79,7 @@ export async function fetchAllStudents() {
         applicant_id,
         enrollment_status,
         enrolled_at,
-            applicant.applicant_profiles (
+            applicant_profiles (
           full_name,
           school_level,
           applicant_type,
@@ -119,7 +119,7 @@ export async function fetchStudentDetails(studentId: string) {
       .from("student_accounts")
       .select(`
         *,
-        applicant.applicant_profiles (*)
+        applicant_profiles (*)
       `)
       .eq("id", studentId)
       .single();
