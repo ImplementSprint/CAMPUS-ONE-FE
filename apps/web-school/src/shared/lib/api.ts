@@ -1,5 +1,28 @@
+import { buildTenantHeaders, getSchoolSlugFromHost } from '@campus-one/api-client';
+
 // API client for backend communication
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+function getSelectedSchoolSlug(): string | null {
+  if (typeof window === 'undefined') {
+    return process.env.NEXT_PUBLIC_SCHOOL_SLUG ?? null;
+  }
+
+  const fromQuery = new URLSearchParams(window.location.search).get('school');
+  if (fromQuery) return fromQuery;
+
+  const fromHost = getSchoolSlugFromHost(window.location.hostname, process.env.NEXT_PUBLIC_SCHOOL_PORTAL_DOMAIN);
+  if (fromHost) return fromHost;
+
+  const stored = window.localStorage.getItem('campus-one:selected-school');
+  if (!stored) return null;
+
+  try {
+    return JSON.parse(stored).schoolSlug ?? null;
+  } catch {
+    return null;
+  }
+}
 
 class APIError extends Error {
   constructor(public status: number, message: string) {
@@ -15,6 +38,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...buildTenantHeaders(getSelectedSchoolSlug()),
       ...options.headers,
     },
   });

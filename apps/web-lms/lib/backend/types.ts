@@ -13,7 +13,8 @@ export type ResourceName =
   | "accounts"
   | "fees"
   | "salary"
-  | "attendance";
+  | "attendance"
+  | "notifications";
 
 export type BackendRecord = Record<string, string>;
 
@@ -47,6 +48,7 @@ export type CampusDb = {
   fees: BackendRecord[];
   salary: BackendRecord[];
   attendance: BackendRecord[];
+  notifications: BackendRecord[];
   activities: string[];
   actionLogs: ActionLog[];
 };
@@ -60,4 +62,5 @@ export const resourceNames: ResourceName[] = [
   "fees",
   "salary",
   "attendance",
+  "notifications",
 ];

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { getEnrollmentOfferings, submitEnrollment } from '@/lib/api';
@@ -22,7 +22,7 @@ type Offering = {
 };
 type CartItem = { offeringId: string; subjectCode: string; subjectTitle: string; units: number };
 
-export default function EnrollPage() {
+function EnrollPageContent() {
   const params = useSearchParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
@@ -299,5 +299,13 @@ export default function EnrollPage() {
         </div>
       )}
     </DashboardLayout>
+  );
+}
+
+export default function EnrollPage() {
+  return (
+    <Suspense fallback={<DashboardLayout><div className="p-6 text-sm text-gray-400">Loading...</div></DashboardLayout>}>
+      <EnrollPageContent />
+    </Suspense>
   );
 }

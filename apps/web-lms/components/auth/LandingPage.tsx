@@ -1,7 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { UserPlus, LogIn, GraduationCap, ArrowRight, X, Eye, EyeOff } from 'lucide-react';
+import { UserPlus, LogIn, GraduationCap, ArrowRight, X, Eye, EyeOff, Search } from 'lucide-react';
+import { buildSchoolPortalUrl } from '@campus-one/api-client';
+import type { PublicSchool } from '@campus-one/shared-contracts';
 import { loginWithSupabase, getRedirectPath } from '@/lib/auth.service';
 
 type ModalType = 'signup' | 'login' | null;
@@ -17,6 +19,10 @@ export function LandingPage() {
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [schoolQuery, setSchoolQuery] = useState('');
+  const [schoolResults, setSchoolResults] = useState<PublicSchool[]>([]);
+  const [schoolError, setSchoolError] = useState('');
+  const [schoolSearchLoading, setSchoolSearchLoading] = useState(false);
 
   const resetForm = () => {
     setEmail('');
@@ -30,6 +36,38 @@ export function LandingPage() {
 
   const closeModal = () => { setActiveModal(null); resetForm(); };
   const switchModal = (to: ModalType) => { setActiveModal(to); resetForm(); };
+
+  const handleSchoolSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSchoolError('');
+    setSchoolSearchLoading(true);
+
+    try {
+      const params = schoolQuery.trim() ? `?search=${encodeURIComponent(schoolQuery.trim())}` : '';
+      const response = await fetch(`/api/schools${params}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setSchoolError(data.message ?? 'Unable to search schools.');
+        return;
+      }
+
+      setSchoolResults(data);
+      if (data.length === 0) setSchoolError('No approved schools matched your search.');
+    } catch {
+      setSchoolError('Network error. Please try again.');
+    } finally {
+      setSchoolSearchLoading(false);
+    }
+  };
+
+  const openSchoolPortal = (school: PublicSchool) => {
+    const portalUrl = buildSchoolPortalUrl(school.schoolSlug, {
+      baseUrl: process.env.NEXT_PUBLIC_SCHOOL_PORTAL_BASE_URL,
+      platformDomain: process.env.NEXT_PUBLIC_SCHOOL_PORTAL_DOMAIN,
+    });
+    window.location.assign(portalUrl);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +177,48 @@ export function LandingPage() {
               </div>
             </button>
           </div>
+
+          <form onSubmit={handleSchoolSearch} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <label className="block text-xs font-bold text-gray-400 tracking-wider uppercase mb-3">
+              FIND YOUR SCHOOL
+            </label>
+            <div className="flex gap-2">
+              <input
+                value={schoolQuery}
+                onChange={(e) => setSchoolQuery(e.target.value)}
+                placeholder="Search school name or subdomain"
+                className="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B]"
+              />
+              <button
+                type="submit"
+                disabled={schoolSearchLoading}
+                className="h-11 w-11 rounded-xl bg-white text-[#1a1a1a] transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                aria-label="Search schools"
+                title="Search schools"
+              >
+                <Search className="mx-auto h-4 w-4" />
+              </button>
+            </div>
+            {schoolError && <p className="mt-3 text-xs text-red-300">{schoolError}</p>}
+            {schoolResults.length > 0 && (
+              <div className="mt-3 divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10">
+                {schoolResults.map((school) => (
+                  <button
+                    key={school.schoolId}
+                    type="button"
+                    onClick={() => openSchoolPortal(school)}
+                    className="flex w-full items-center justify-between gap-3 bg-white/[0.03] px-4 py-3 text-left text-sm text-white transition-colors hover:bg-white/10"
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate font-semibold">{school.displayName}</span>
+                      <span className="block truncate text-xs text-gray-400">{school.schoolSlug}</span>
+                    </span>
+                    <ArrowRight className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </form>
         </div>
       </div>
 

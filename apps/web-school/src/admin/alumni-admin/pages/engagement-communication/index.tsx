@@ -1,15 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { RecordsTable } from '../../../components/common/RecordsTable'
-import { SectionCard } from '../../../components/common/SectionCard'
-import { StatusPill } from '../../../components/common/StatusPill'
+import { RecordsTable } from '../../components/common/RecordsTable'
+import { SectionCard } from '../../components/common/SectionCard'
+import { StatusPill } from '../../components/common/StatusPill'
 import {
   activityTrackingRecords,
   notificationEngineRecords,
   type ActivityTrackingRecord,
   type NotificationEngineRecord,
-} from '../../../../data/admin-modules'
+} from '../../../data/admin-modules'
 
 function notificationTone(status: NotificationEngineRecord['status']) {
   if (status === 'Live') {

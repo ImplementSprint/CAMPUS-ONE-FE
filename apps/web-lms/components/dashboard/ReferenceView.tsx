@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Users, BookOpen, AlertCircle, X, ChevronDown, Edit, Trash2, Eye, EyeOff, Save, Send, Printer, Search, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PrintTemplate, PrintTable, PrintThead, PrintTh, PrintTd, PrintInfoGrid, PrintSection } from "@/components/ui/PrintTemplate";
@@ -2363,7 +2363,7 @@ function AllClassesGrid() {
                   className="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
                   title="Edit"
                 >
-                  <Edit3 className="w-5 h-5" />
+                  <Edit className="w-5 h-5" />
                 </button>
                 <button 
                   onClick={(e) => {
@@ -2812,7 +2812,7 @@ function ClassesWithSubjectsList() {
                   className="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
                   title="Edit"
                 >
-                  <Edit3 className="w-5 h-5" />
+                  <Edit className="w-5 h-5" />
                 </button>
                 <button 
                   onClick={(e) => {

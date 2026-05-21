@@ -1,15 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { RecordsTable } from '../../../components/common/RecordsTable'
-import { SectionCard } from '../../../components/common/SectionCard'
-import { StatusPill } from '../../../components/common/StatusPill'
+import { RecordsTable } from '../../components/common/RecordsTable'
+import { SectionCard } from '../../components/common/SectionCard'
+import { StatusPill } from '../../components/common/StatusPill'
 import {
   dataDownloadRequests,
   privacyComplianceRecords,
   type DataDownloadRequestRecord,
   type PrivacyComplianceRecord,
-} from '../../../../data/admin-modules'
+} from '../../../data/admin-modules'
 
 function complianceTone(status: PrivacyComplianceRecord['status']) {
   if (status === 'Compliant') {

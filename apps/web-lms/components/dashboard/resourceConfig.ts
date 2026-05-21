@@ -125,4 +125,17 @@ export const resourceConfigs: Record<ResourceName, ResourceConfig> = {
     ],
     columns: ["class", "expected", "present", "absent", "rate"],
   },
+  notifications: {
+    resource: "notifications",
+    title: "Notifications",
+    description: "Review school-facing announcements and operational notices.",
+    statusLabel: "Notification records",
+    fields: [
+      { key: "title", label: "Title", placeholder: "Enter notification title" },
+      { key: "message", label: "Message", placeholder: "Enter notification message" },
+      { key: "audience", label: "Audience", placeholder: "Enter audience" },
+      { key: "status", label: "Status", placeholder: "Enter status" },
+    ],
+    columns: ["title", "message", "audience", "status"],
+  },
 };

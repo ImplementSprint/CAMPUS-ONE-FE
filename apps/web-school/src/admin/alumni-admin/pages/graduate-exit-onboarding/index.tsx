@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { RecordsTable } from '../../../components/common/RecordsTable'
-import { SectionCard } from '../../../components/common/SectionCard'
-import { StatusPill } from '../../../components/common/StatusPill'
-import { clearanceRecords, registryRecords, type AlumniRegistryRecord, type ClearanceOversightRecord } from '../../../../data/admin-modules'
+import { RecordsTable } from '../../components/common/RecordsTable'
+import { SectionCard } from '../../components/common/SectionCard'
+import { StatusPill } from '../../components/common/StatusPill'
+import { clearanceRecords, registryRecords, type AlumniRegistryRecord, type ClearanceOversightRecord } from '../../../data/admin-modules'
 
 function clearanceTone(status: ClearanceOversightRecord['status']) {
   if (status === 'Released') {

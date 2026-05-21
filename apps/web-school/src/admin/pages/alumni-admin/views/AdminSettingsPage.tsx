@@ -109,7 +109,7 @@ export function AdminSettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
 
   const handleLogOut = async () => {
-    const { default: supabase } = await import('@/lib/supabase');
+    const { supabase } = await import('@/lib/supabase');
     await supabase.auth.signOut();
     router.push('/login');
   };

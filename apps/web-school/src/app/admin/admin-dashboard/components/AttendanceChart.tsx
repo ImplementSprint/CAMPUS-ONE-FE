@@ -1,7 +1,6 @@
 'use client'
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
-import { TooltipProps } from 'recharts'
 
 const data = [
   { day: 'Mon', rate: 88 },
@@ -12,7 +11,13 @@ const data = [
   { day: 'Sat', rate: 65 },
 ]
 
-function CustomTooltip({ active, payload, label }: TooltipProps<number, string> & { payload?: Array<{ value?: number | string }>; label?: string | number }) {
+type AttendanceTooltipProps = {
+  active?: boolean;
+  payload?: Array<{ value?: number | string }>;
+  label?: string | number;
+};
+
+function CustomTooltip({ active, payload, label }: AttendanceTooltipProps) {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-[#0B0F14] border border-white/10 rounded-xl px-4 py-3 shadow-2xl">

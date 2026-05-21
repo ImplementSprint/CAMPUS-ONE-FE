@@ -11,6 +11,7 @@ export const seedDb: CampusDb = {
   fees: [],
   salary: [],
   attendance: [],
+  notifications: [],
   activities: [],
   actionLogs: [],
 };

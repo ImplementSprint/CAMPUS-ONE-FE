@@ -28,6 +28,8 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-progress": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "@campus-one/api-client": "0.1.0",
+    "@campus-one/shared-contracts": "0.1.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.49.8",
     "class-variance-authority": "^0.7.1",

@@ -75,7 +75,7 @@ export async function readDb() {
     fees:       [{ amount: String(summary.revenue) }],
     salary:     [{ baseSalary: String(summary.revenue - summary.profit) }],
     activities: [], actionLogs: [], schools: {}, users: [],
-    classes: [], subjects: [], accounts: [], attendance: [],
+    classes: [], subjects: [], accounts: [], attendance: [], notifications: [],
   };
 }
 

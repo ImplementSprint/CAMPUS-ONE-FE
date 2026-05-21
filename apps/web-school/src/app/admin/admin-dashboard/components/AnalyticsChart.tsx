@@ -9,8 +9,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { TooltipProps } from 'recharts'
-
 const data = [
   { month: 'Aug', enrolled: 3200, newStudents: 320 },
   { month: 'Sep', enrolled: 3400, newStudents: 200 },
@@ -23,21 +21,33 @@ const data = [
   { month: 'Apr', enrolled: 3842, newStudents: 62 },
 ]
 
+type CustomTooltipPayload = {
+  name?: string;
+  color?: string;
+  value?: number;
+};
+
+type CustomTooltipProps = {
+  active?: boolean;
+  payload?: CustomTooltipPayload[];
+  label?: string;
+};
+
 function CustomTooltip({
   active,
   payload,
   label,
-}: any) {
+}: CustomTooltipProps) {
   if (!active || !payload?.length) return null
 
   return (
     <div className="bg-[#0B0F14] border border-white/10 rounded-xl px-4 py-3 shadow-2xl">
       <p className="text-[#F59E0B] font-bold text-xs mb-2">{label}</p>
       {payload.map((p) => (
-        <div key={p.name} className="flex items-center gap-2 text-xs mb-1">
+        <div key={String(p.name)} className="flex items-center gap-2 text-xs mb-1">
           <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
           <span className="text-white/50">{p.name === 'enrolled' ? 'Enrolled' : 'New Students'}:</span>
-          <span className="text-white font-semibold">{(p.value ?? 0).toLocaleString()}</span>
+          <span className="text-white font-semibold">{Number(p.value ?? 0).toLocaleString()}</span>
         </div>
       ))}
     </div>

@@ -52,6 +52,8 @@ export async function sendApplicationConfirmationEmail({
   applicantType,
 }: SendApplicationConfirmationParams) {
   try {
+    if (!resend) return { success: false, error: "Missing NEXT_PUBLIC_RESEND_API_KEY" };
+    const appOrigin = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
     const { data, error } = await resend.emails.send({
       from: 'Campus Admissions <onboarding@resend.dev>', // Resend test domain
       to: [to],
@@ -179,7 +181,7 @@ export async function sendApplicationConfirmationEmail({
                       <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                         <tr>
                           <td align="center">
-                            <a href="${window.location.origin}/admissions/track" style="display: inline-block; padding: 15px 40px; background-color: #F59E0B; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">Track My Application</a>
+                            <a href="${appOrigin}/admissions/track" style="display: inline-block; padding: 15px 40px; background-color: #F59E0B; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">Track My Application</a>
                           </td>
                         </tr>
                       </table>

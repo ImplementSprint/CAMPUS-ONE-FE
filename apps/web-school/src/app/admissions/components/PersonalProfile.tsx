@@ -51,6 +51,7 @@ function InputField({
   icon,
   onFocus,
   onBlur,
+  onClick,
 }: {
   label: string;
   value: string;
@@ -62,6 +63,7 @@ function InputField({
   icon?: React.ReactNode;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
 }) {
   return (
     <div className="w-full">
