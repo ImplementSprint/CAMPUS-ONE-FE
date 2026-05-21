@@ -9,6 +9,7 @@
     "build": "npm run build -ws --if-present",
     "contracts:sync": "node scripts/sync-contracts.mjs",
     "contracts:check": "node scripts/sync-contracts.mjs --check",
+    "verify": "npm run contracts:check && npm run build",
     "dev:web-lms": "npm --workspace apps/web-lms run dev",
     "dev:web-school": "npm --workspace apps/web-school run dev"
   }

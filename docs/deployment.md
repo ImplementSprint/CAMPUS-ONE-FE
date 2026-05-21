@@ -49,7 +49,7 @@ api.campusone.com          -> campus-one-backend
 
 ```powershell
 npm ci
-npm run build
+npm run verify
 ```
 
 The current production build can emit Recharts static-render size warnings during prerender. Treat non-zero exit codes as blocking; the warnings alone are not blocking.

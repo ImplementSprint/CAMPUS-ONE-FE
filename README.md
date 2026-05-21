@@ -12,3 +12,9 @@ Web frontend repository for Campus One.
 - `packages/api-client` - shared typed API client.
 - `packages/ui` - shared web UI components.
 - `packages/shared-contracts` - frontend-safe DTOs and enums from backend contracts.
+
+## Verification
+
+```powershell
+npm run verify
+```
