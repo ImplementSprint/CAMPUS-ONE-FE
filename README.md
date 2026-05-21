@@ -18,3 +18,8 @@ Web frontend repository for Campus One.
 ```powershell
 npm run verify
 ```
+
+## Deployment Setup
+
+- Runtime/deployment notes: `docs/deployment.md`
+- Secret setup runbook: `docs/secrets.md`
