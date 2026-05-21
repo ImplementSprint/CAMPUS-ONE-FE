@@ -9,7 +9,21 @@ packages/shared-contracts
 packages/api-client
 ```
 
-`packages/shared-contracts` contains browser-safe DTOs and enums. `packages/api-client` contains fetch helpers for LMS and school portal code.
+`packages/shared-contracts` contains generated browser-safe DTOs and enums. `packages/api-client` contains fetch helpers for LMS and school portal code.
+
+Sync generated contracts from the backend artifact with:
+
+```powershell
+npm run contracts:sync
+```
+
+Check for drift with:
+
+```powershell
+npm run contracts:check
+```
+
+By default this checks against the backend repo at `../campus-one-backend` when it exists. In standalone CI where the backend repo is not checked out, it verifies the committed contract file against `packages/shared-contracts/contracts-manifest.json`. Override the backend path with `CAMPUS_ONE_BACKEND_DIR` when needed.
 
 ## Public School Lookup
 
@@ -44,6 +58,6 @@ The school slug is resolved in this order:
 
 ## Contract Sync Rule
 
-When backend contract types change, update `packages/shared-contracts` and `packages/api-client` in the same frontend PR or in a directly linked PR.
+When backend contract types change, run `npm run contracts:sync` and update `packages/api-client` in the same frontend PR or in a directly linked PR.
 
 Do not import backend runtime modules into this repository.
