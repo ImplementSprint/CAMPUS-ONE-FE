@@ -1,0 +1,60 @@
+{
+  "schools": {
+    "user-1778937021108": {
+      "id": "school-user-1778937021108",
+      "name": "UST",
+      "representative": "John Lloyd",
+      "email": "",
+      "contactNumber": "",
+      "schoolType": "",
+      "targetSubdomain": "",
+      "status": "draft",
+      "setupProgress": 0
+    }
+  },
+  "users": [
+    {
+      "id": "user-1778937021108",
+      "email": "gmail@gmail.com",
+      "password": "12345678",
+      "createdAt": "2026-05-16T13:10:21.108Z"
+    },
+    {
+      "id": "user-1778936013860",
+      "email": "hellohaha@gmail.com",
+      "password": "12345678",
+      "createdAt": "2026-05-16T12:53:33.860Z"
+    },
+    {
+      "id": "user-1778933603842",
+      "email": "haha@gmail.com",
+      "password": "hello123",
+      "createdAt": "2026-05-16T12:13:23.843Z"
+    },
+    {
+      "id": "user-demo",
+      "email": "admin@demo.edu.ph",
+      "password": "demo1234",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "classes": [],
+  "subjects": [],
+  "students": [],
+  "employees": [],
+  "accounts": [],
+  "fees": [],
+  "salary": [],
+  "attendance": [],
+  "activities": [
+    "Save Draft clicked in Dashboard"
+  ],
+  "actionLogs": [
+    {
+      "id": "action-1778993589241",
+      "label": "Save Draft",
+      "module": "Dashboard",
+      "createdAt": "2026-05-17T04:53:09.241Z"
+    }
+  ]
+}

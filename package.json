@@ -1,0 +1,13 @@
+﻿{
+  "name": "campus-one-frontend",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -ws --if-present",
+    "dev:web-lms": "npm --workspace apps/web-lms run dev",
+    "dev:web-school": "npm --workspace apps/web-school run dev"
+  }
+}

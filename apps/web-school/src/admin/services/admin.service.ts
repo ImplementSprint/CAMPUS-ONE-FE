@@ -1,0 +1,330 @@
+import { supabase } from "@/shared/lib/supabase";
+import type { SchoolLevel, ApplicantType, AdmissionStatus, SupabaseResponse } from "@/applicant/types/admissions.types";
+import { sendEmail } from "@/services/email.service";
+
+const applicationDb = supabase.schema("applicant");
+
+// ─── Admin Types ──────────────────────────────────────────────────────────────
+export interface AdminApplication {
+  id: string;
+  reference_number: string;
+  applicant_number: string | null;
+  full_name: string;
+  first_name: string;
+  last_name: string;
+  middle_name: string;
+  email: string;
+  birthdate: string;
+  mobile_number: string;
+  address: string;
+  school_level: SchoolLevel;
+  applicant_type: ApplicantType;
+  program: string;
+  status: AdmissionStatus;
+  application_submitted_at: string;
+  reviewed_at: string | null;
+  rejection_reason: string | null;
+  created_at: string;
+}
+
+export interface ApplicationDetail extends AdminApplication {
+  parent_info: ParentInfo | null;
+  academic_background: AcademicEntry[];
+  alumni_relatives: AlumniRelative[];
+  documents: ApplicationDocument[];
+  program_selection: ProgramSelection | null;
+}
+
+export interface ParentInfo {
+  father_name: string;
+  father_address: string;
+  father_contact: string;
+  mother_name: string;
+  mother_address: string;
+  mother_contact: string;
+  guardian_name: string | null;
+  guardian_address: string | null;
+  guardian_phone_home: string | null;
+  guardian_phone_work: string | null;
+}
+
+export interface AcademicEntry {
+  grade_level: string;
+  school_name: string;
+  completion_year: string;
+}
+
+export interface AlumniRelative {
+  name: string;
+  relationship: string;
+  college: string;
+  batch_year: string;
+  contact_number: string;
+}
+
+export interface ApplicationDocument {
+  id: string;
+  document_name: string;
+  file_name: string;
+  file_url: string;
+  status: string;
+  submitted_at: string;
+}
+
+export interface ProgramSelection {
+  college_department: string | null;
+  college_program: string | null;
+  senior_high_track: string | null;
+  tvl_strand: string | null;
+}
+
+export interface DashboardStats {
+  total: number;
+  pending: number;
+  accepted: number;
+  rejected: number;
+}
+
+// ─── Fetch Applications ───────────────────────────────────────────────────────
+export async function fetchAllApplications(): Promise<SupabaseResponse<AdminApplication[]>> {
+  const { data, error } = await applicationDb
+    .from("applicant_profiles")
+    .select("*")
+    .not("application_submitted_at", "is", null)
+    .order("application_submitted_at", { ascending: false });
+
+  if (error) return { data: null, error: { message: error.message } };
+  return { data: data as AdminApplication[], error: null };
+}
+
+// ─── Fetch Application Detail ─────────────────────────────────────────────────
+export async function fetchApplicationDetail(applicationId: string): Promise<SupabaseResponse<ApplicationDetail>> {
+  // Fetch main profile
+  const { data: profile, error: profileError } = await applicationDb
+    .from("applicant_profiles")
+    .select("*")
+    .eq("id", applicationId)
+    .single();
+
+  if (profileError) return { data: null, error: { message: profileError.message } };
+
+  // Fetch parent info
+  const { data: parentInfo } = await applicationDb
+    .from("parent_information")
+    .select("*")
+    .eq("applicant_id", applicationId)
+    .single();
+
+  // Fetch academic background
+  const { data: academicBg } = await applicationDb
+    .from("academic_background")
+    .select("*")
+    .eq("applicant_id", applicationId)
+    .order("grade_level", { ascending: true });
+
+  // Fetch alumni relatives
+  const { data: alumni } = await applicationDb
+    .from("alumni_relatives")
+    .select("*")
+    .eq("applicant_id", applicationId);
+
+  // Fetch documents
+  const { data: documents } = await applicationDb
+    .from("applicant_documents")
+    .select("*")
+    .eq("applicant_id", applicationId)
+    .order("submitted_at", { ascending: false });
+
+  // Fetch program selection
+  const { data: programSelection } = await applicationDb
+    .from("program_selections")
+    .select("*")
+    .eq("applicant_id", applicationId)
+    .single();
+
+  const detail: ApplicationDetail = {
+    ...(profile as AdminApplication),
+    parent_info: parentInfo as ParentInfo | null,
+    academic_background: (academicBg as AcademicEntry[]) || [],
+    alumni_relatives: (alumni as AlumniRelative[]) || [],
+    documents: (documents as ApplicationDocument[]) || [],
+    program_selection: programSelection as ProgramSelection | null,
+  };
+
+  return { data: detail, error: null };
+}
+
+// ─── Update Application Status ────────────────────────────────────────────────
+export async function updateApplicationStatus(
+  applicationId: string,
+  status: AdmissionStatus,
+  rejectionReason?: string
+): Promise<SupabaseResponse<{ success: boolean }>> {
+  const updateData: Record<string, unknown> = {
+    status,
+    reviewed_at: new Date().toISOString(),
+  };
+
+  // Generate applicant number if accepted
+  if (status === "Passed") {
+    const { data: appNumber } = await applicationDb.rpc("generate_applicant_number");
+    updateData.applicant_number = appNumber;
+  }
+
+  if (status === "Not Accepted" && rejectionReason) {
+    updateData.rejection_reason = rejectionReason;
+  }
+
+  const { error } = await applicationDb
+    .from("applicant_profiles")
+    .update(updateData)
+    .eq("id", applicationId);
+
+  if (error) return { data: null, error: { message: error.message } };
+
+  // Send email notification
+  const { data: applicant } = await applicationDb
+    .from("applicant_profiles")
+    .select("email, full_name, reference_number, applicant_number")
+    .eq("id", applicationId)
+    .single();
+
+  if (applicant) {
+    await sendStatusUpdateEmail(applicant, status, rejectionReason);
+  }
+
+  return { data: { success: true }, error: null };
+}
+
+// ─── Send Status Update Email ─────────────────────────────────────────────────
+async function sendStatusUpdateEmail(
+  applicant: { email: string; full_name: string; reference_number: string; applicant_number: string | null },
+  status: AdmissionStatus,
+  rejectionReason?: string
+): Promise<void> {
+  const subject = status === "Passed" 
+    ? "🎉 Congratulations! Your Application Has Been Accepted"
+    : "Application Status Update";
+
+  let html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+        .info-box { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea; }
+        .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+        .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; margin: 10px 0; }
+        .status-passed { background: #10b981; color: white; }
+        .status-rejected { background: #ef4444; color: white; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Application Status Update</h1>
+        </div>
+        <div class="content">
+          <p>Dear ${applicant.full_name},</p>
+  `;
+
+  if (status === "Passed") {
+    html += `
+          <p>We are pleased to inform you that your application has been <strong>ACCEPTED</strong>!</p>
+          
+          <div class="info-box">
+            <h3>Your Application Details:</h3>
+            <p><strong>Reference Number:</strong> ${applicant.reference_number}</p>
+            <p><strong>Applicant Number:</strong> <span style="color: #667eea; font-size: 18px; font-weight: bold;">${applicant.applicant_number}</span></p>
+          </div>
+
+          <h3>Next Steps:</h3>
+          <ol>
+            <li>Save your <strong>Applicant Number</strong> - you'll need it for enrollment</li>
+            <li>Wait for enrollment instructions via email</li>
+            <li>Prepare required documents for enrollment</li>
+            <li>Complete the enrollment process during the enrollment period</li>
+          </ol>
+
+          <p style="margin-top: 20px;">Congratulations once again! We look forward to welcoming you to our institution.</p>
+    `;
+  } else {
+    html += `
+          <p>Thank you for your interest in our institution. After careful review, we regret to inform you that your application has <strong>not been accepted</strong> at this time.</p>
+          
+          <div class="info-box">
+            <p><strong>Reference Number:</strong> ${applicant.reference_number}</p>
+            ${rejectionReason ? `<p><strong>Reason:</strong> ${rejectionReason}</p>` : ""}
+          </div>
+
+          <p>We encourage you to reapply in the future. If you have any questions, please don't hesitate to contact our admissions office.</p>
+    `;
+  }
+
+  html += `
+          <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>For inquiries, contact our admissions office.</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    await sendEmail({
+      to: applicant.email,
+      subject,
+      html,
+    });
+  } catch (error) {
+    console.error("Failed to send status update email:", error);
+  }
+}
+
+// ─── Fetch Dashboard Stats ────────────────────────────────────────────────────
+export async function fetchDashboardStats(): Promise<SupabaseResponse<DashboardStats>> {
+  const { data, error } = await supabase
+    .from("applicant_profiles")
+    .select("status")
+    .not("application_submitted_at", "is", null);
+
+  if (error) return { data: null, error: { message: error.message } };
+
+  const stats: DashboardStats = {
+    total: data.length,
+    pending: data.filter(app => app.status === "Under Review").length,
+    accepted: data.filter(app => app.status === "Passed").length,
+    rejected: data.filter(app => app.status === "Not Accepted").length,
+  };
+
+  return { data: stats, error: null };
+}
+
+// ─── Update Program Selection ─────────────────────────────────────────────────
+export async function updateProgramSelection(
+  applicationId: string,
+  department: string,
+  program: string
+): Promise<SupabaseResponse<{ success: boolean }>> {
+  try {
+    // Update program_selections table
+    const { error } = await supabase
+      .from("program_selections")
+      .update({
+        college_department: department,
+        college_program: program,
+      })
+      .eq("applicant_id", applicationId);
+
+    if (error) throw error;
+
+    return { data: { success: true }, error: null };
+  } catch (error: any) {
+    return { data: null, error: { message: error.message } };
+  }
+}
