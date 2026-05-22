@@ -1,0 +1,2441 @@
+{
+  "source_root": "CAMPUS-ONE-MAIN-FE/public/mascot/tigo/archive",
+  "output_root": "transparent-square",
+  "total_pngs": 320,
+  "cleanup": {
+    "version": "border-connected-v2",
+    "notes": [
+      "Preserves internal mascot whites and cream highlights.",
+      "Removes only border-connected white/chroma backgrounds.",
+      "Peels edge-adjacent residue and drops tiny edge fragments from sprite-frame bleed."
+    ]
+  },
+  "groups": {
+    "frames/apologetic-shrug": {
+      "count": 6,
+      "content_square_side": 340
+    },
+    "frames/attendance-saved": {
+      "count": 6,
+      "content_square_side": 331
+    },
+    "frames/celebration-achievement": {
+      "count": 6,
+      "content_square_side": 362
+    },
+    "frames/completed-task": {
+      "count": 6,
+      "content_square_side": 347
+    },
+    "frames/confused-question": {
+      "count": 6,
+      "content_square_side": 349
+    },
+    "frames/correct-answer-approval": {
+      "count": 6,
+      "content_square_side": 371
+    },
+    "frames/credentials-sent": {
+      "count": 6,
+      "content_square_side": 350
+    },
+    "frames/curious-head-tilt": {
+      "count": 6,
+      "content_square_side": 368
+    },
+    "frames/default-wave": {
+      "count": 6,
+      "content_square_side": 324
+    },
+    "frames/delete-confirm": {
+      "count": 6,
+      "content_square_side": 370
+    },
+    "frames/error-concerned": {
+      "count": 6,
+      "content_square_side": 343
+    },
+    "frames/explaining-pointing": {
+      "count": 6,
+      "content_square_side": 354
+    },
+    "frames/focused-studying": {
+      "count": 6,
+      "content_square_side": 329
+    },
+    "frames/form-incomplete": {
+      "count": 6,
+      "content_square_side": 350
+    },
+    "frames/invoice-generated": {
+      "count": 6,
+      "content_square_side": 350
+    },
+    "frames/loading-walk": {
+      "count": 6,
+      "content_square_side": 380
+    },
+    "frames/locked-restricted-access": {
+      "count": 6,
+      "content_square_side": 345
+    },
+    "frames/login-success": {
+      "count": 6,
+      "content_square_side": 338
+    },
+    "frames/maintenance-waiting": {
+      "count": 6,
+      "content_square_side": 362
+    },
+    "frames/neutral-idle": {
+      "count": 6,
+      "content_square_side": 347
+    },
+    "frames/no-results-looking-around": {
+      "count": 6,
+      "content_square_side": 352
+    },
+    "frames/notification-received": {
+      "count": 6,
+      "content_square_side": 378
+    },
+    "frames/peeking-helper": {
+      "count": 6,
+      "content_square_side": 298
+    },
+    "frames/pointing-left": {
+      "count": 6,
+      "content_square_side": 331
+    },
+    "frames/proud-hands-on-hips": {
+      "count": 6,
+      "content_square_side": 355
+    },
+    "frames/proud-milestone": {
+      "count": 6,
+      "content_square_side": 334
+    },
+    "frames/quiz-master": {
+      "count": 6,
+      "content_square_side": 342
+    },
+    "frames/save-success": {
+      "count": 6,
+      "content_square_side": 355
+    },
+    "frames/saving-changes": {
+      "count": 6,
+      "content_square_side": 358
+    },
+    "frames/session-expired": {
+      "count": 6,
+      "content_square_side": 353
+    },
+    "frames/signup-success": {
+      "count": 6,
+      "content_square_side": 363
+    },
+    "frames/sleepy-idle": {
+      "count": 6,
+      "content_square_side": 341
+    },
+    "frames/streak-progress-excitement": {
+      "count": 6,
+      "content_square_side": 361
+    },
+    "frames/student-enrolled": {
+      "count": 6,
+      "content_square_side": 341
+    },
+    "frames/thinking-hint": {
+      "count": 6,
+      "content_square_side": 380
+    },
+    "frames/wrong-answer-encouragement": {
+      "count": 6,
+      "content_square_side": 350
+    },
+    "landing": {
+      "count": 5,
+      "content_square_side": 1002
+    },
+    "pose-sheets": {
+      "count": 7,
+      "content_square_side": 1577
+    },
+    "poses/achievement-poses": {
+      "count": 6,
+      "content_square_side": 423
+    },
+    "poses/all-poses-12": {
+      "count": 12,
+      "content_square_side": 306
+    },
+    "poses/concept-iterations-10": {
+      "count": 10,
+      "content_square_side": 346
+    },
+    "poses/core-ui-poses": {
+      "count": 6,
+      "content_square_side": 401
+    },
+    "poses/learning-quiz-poses": {
+      "count": 6,
+      "content_square_side": 412
+    },
+    "poses/pose-iterations-10": {
+      "count": 10,
+      "content_square_side": 310
+    },
+    "poses/support-error-poses": {
+      "count": 6,
+      "content_square_side": 424
+    },
+    "sprite-sheets": {
+      "count": 36,
+      "content_square_side": 2096
+    }
+  },
+  "files": [
+    {
+      "path": "transparent-square/frames/apologetic-shrug/frame-01.png",
+      "source": "frames/apologetic-shrug/frame-01.png",
+      "width": 387,
+      "height": 387,
+      "content_square_side": 335
+    },
+    {
+      "path": "transparent-square/frames/apologetic-shrug/frame-02.png",
+      "source": "frames/apologetic-shrug/frame-02.png",
+      "width": 382,
+      "height": 382,
+      "content_square_side": 330
+    },
+    {
+      "path": "transparent-square/frames/apologetic-shrug/frame-03.png",
+      "source": "frames/apologetic-shrug/frame-03.png",
+      "width": 394,
+      "height": 394,
+      "content_square_side": 340
+    },
+    {
+      "path": "transparent-square/frames/apologetic-shrug/frame-04.png",
+      "source": "frames/apologetic-shrug/frame-04.png",
+      "width": 394,
+      "height": 394,
+      "content_square_side": 340
+    },
+    {
+      "path": "transparent-square/frames/apologetic-shrug/frame-05.png",
+      "source": "frames/apologetic-shrug/frame-05.png",
+      "width": 383,
+      "height": 383,
+      "content_square_side": 331
+    },
+    {
+      "path": "transparent-square/frames/apologetic-shrug/frame-06.png",
+      "source": "frames/apologetic-shrug/frame-06.png",
+      "width": 380,
+      "height": 380,
+      "content_square_side": 328
+    },
+    {
+      "path": "transparent-square/frames/attendance-saved/frame-01.png",
+      "source": "frames/attendance-saved/frame-01.png",
+      "width": 377,
+      "height": 377,
+      "content_square_side": 325
+    },
+    {
+      "path": "transparent-square/frames/attendance-saved/frame-02.png",
+      "source": "frames/attendance-saved/frame-02.png",
+      "width": 370,
+      "height": 370,
+      "content_square_side": 320
+    },
+    {
+      "path": "transparent-square/frames/attendance-saved/frame-03.png",
+      "source": "frames/attendance-saved/frame-03.png",
+      "width": 370,
+      "height": 370,
+      "content_square_side": 320
+    },
+    {
+      "path": "transparent-square/frames/attendance-saved/frame-04.png",
+      "source": "frames/attendance-saved/frame-04.png",
+      "width": 383,
+      "height": 383,
+      "content_square_side": 331
+    },
+    {
+      "path": "transparent-square/frames/attendance-saved/frame-05.png",
+      "source": "frames/attendance-saved/frame-05.png",
+      "width": 364,
+      "height": 364,
+      "content_square_side": 314
+    },
+    {
+      "path": "transparent-square/frames/attendance-saved/frame-06.png",
+      "source": "frames/attendance-saved/frame-06.png",
+      "width": 373,
+      "height": 373,
+      "content_square_side": 323
+    },
+    {
+      "path": "transparent-square/frames/celebration-achievement/frame-01.png",
+      "source": "frames/celebration-achievement/frame-01.png",
+      "width": 412,
+      "height": 412,
+      "content_square_side": 356
+    },
+    {
+      "path": "transparent-square/frames/celebration-achievement/frame-02.png",
+      "source": "frames/celebration-achievement/frame-02.png",
+      "width": 360,
+      "height": 360,
+      "content_square_side": 312
+    },
+    {
+      "path": "transparent-square/frames/celebration-achievement/frame-03.png",
+      "source": "frames/celebration-achievement/frame-03.png",
+      "width": 416,
+      "height": 416,
+      "content_square_side": 360
+    },
+    {
+      "path": "transparent-square/frames/celebration-achievement/frame-04.png",
+      "source": "frames/celebration-achievement/frame-04.png",
+      "width": 418,
+      "height": 418,
+      "content_square_side": 362
+    },
+    {
+      "path": "transparent-square/frames/celebration-achievement/frame-05.png",
+      "source": "frames/celebration-achievement/frame-05.png",
+      "width": 358,
+      "height": 358,
+      "content_square_side": 310
+    },
+    {
+      "path": "transparent-square/frames/celebration-achievement/frame-06.png",
+      "source": "frames/celebration-achievement/frame-06.png",
+      "width": 402,
+      "height": 402,
+      "content_square_side": 348
+    },
+    {
+      "path": "transparent-square/frames/completed-task/frame-01.png",
+      "source": "frames/completed-task/frame-01.png",
+      "width": 401,
+      "height": 401,
+      "content_square_side": 347
+    },
+    {
+      "path": "transparent-square/frames/completed-task/frame-02.png",
+      "source": "frames/completed-task/frame-02.png",
+      "width": 397,
+      "height": 397,
+      "content_square_side": 343
+    },
+    {
+      "path": "transparent-square/frames/completed-task/frame-03.png",
+      "source": "frames/completed-task/frame-03.png",
+      "width": 395,
+      "height": 395,
+      "content_square_side": 341
+    },
+    {
+      "path": "transparent-square/frames/completed-task/frame-04.png",
+      "source": "frames/completed-task/frame-04.png",
+      "width": 389,
+      "height": 389,
+      "content_square_side": 337
+    },
+    {
+      "path": "transparent-square/frames/completed-task/frame-05.png",
+      "source": "frames/completed-task/frame-05.png",
+      "width": 388,
+      "height": 388,
+      "content_square_side": 336
+    },
+    {
+      "path": "transparent-square/frames/completed-task/frame-06.png",
+      "source": "frames/completed-task/frame-06.png",
+      "width": 393,
+      "height": 393,
+      "content_square_side": 339
+    },
+    {
+      "path": "transparent-square/frames/confused-question/frame-01.png",
+      "source": "frames/confused-question/frame-01.png",
+      "width": 401,
+      "height": 401,
+      "content_square_side": 347
+    },
+    {
+      "path": "transparent-square/frames/confused-question/frame-02.png",
+      "source": "frames/confused-question/frame-02.png",
+      "width": 399,
+      "height": 399,
+      "content_square_side": 345
+    },
+    {
+      "path": "transparent-square/frames/confused-question/frame-03.png",
+      "source": "frames/confused-question/frame-03.png",
+      "width": 402,
+      "height": 402,
+      "content_square_side": 348
+    },
+    {
+      "path": "transparent-square/frames/confused-question/frame-04.png",
+      "source": "frames/confused-question/frame-04.png",
+      "width": 403,
+      "height": 403,
+      "content_square_side": 349
+    },
+    {
+      "path": "transparent-square/frames/confused-question/frame-05.png",
+      "source": "frames/confused-question/frame-05.png",
+      "width": 392,
+      "height": 392,
+      "content_square_side": 338
+    },
+    {
+      "path": "transparent-square/frames/confused-question/frame-06.png",
+      "source": "frames/confused-question/frame-06.png",
+      "width": 395,
+      "height": 395,
+      "content_square_side": 341
+    },
+    {
+      "path": "transparent-square/frames/correct-answer-approval/frame-01.png",
+      "source": "frames/correct-answer-approval/frame-01.png",
+      "width": 429,
+      "height": 429,
+      "content_square_side": 371
+    },
+    {
+      "path": "transparent-square/frames/correct-answer-approval/frame-02.png",
+      "source": "frames/correct-answer-approval/frame-02.png",
+      "width": 426,
+      "height": 426,
+      "content_square_side": 368
+    },
+    {
+      "path": "transparent-square/frames/correct-answer-approval/frame-03.png",
+      "source": "frames/correct-answer-approval/frame-03.png",
+      "width": 421,
+      "height": 421,
+      "content_square_side": 363
+    },
+    {
+      "path": "transparent-square/frames/correct-answer-approval/frame-04.png",
+      "source": "frames/correct-answer-approval/frame-04.png",
+      "width": 415,
+      "height": 415,
+      "content_square_side": 359
+    },
+    {
+      "path": "transparent-square/frames/correct-answer-approval/frame-05.png",
+      "source": "frames/correct-answer-approval/frame-05.png",
+      "width": 421,
+      "height": 421,
+      "content_square_side": 363
+    },
+    {
+      "path": "transparent-square/frames/correct-answer-approval/frame-06.png",
+      "source": "frames/correct-answer-approval/frame-06.png",
+      "width": 415,
+      "height": 415,
+      "content_square_side": 359
+    },
+    {
+      "path": "transparent-square/frames/credentials-sent/frame-01.png",
+      "source": "frames/credentials-sent/frame-01.png",
+      "width": 402,
+      "height": 402,
+      "content_square_side": 348
+    },
+    {
+      "path": "transparent-square/frames/credentials-sent/frame-02.png",
+      "source": "frames/credentials-sent/frame-02.png",
+      "width": 403,
+      "height": 403,
+      "content_square_side": 349
+    },
+    {
+      "path": "transparent-square/frames/credentials-sent/frame-03.png",
+      "source": "frames/credentials-sent/frame-03.png",
+      "width": 406,
+      "height": 406,
+      "content_square_side": 350
+    },
+    {
+      "path": "transparent-square/frames/credentials-sent/frame-04.png",
+      "source": "frames/credentials-sent/frame-04.png",
+      "width": 388,
+      "height": 388,
+      "content_square_side": 336
+    },
+    {
+      "path": "transparent-square/frames/credentials-sent/frame-05.png",
+      "source": "frames/credentials-sent/frame-05.png",
+      "width": 392,
+      "height": 392,
+      "content_square_side": 338
+    },
+    {
+      "path": "transparent-square/frames/credentials-sent/frame-06.png",
+      "source": "frames/credentials-sent/frame-06.png",
+      "width": 402,
+      "height": 402,
+      "content_square_side": 348
+    },
+    {
+      "path": "transparent-square/frames/curious-head-tilt/frame-01.png",
+      "source": "frames/curious-head-tilt/frame-01.png",
+      "width": 418,
+      "height": 418,
+      "content_square_side": 362
+    },
+    {
+      "path": "transparent-square/frames/curious-head-tilt/frame-02.png",
+      "source": "frames/curious-head-tilt/frame-02.png",
+      "width": 422,
+      "height": 422,
+      "content_square_side": 364
+    },
+    {
+      "path": "transparent-square/frames/curious-head-tilt/frame-03.png",
+      "source": "frames/curious-head-tilt/frame-03.png",
+      "width": 426,
+      "height": 426,
+      "content_square_side": 368
+    },
+    {
+      "path": "transparent-square/frames/curious-head-tilt/frame-04.png",
+      "source": "frames/curious-head-tilt/frame-04.png",
+      "width": 426,
+      "height": 426,
+      "content_square_side": 368
+    },
+    {
+      "path": "transparent-square/frames/curious-head-tilt/frame-05.png",
+      "source": "frames/curious-head-tilt/frame-05.png",
+      "width": 421,
+      "height": 421,
+      "content_square_side": 363
+    },
+    {
+      "path": "transparent-square/frames/curious-head-tilt/frame-06.png",
+      "source": "frames/curious-head-tilt/frame-06.png",
+      "width": 415,
+      "height": 415,
+      "content_square_side": 359
+    },
+    {
+      "path": "transparent-square/frames/default-wave/frame-01.png",
+      "source": "frames/default-wave/frame-01.png",
+      "width": 365,
+      "height": 365,
+      "content_square_side": 315
+    },
+    {
+      "path": "transparent-square/frames/default-wave/frame-02.png",
+      "source": "frames/default-wave/frame-02.png",
+      "width": 368,
+      "height": 368,
+      "content_square_side": 318
+    },
+    {
+      "path": "transparent-square/frames/default-wave/frame-03.png",
+      "source": "frames/default-wave/frame-03.png",
+      "width": 370,
+      "height": 370,
+      "content_square_side": 320
+    },
+    {
+      "path": "transparent-square/frames/default-wave/frame-04.png",
+      "source": "frames/default-wave/frame-04.png",
+      "width": 374,
+      "height": 374,
+      "content_square_side": 324
+    },
+    {
+      "path": "transparent-square/frames/default-wave/frame-05.png",
+      "source": "frames/default-wave/frame-05.png",
+      "width": 367,
+      "height": 367,
+      "content_square_side": 317
+    },
+    {
+      "path": "transparent-square/frames/default-wave/frame-06.png",
+      "source": "frames/default-wave/frame-06.png",
+      "width": 367,
+      "height": 367,
+      "content_square_side": 317
+    },
+    {
+      "path": "transparent-square/frames/delete-confirm/frame-01.png",
+      "source": "frames/delete-confirm/frame-01.png",
+      "width": 427,
+      "height": 427,
+      "content_square_side": 369
+    },
+    {
+      "path": "transparent-square/frames/delete-confirm/frame-02.png",
+      "source": "frames/delete-confirm/frame-02.png",
+      "width": 428,
+      "height": 428,
+      "content_square_side": 370
+    },
+    {
+      "path": "transparent-square/frames/delete-confirm/frame-03.png",
+      "source": "frames/delete-confirm/frame-03.png",
+      "width": 426,
+      "height": 426,
+      "content_square_side": 368
+    },
+    {
+      "path": "transparent-square/frames/delete-confirm/frame-04.png",
+      "source": "frames/delete-confirm/frame-04.png",
+      "width": 412,
+      "height": 412,
+      "content_square_side": 356
+    },
+    {
+      "path": "transparent-square/frames/delete-confirm/frame-05.png",
+      "source": "frames/delete-confirm/frame-05.png",
+      "width": 418,
+      "height": 418,
+      "content_square_side": 362
+    },
+    {
+      "path": "transparent-square/frames/delete-confirm/frame-06.png",
+      "source": "frames/delete-confirm/frame-06.png",
+      "width": 422,
+      "height": 422,
+      "content_square_side": 364
+    },
+    {
+      "path": "transparent-square/frames/error-concerned/frame-01.png",
+      "source": "frames/error-concerned/frame-01.png",
+      "width": 385,
+      "height": 385,
+      "content_square_side": 333
+    },
+    {
+      "path": "transparent-square/frames/error-concerned/frame-02.png",
+      "source": "frames/error-concerned/frame-02.png",
+      "width": 386,
+      "height": 386,
+      "content_square_side": 334
+    },
+    {
+      "path": "transparent-square/frames/error-concerned/frame-03.png",
+      "source": "frames/error-concerned/frame-03.png",
+      "width": 393,
+      "height": 393,
+      "content_square_side": 339
+    },
+    {
+      "path": "transparent-square/frames/error-concerned/frame-04.png",
+      "source": "frames/error-concerned/frame-04.png",
+      "width": 355,
+      "height": 355,
+      "content_square_side": 307
+    },
+    {
+      "path": "transparent-square/frames/error-concerned/frame-05.png",
+      "source": "frames/error-concerned/frame-05.png",
+      "width": 397,
+      "height": 397,
+      "content_square_side": 343
+    },
+    {
+      "path": "transparent-square/frames/error-concerned/frame-06.png",
+      "source": "frames/error-concerned/frame-06.png",
+      "width": 382,
+      "height": 382,
+      "content_square_side": 330
+    },
+    {
+      "path": "transparent-square/frames/explaining-pointing/frame-01.png",
+      "source": "frames/explaining-pointing/frame-01.png",
+      "width": 384,
+      "height": 384,
+      "content_square_side": 332
+    },
+    {
+      "path": "transparent-square/frames/explaining-pointing/frame-02.png",
+      "source": "frames/explaining-pointing/frame-02.png",
+      "width": 384,
+      "height": 384,
+      "content_square_side": 332
+    },
+    {
+      "path": "transparent-square/frames/explaining-pointing/frame-03.png",
+      "source": "frames/explaining-pointing/frame-03.png",
+      "width": 395,
+      "height": 395,
+      "content_square_side": 341
+    },
+    {
+      "path": "transparent-square/frames/explaining-pointing/frame-04.png",
+      "source": "frames/explaining-pointing/frame-04.png",
+      "width": 410,
+      "height": 410,
+      "content_square_side": 354
+    },
+    {
+      "path": "transparent-square/frames/explaining-pointing/frame-05.png",
+      "source": "frames/explaining-pointing/frame-05.png",
+      "width": 378,
+      "height": 378,
+      "content_square_side": 326
+    },
+    {
+      "path": "transparent-square/frames/explaining-pointing/frame-06.png",
+      "source": "frames/explaining-pointing/frame-06.png",
+      "width": 374,
+      "height": 374,
+      "content_square_side": 324
+    },
+    {
+      "path": "transparent-square/frames/focused-studying/frame-01.png",
+      "source": "frames/focused-studying/frame-01.png",
+      "width": 381,
+      "height": 381,
+      "content_square_side": 329
+    },
+    {
+      "path": "transparent-square/frames/focused-studying/frame-02.png",
+      "source": "frames/focused-studying/frame-02.png",
+      "width": 378,
+      "height": 378,
+      "content_square_side": 326
+    },
+    {
+      "path": "transparent-square/frames/focused-studying/frame-03.png",
+      "source": "frames/focused-studying/frame-03.png",
+      "width": 363,
+      "height": 363,
+      "content_square_side": 313
+    },
+    {
+      "path": "transparent-square/frames/focused-studying/frame-04.png",
+      "source": "frames/focused-studying/frame-04.png",
+      "width": 367,
+      "height": 367,
+      "content_square_side": 317
+    },
+    {
+      "path": "transparent-square/frames/focused-studying/frame-05.png",
+      "source": "frames/focused-studying/frame-05.png",
+      "width": 366,
+      "height": 366,
+      "content_square_side": 316
+    },
+    {
+      "path": "transparent-square/frames/focused-studying/frame-06.png",
+      "source": "frames/focused-studying/frame-06.png",
+      "width": 380,
+      "height": 380,
+      "content_square_side": 328
+    },
+    {
+      "path": "transparent-square/frames/form-incomplete/frame-01.png",
+      "source": "frames/form-incomplete/frame-01.png",
+      "width": 401,
+      "height": 401,
+      "content_square_side": 347
+    },
+    {
+      "path": "transparent-square/frames/form-incomplete/frame-02.png",
+      "source": "frames/form-incomplete/frame-02.png",
+      "width": 397,
+      "height": 397,
+      "content_square_side": 343
+    },
+    {
+      "path": "transparent-square/frames/form-incomplete/frame-03.png",
+      "source": "frames/form-incomplete/frame-03.png",
+      "width": 394,
+      "height": 394,
+      "content_square_side": 340
+    },
+    {
+      "path": "transparent-square/frames/form-incomplete/frame-04.png",
+      "source": "frames/form-incomplete/frame-04.png",
+      "width": 406,
+      "height": 406,
+      "content_square_side": 350
+    },
+    {
+      "path": "transparent-square/frames/form-incomplete/frame-05.png",
+      "source": "frames/form-incomplete/frame-05.png",
+      "width": 397,
+      "height": 397,
+      "content_square_side": 343
+    },
+    {
+      "path": "transparent-square/frames/form-incomplete/frame-06.png",
+      "source": "frames/form-incomplete/frame-06.png",
+      "width": 398,
+      "height": 398,
+      "content_square_side": 344
+    },
+    {
+      "path": "transparent-square/frames/invoice-generated/frame-01.png",
+      "source": "frames/invoice-generated/frame-01.png",
+      "width": 386,
+      "height": 386,
+      "content_square_side": 334
+    },
+    {
+      "path": "transparent-square/frames/invoice-generated/frame-02.png",
+      "source": "frames/invoice-generated/frame-02.png",
+      "width": 386,
+      "height": 386,
+      "content_square_side": 334
+    },
+    {
+      "path": "transparent-square/frames/invoice-generated/frame-03.png",
+      "source": "frames/invoice-generated/frame-03.png",
+      "width": 385,
+      "height": 385,
+      "content_square_side": 333
+    },
+    {
+      "path": "transparent-square/frames/invoice-generated/frame-04.png",
+      "source": "frames/invoice-generated/frame-04.png",
+      "width": 384,
+      "height": 384,
+      "content_square_side": 332
+    },
+    {
+      "path": "transparent-square/frames/invoice-generated/frame-05.png",
+      "source": "frames/invoice-generated/frame-05.png",
+      "width": 406,
+      "height": 406,
+      "content_square_side": 350
+    },
+    {
+      "path": "transparent-square/frames/invoice-generated/frame-06.png",
+      "source": "frames/invoice-generated/frame-06.png",
+      "width": 385,
+      "height": 385,
+      "content_square_side": 333
+    },
+    {
+      "path": "transparent-square/frames/loading-walk/frame-01.png",
+      "source": "frames/loading-walk/frame-01.png",
+      "width": 430,
+      "height": 430,
+      "content_square_side": 372
+    },
+    {
+      "path": "transparent-square/frames/loading-walk/frame-02.png",
+      "source": "frames/loading-walk/frame-02.png",
+      "width": 435,
+      "height": 435,
+      "content_square_side": 375
+    },
+    {
+      "path": "transparent-square/frames/loading-walk/frame-03.png",
+      "source": "frames/loading-walk/frame-03.png",
+      "width": 440,
+      "height": 440,
+      "content_square_side": 380
+    },
+    {
+      "path": "transparent-square/frames/loading-walk/frame-04.png",
+      "source": "frames/loading-walk/frame-04.png",
+      "width": 437,
+      "height": 437,
+      "content_square_side": 377
+    },
+    {
+      "path": "transparent-square/frames/loading-walk/frame-05.png",
+      "source": "frames/loading-walk/frame-05.png",
+      "width": 437,
+      "height": 437,
+      "content_square_side": 377
+    },
+    {
+      "path": "transparent-square/frames/loading-walk/frame-06.png",
+      "source": "frames/loading-walk/frame-06.png",
+      "width": 424,
+      "height": 424,
+      "content_square_side": 366
+    },
+    {
+      "path": "transparent-square/frames/locked-restricted-access/frame-01.png",
+      "source": "frames/locked-restricted-access/frame-01.png",
+      "width": 397,
+      "height": 397,
+      "content_square_side": 343
+    },
+    {
+      "path": "transparent-square/frames/locked-restricted-access/frame-02.png",
+      "source": "frames/locked-restricted-access/frame-02.png",
+      "width": 399,
+      "height": 399,
+      "content_square_side": 345
+    },
+    {
+      "path": "transparent-square/frames/locked-restricted-access/frame-03.png",
+      "source": "frames/locked-restricted-access/frame-03.png",
+      "width": 398,
+      "height": 398,
+      "content_square_side": 344
+    },
+    {
+      "path": "transparent-square/frames/locked-restricted-access/frame-04.png",
+      "source": "frames/locked-restricted-access/frame-04.png",
+      "width": 396,
+      "height": 396,
+      "content_square_side": 342
+    },
+    {
+      "path": "transparent-square/frames/locked-restricted-access/frame-05.png",
+      "source": "frames/locked-restricted-access/frame-05.png",
+      "width": 383,
+      "height": 383,
+      "content_square_side": 331
+    },
+    {
+      "path": "transparent-square/frames/locked-restricted-access/frame-06.png",
+      "source": "frames/locked-restricted-access/frame-06.png",
+      "width": 396,
+      "height": 396,
+      "content_square_side": 342
+    },
+    {
+      "path": "transparent-square/frames/login-success/frame-01.png",
+      "source": "frames/login-success/frame-01.png",
+      "width": 392,
+      "height": 392,
+      "content_square_side": 338
+    },
+    {
+      "path": "transparent-square/frames/login-success/frame-02.png",
+      "source": "frames/login-success/frame-02.png",
+      "width": 387,
+      "height": 387,
+      "content_square_side": 335
+    },
+    {
+      "path": "transparent-square/frames/login-success/frame-03.png",
+      "source": "frames/login-success/frame-03.png",
+      "width": 387,
+      "height": 387,
+      "content_square_side": 335
+    },
+    {
+      "path": "transparent-square/frames/login-success/frame-04.png",
+      "source": "frames/login-success/frame-04.png",
+      "width": 387,
+      "height": 387,
+      "content_square_side": 335
+    },
+    {
+      "path": "transparent-square/frames/login-success/frame-05.png",
+      "source": "frames/login-success/frame-05.png",
+      "width": 386,
+      "height": 386,
+      "content_square_side": 334
+    },
+    {
+      "path": "transparent-square/frames/login-success/frame-06.png",
+      "source": "frames/login-success/frame-06.png",
+      "width": 384,
+      "height": 384,
+      "content_square_side": 332
+    },
+    {
+      "path": "transparent-square/frames/maintenance-waiting/frame-01.png",
+      "source": "frames/maintenance-waiting/frame-01.png",
+      "width": 418,
+      "height": 418,
+      "content_square_side": 362
+    },
+    {
+      "path": "transparent-square/frames/maintenance-waiting/frame-02.png",
+      "source": "frames/maintenance-waiting/frame-02.png",
+      "width": 410,
+      "height": 410,
+      "content_square_side": 354
+    },
+    {
+      "path": "transparent-square/frames/maintenance-waiting/frame-03.png",
+      "source": "frames/maintenance-waiting/frame-03.png",
+      "width": 397,
+      "height": 397,
+      "content_square_side": 343
+    },
+    {
+      "path": "transparent-square/frames/maintenance-waiting/frame-04.png",
+      "source": "frames/maintenance-waiting/frame-04.png",
+      "width": 415,
+      "height": 415,
+      "content_square_side": 359
+    },
+    {
+      "path": "transparent-square/frames/maintenance-waiting/frame-05.png",
+      "source": "frames/maintenance-waiting/frame-05.png",
+      "width": 408,
+      "height": 408,
+      "content_square_side": 352
+    },
+    {
+      "path": "transparent-square/frames/maintenance-waiting/frame-06.png",
+      "source": "frames/maintenance-waiting/frame-06.png",
+      "width": 414,
+      "height": 414,
+      "content_square_side": 358
+    },
+    {
+      "path": "transparent-square/frames/neutral-idle/frame-01.png",
+      "source": "frames/neutral-idle/frame-01.png",
+      "width": 396,
+      "height": 396,
+      "content_square_side": 342
+    },
+    {
+      "path": "transparent-square/frames/neutral-idle/frame-02.png",
+      "source": "frames/neutral-idle/frame-02.png",
+      "width": 401,
+      "height": 401,
+      "content_square_side": 347
+    },
+    {
+      "path": "transparent-square/frames/neutral-idle/frame-03.png",
+      "source": "frames/neutral-idle/frame-03.png",
+      "width": 395,
+      "height": 395,
+      "content_square_side": 341
+    },
+    {
+      "path": "transparent-square/frames/neutral-idle/frame-04.png",
+      "source": "frames/neutral-idle/frame-04.png",
+      "width": 389,
+      "height": 389,
+      "content_square_side": 337
+    },
+    {
+      "path": "transparent-square/frames/neutral-idle/frame-05.png",
+      "source": "frames/neutral-idle/frame-05.png",
+      "width": 396,
+      "height": 396,
+      "content_square_side": 342
+    },
+    {
+      "path": "transparent-square/frames/neutral-idle/frame-06.png",
+      "source": "frames/neutral-idle/frame-06.png",
+      "width": 395,
+      "height": 395,
+      "content_square_side": 341
+    },
+    {
+      "path": "transparent-square/frames/no-results-looking-around/frame-01.png",
+      "source": "frames/no-results-looking-around/frame-01.png",
+      "width": 406,
+      "height": 406,
+      "content_square_side": 350
+    },
+    {
+      "path": "transparent-square/frames/no-results-looking-around/frame-02.png",
+      "source": "frames/no-results-looking-around/frame-02.png",
+      "width": 402,
+      "height": 402,
+      "content_square_side": 348
+    },
+    {
+      "path": "transparent-square/frames/no-results-looking-around/frame-03.png",
+      "source": "frames/no-results-looking-around/frame-03.png",
+      "width": 408,
+      "height": 408,
+      "content_square_side": 352
+    },
+    {
+      "path": "transparent-square/frames/no-results-looking-around/frame-04.png",
+      "source": "frames/no-results-looking-around/frame-04.png",
+      "width": 401,
+      "height": 401,
+      "content_square_side": 347
+    },
+    {
+      "path": "transparent-square/frames/no-results-looking-around/frame-05.png",
+      "source": "frames/no-results-looking-around/frame-05.png",
+      "width": 393,
+      "height": 393,
+      "content_square_side": 339
+    },
+    {
+      "path": "transparent-square/frames/no-results-looking-around/frame-06.png",
+      "source": "frames/no-results-looking-around/frame-06.png",
+      "width": 398,
+      "height": 398,
+      "content_square_side": 344
+    },
+    {
+      "path": "transparent-square/frames/notification-received/frame-01.png",
+      "source": "frames/notification-received/frame-01.png",
+      "width": 413,
+      "height": 413,
+      "content_square_side": 357
+    },
+    {
+      "path": "transparent-square/frames/notification-received/frame-02.png",
+      "source": "frames/notification-received/frame-02.png",
+      "width": 438,
+      "height": 438,
+      "content_square_side": 378
+    },
+    {
+      "path": "transparent-square/frames/notification-received/frame-03.png",
+      "source": "frames/notification-received/frame-03.png",
+      "width": 412,
+      "height": 412,
+      "content_square_side": 356
+    },
+    {
+      "path": "transparent-square/frames/notification-received/frame-04.png",
+      "source": "frames/notification-received/frame-04.png",
+      "width": 410,
+      "height": 410,
+      "content_square_side": 354
+    },
+    {
+      "path": "transparent-square/frames/notification-received/frame-05.png",
+      "source": "frames/notification-received/frame-05.png",
+      "width": 409,
+      "height": 409,
+      "content_square_side": 353
+    },
+    {
+      "path": "transparent-square/frames/notification-received/frame-06.png",
+      "source": "frames/notification-received/frame-06.png",
+      "width": 413,
+      "height": 413,
+      "content_square_side": 357
+    },
+    {
+      "path": "transparent-square/frames/peeking-helper/frame-01.png",
+      "source": "frames/peeking-helper/frame-01.png",
+      "width": 247,
+      "height": 247,
+      "content_square_side": 213
+    },
+    {
+      "path": "transparent-square/frames/peeking-helper/frame-02.png",
+      "source": "frames/peeking-helper/frame-02.png",
+      "width": 240,
+      "height": 240,
+      "content_square_side": 208
+    },
+    {
+      "path": "transparent-square/frames/peeking-helper/frame-03.png",
+      "source": "frames/peeking-helper/frame-03.png",
+      "width": 341,
+      "height": 341,
+      "content_square_side": 295
+    },
+    {
+      "path": "transparent-square/frames/peeking-helper/frame-04.png",
+      "source": "frames/peeking-helper/frame-04.png",
+      "width": 344,
+      "height": 344,
+      "content_square_side": 298
+    },
+    {
+      "path": "transparent-square/frames/peeking-helper/frame-05.png",
+      "source": "frames/peeking-helper/frame-05.png",
+      "width": 337,
+      "height": 337,
+      "content_square_side": 291
+    },
+    {
+      "path": "transparent-square/frames/peeking-helper/frame-06.png",
+      "source": "frames/peeking-helper/frame-06.png",
+      "width": 234,
+      "height": 234,
+      "content_square_side": 202
+    },
+    {
+      "path": "transparent-square/frames/pointing-left/frame-01.png",
+      "source": "frames/pointing-left/frame-01.png",
+      "width": 363,
+      "height": 363,
+      "content_square_side": 313
+    },
+    {
+      "path": "transparent-square/frames/pointing-left/frame-02.png",
+      "source": "frames/pointing-left/frame-02.png",
+      "width": 366,
+      "height": 366,
+      "content_square_side": 316
+    },
+    {
+      "path": "transparent-square/frames/pointing-left/frame-03.png",
+      "source": "frames/pointing-left/frame-03.png",
+      "width": 383,
+      "height": 383,
+      "content_square_side": 331
+    },
+    {
+      "path": "transparent-square/frames/pointing-left/frame-04.png",
+      "source": "frames/pointing-left/frame-04.png",
+      "width": 370,
+      "height": 370,
+      "content_square_side": 320
+    },
+    {
+      "path": "transparent-square/frames/pointing-left/frame-05.png",
+      "source": "frames/pointing-left/frame-05.png",
+      "width": 358,
+      "height": 358,
+      "content_square_side": 310
+    },
+    {
+      "path": "transparent-square/frames/pointing-left/frame-06.png",
+      "source": "frames/pointing-left/frame-06.png",
+      "width": 359,
+      "height": 359,
+      "content_square_side": 311
+    },
+    {
+      "path": "transparent-square/frames/proud-hands-on-hips/frame-01.png",
+      "source": "frames/proud-hands-on-hips/frame-01.png",
+      "width": 410,
+      "height": 410,
+      "content_square_side": 354
+    },
+    {
+      "path": "transparent-square/frames/proud-hands-on-hips/frame-02.png",
+      "source": "frames/proud-hands-on-hips/frame-02.png",
+      "width": 411,
+      "height": 411,
+      "content_square_side": 355
+    },
+    {
+      "path": "transparent-square/frames/proud-hands-on-hips/frame-03.png",
+      "source": "frames/proud-hands-on-hips/frame-03.png",
+      "width": 411,
+      "height": 411,
+      "content_square_side": 355
+    },
+    {
+      "path": "transparent-square/frames/proud-hands-on-hips/frame-04.png",
+      "source": "frames/proud-hands-on-hips/frame-04.png",
+      "width": 409,
+      "height": 409,
+      "content_square_side": 353
+    },
+    {
+      "path": "transparent-square/frames/proud-hands-on-hips/frame-05.png",
+      "source": "frames/proud-hands-on-hips/frame-05.png",
+      "width": 409,
+      "height": 409,
+      "content_square_side": 353
+    },
+    {
+      "path": "transparent-square/frames/proud-hands-on-hips/frame-06.png",
+      "source": "frames/proud-hands-on-hips/frame-06.png",
+      "width": 410,
+      "height": 410,
+      "content_square_side": 354
+    },
+    {
+      "path": "transparent-square/frames/proud-milestone/frame-01.png",
+      "source": "frames/proud-milestone/frame-01.png",
+      "width": 367,
+      "height": 367,
+      "content_square_side": 317
+    },
+    {
+      "path": "transparent-square/frames/proud-milestone/frame-02.png",
+      "source": "frames/proud-milestone/frame-02.png",
+      "width": 379,
+      "height": 379,
+      "content_square_side": 327
+    },
+    {
+      "path": "transparent-square/frames/proud-milestone/frame-03.png",
+      "source": "frames/proud-milestone/frame-03.png",
+      "width": 378,
+      "height": 378,
+      "content_square_side": 326
+    },
+    {
+      "path": "transparent-square/frames/proud-milestone/frame-04.png",
+      "source": "frames/proud-milestone/frame-04.png",
+      "width": 386,
+      "height": 386,
+      "content_square_side": 334
+    },
+    {
+      "path": "transparent-square/frames/proud-milestone/frame-05.png",
+      "source": "frames/proud-milestone/frame-05.png",
+      "width": 371,
+      "height": 371,
+      "content_square_side": 321
+    },
+    {
+      "path": "transparent-square/frames/proud-milestone/frame-06.png",
+      "source": "frames/proud-milestone/frame-06.png",
+      "width": 366,
+      "height": 366,
+      "content_square_side": 316
+    },
+    {
+      "path": "transparent-square/frames/quiz-master/frame-01.png",
+      "source": "frames/quiz-master/frame-01.png",
+      "width": 396,
+      "height": 396,
+      "content_square_side": 342
+    },
+    {
+      "path": "transparent-square/frames/quiz-master/frame-02.png",
+      "source": "frames/quiz-master/frame-02.png",
+      "width": 396,
+      "height": 396,
+      "content_square_side": 342
+    },
+    {
+      "path": "transparent-square/frames/quiz-master/frame-03.png",
+      "source": "frames/quiz-master/frame-03.png",
+      "width": 396,
+      "height": 396,
+      "content_square_side": 342
+    },
+    {
+      "path": "transparent-square/frames/quiz-master/frame-04.png",
+      "source": "frames/quiz-master/frame-04.png",
+      "width": 385,
+      "height": 385,
+      "content_square_side": 333
+    },
+    {
+      "path": "transparent-square/frames/quiz-master/frame-05.png",
+      "source": "frames/quiz-master/frame-05.png",
+      "width": 394,
+      "height": 394,
+      "content_square_side": 340
+    },
+    {
+      "path": "transparent-square/frames/quiz-master/frame-06.png",
+      "source": "frames/quiz-master/frame-06.png",
+      "width": 381,
+      "height": 381,
+      "content_square_side": 329
+    },
+    {
+      "path": "transparent-square/frames/save-success/frame-01.png",
+      "source": "frames/save-success/frame-01.png",
+      "width": 411,
+      "height": 411,
+      "content_square_side": 355
+    },
+    {
+      "path": "transparent-square/frames/save-success/frame-02.png",
+      "source": "frames/save-success/frame-02.png",
+      "width": 409,
+      "height": 409,
+      "content_square_side": 353
+    },
+    {
+      "path": "transparent-square/frames/save-success/frame-03.png",
+      "source": "frames/save-success/frame-03.png",
+      "width": 408,
+      "height": 408,
+      "content_square_side": 352
+    },
+    {
+      "path": "transparent-square/frames/save-success/frame-04.png",
+      "source": "frames/save-success/frame-04.png",
+      "width": 409,
+      "height": 409,
+      "content_square_side": 353
+    },
+    {
+      "path": "transparent-square/frames/save-success/frame-05.png",
+      "source": "frames/save-success/frame-05.png",
+      "width": 407,
+      "height": 407,
+      "content_square_side": 351
+    },
+    {
+      "path": "transparent-square/frames/save-success/frame-06.png",
+      "source": "frames/save-success/frame-06.png",
+      "width": 409,
+      "height": 409,
+      "content_square_side": 353
+    },
+    {
+      "path": "transparent-square/frames/saving-changes/frame-01.png",
+      "source": "frames/saving-changes/frame-01.png",
+      "width": 414,
+      "height": 414,
+      "content_square_side": 358
+    },
+    {
+      "path": "transparent-square/frames/saving-changes/frame-02.png",
+      "source": "frames/saving-changes/frame-02.png",
+      "width": 410,
+      "height": 410,
+      "content_square_side": 354
+    },
+    {
+      "path": "transparent-square/frames/saving-changes/frame-03.png",
+      "source": "frames/saving-changes/frame-03.png",
+      "width": 411,
+      "height": 411,
+      "content_square_side": 355
+    },
+    {
+      "path": "transparent-square/frames/saving-changes/frame-04.png",
+      "source": "frames/saving-changes/frame-04.png",
+      "width": 411,
+      "height": 411,
+      "content_square_side": 355
+    },
+    {
+      "path": "transparent-square/frames/saving-changes/frame-05.png",
+      "source": "frames/saving-changes/frame-05.png",
+      "width": 412,
+      "height": 412,
+      "content_square_side": 356
+    },
+    {
+      "path": "transparent-square/frames/saving-changes/frame-06.png",
+      "source": "frames/saving-changes/frame-06.png",
+      "width": 412,
+      "height": 412,
+      "content_square_side": 356
+    },
+    {
+      "path": "transparent-square/frames/session-expired/frame-01.png",
+      "source": "frames/session-expired/frame-01.png",
+      "width": 408,
+      "height": 408,
+      "content_square_side": 352
+    },
+    {
+      "path": "transparent-square/frames/session-expired/frame-02.png",
+      "source": "frames/session-expired/frame-02.png",
+      "width": 409,
+      "height": 409,
+      "content_square_side": 353
+    },
+    {
+      "path": "transparent-square/frames/session-expired/frame-03.png",
+      "source": "frames/session-expired/frame-03.png",
+      "width": 402,
+      "height": 402,
+      "content_square_side": 348
+    },
+    {
+      "path": "transparent-square/frames/session-expired/frame-04.png",
+      "source": "frames/session-expired/frame-04.png",
+      "width": 396,
+      "height": 396,
+      "content_square_side": 342
+    },
+    {
+      "path": "transparent-square/frames/session-expired/frame-05.png",
+      "source": "frames/session-expired/frame-05.png",
+      "width": 395,
+      "height": 395,
+      "content_square_side": 341
+    },
+    {
+      "path": "transparent-square/frames/session-expired/frame-06.png",
+      "source": "frames/session-expired/frame-06.png",
+      "width": 401,
+      "height": 401,
+      "content_square_side": 347
+    },
+    {
+      "path": "transparent-square/frames/signup-success/frame-01.png",
+      "source": "frames/signup-success/frame-01.png",
+      "width": 396,
+      "height": 396,
+      "content_square_side": 342
+    },
+    {
+      "path": "transparent-square/frames/signup-success/frame-02.png",
+      "source": "frames/signup-success/frame-02.png",
+      "width": 421,
+      "height": 421,
+      "content_square_side": 363
+    },
+    {
+      "path": "transparent-square/frames/signup-success/frame-03.png",
+      "source": "frames/signup-success/frame-03.png",
+      "width": 402,
+      "height": 402,
+      "content_square_side": 348
+    },
+    {
+      "path": "transparent-square/frames/signup-success/frame-04.png",
+      "source": "frames/signup-success/frame-04.png",
+      "width": 381,
+      "height": 381,
+      "content_square_side": 329
+    },
+    {
+      "path": "transparent-square/frames/signup-success/frame-05.png",
+      "source": "frames/signup-success/frame-05.png",
+      "width": 386,
+      "height": 386,
+      "content_square_side": 334
+    },
+    {
+      "path": "transparent-square/frames/signup-success/frame-06.png",
+      "source": "frames/signup-success/frame-06.png",
+      "width": 392,
+      "height": 392,
+      "content_square_side": 338
+    },
+    {
+      "path": "transparent-square/frames/sleepy-idle/frame-01.png",
+      "source": "frames/sleepy-idle/frame-01.png",
+      "width": 395,
+      "height": 395,
+      "content_square_side": 341
+    },
+    {
+      "path": "transparent-square/frames/sleepy-idle/frame-02.png",
+      "source": "frames/sleepy-idle/frame-02.png",
+      "width": 385,
+      "height": 385,
+      "content_square_side": 333
+    },
+    {
+      "path": "transparent-square/frames/sleepy-idle/frame-03.png",
+      "source": "frames/sleepy-idle/frame-03.png",
+      "width": 379,
+      "height": 379,
+      "content_square_side": 327
+    },
+    {
+      "path": "transparent-square/frames/sleepy-idle/frame-04.png",
+      "source": "frames/sleepy-idle/frame-04.png",
+      "width": 378,
+      "height": 378,
+      "content_square_side": 326
+    },
+    {
+      "path": "transparent-square/frames/sleepy-idle/frame-05.png",
+      "source": "frames/sleepy-idle/frame-05.png",
+      "width": 382,
+      "height": 382,
+      "content_square_side": 330
+    },
+    {
+      "path": "transparent-square/frames/sleepy-idle/frame-06.png",
+      "source": "frames/sleepy-idle/frame-06.png",
+      "width": 382,
+      "height": 382,
+      "content_square_side": 330
+    },
+    {
+      "path": "transparent-square/frames/streak-progress-excitement/frame-01.png",
+      "source": "frames/streak-progress-excitement/frame-01.png",
+      "width": 407,
+      "height": 407,
+      "content_square_side": 351
+    },
+    {
+      "path": "transparent-square/frames/streak-progress-excitement/frame-02.png",
+      "source": "frames/streak-progress-excitement/frame-02.png",
+      "width": 351,
+      "height": 351,
+      "content_square_side": 303
+    },
+    {
+      "path": "transparent-square/frames/streak-progress-excitement/frame-03.png",
+      "source": "frames/streak-progress-excitement/frame-03.png",
+      "width": 417,
+      "height": 417,
+      "content_square_side": 361
+    },
+    {
+      "path": "transparent-square/frames/streak-progress-excitement/frame-04.png",
+      "source": "frames/streak-progress-excitement/frame-04.png",
+      "width": 412,
+      "height": 412,
+      "content_square_side": 356
+    },
+    {
+      "path": "transparent-square/frames/streak-progress-excitement/frame-05.png",
+      "source": "frames/streak-progress-excitement/frame-05.png",
+      "width": 402,
+      "height": 402,
+      "content_square_side": 348
+    },
+    {
+      "path": "transparent-square/frames/streak-progress-excitement/frame-06.png",
+      "source": "frames/streak-progress-excitement/frame-06.png",
+      "width": 407,
+      "height": 407,
+      "content_square_side": 351
+    },
+    {
+      "path": "transparent-square/frames/student-enrolled/frame-01.png",
+      "source": "frames/student-enrolled/frame-01.png",
+      "width": 395,
+      "height": 395,
+      "content_square_side": 341
+    },
+    {
+      "path": "transparent-square/frames/student-enrolled/frame-02.png",
+      "source": "frames/student-enrolled/frame-02.png",
+      "width": 389,
+      "height": 389,
+      "content_square_side": 337
+    },
+    {
+      "path": "transparent-square/frames/student-enrolled/frame-03.png",
+      "source": "frames/student-enrolled/frame-03.png",
+      "width": 387,
+      "height": 387,
+      "content_square_side": 335
+    },
+    {
+      "path": "transparent-square/frames/student-enrolled/frame-04.png",
+      "source": "frames/student-enrolled/frame-04.png",
+      "width": 393,
+      "height": 393,
+      "content_square_side": 339
+    },
+    {
+      "path": "transparent-square/frames/student-enrolled/frame-05.png",
+      "source": "frames/student-enrolled/frame-05.png",
+      "width": 395,
+      "height": 395,
+      "content_square_side": 341
+    },
+    {
+      "path": "transparent-square/frames/student-enrolled/frame-06.png",
+      "source": "frames/student-enrolled/frame-06.png",
+      "width": 392,
+      "height": 392,
+      "content_square_side": 338
+    },
+    {
+      "path": "transparent-square/frames/thinking-hint/frame-01.png",
+      "source": "frames/thinking-hint/frame-01.png",
+      "width": 415,
+      "height": 415,
+      "content_square_side": 359
+    },
+    {
+      "path": "transparent-square/frames/thinking-hint/frame-02.png",
+      "source": "frames/thinking-hint/frame-02.png",
+      "width": 425,
+      "height": 425,
+      "content_square_side": 367
+    },
+    {
+      "path": "transparent-square/frames/thinking-hint/frame-03.png",
+      "source": "frames/thinking-hint/frame-03.png",
+      "width": 440,
+      "height": 440,
+      "content_square_side": 380
+    },
+    {
+      "path": "transparent-square/frames/thinking-hint/frame-04.png",
+      "source": "frames/thinking-hint/frame-04.png",
+      "width": 411,
+      "height": 411,
+      "content_square_side": 355
+    },
+    {
+      "path": "transparent-square/frames/thinking-hint/frame-05.png",
+      "source": "frames/thinking-hint/frame-05.png",
+      "width": 410,
+      "height": 410,
+      "content_square_side": 354
+    },
+    {
+      "path": "transparent-square/frames/thinking-hint/frame-06.png",
+      "source": "frames/thinking-hint/frame-06.png",
+      "width": 415,
+      "height": 415,
+      "content_square_side": 359
+    },
+    {
+      "path": "transparent-square/frames/wrong-answer-encouragement/frame-01.png",
+      "source": "frames/wrong-answer-encouragement/frame-01.png",
+      "width": 397,
+      "height": 397,
+      "content_square_side": 343
+    },
+    {
+      "path": "transparent-square/frames/wrong-answer-encouragement/frame-02.png",
+      "source": "frames/wrong-answer-encouragement/frame-02.png",
+      "width": 406,
+      "height": 406,
+      "content_square_side": 350
+    },
+    {
+      "path": "transparent-square/frames/wrong-answer-encouragement/frame-03.png",
+      "source": "frames/wrong-answer-encouragement/frame-03.png",
+      "width": 398,
+      "height": 398,
+      "content_square_side": 344
+    },
+    {
+      "path": "transparent-square/frames/wrong-answer-encouragement/frame-04.png",
+      "source": "frames/wrong-answer-encouragement/frame-04.png",
+      "width": 399,
+      "height": 399,
+      "content_square_side": 345
+    },
+    {
+      "path": "transparent-square/frames/wrong-answer-encouragement/frame-05.png",
+      "source": "frames/wrong-answer-encouragement/frame-05.png",
+      "width": 393,
+      "height": 393,
+      "content_square_side": 339
+    },
+    {
+      "path": "transparent-square/frames/wrong-answer-encouragement/frame-06.png",
+      "source": "frames/wrong-answer-encouragement/frame-06.png",
+      "width": 397,
+      "height": 397,
+      "content_square_side": 343
+    },
+    {
+      "path": "transparent-square/landing/tigo-portal-builder.png",
+      "source": "landing/tigo-portal-builder.png",
+      "width": 1162,
+      "height": 1162,
+      "content_square_side": 1002
+    },
+    {
+      "path": "transparent-square/landing/tigo-sitting-portal-builder-chromakey.png",
+      "source": "landing/tigo-sitting-portal-builder-chromakey.png",
+      "width": 1094,
+      "height": 1094,
+      "content_square_side": 944
+    },
+    {
+      "path": "transparent-square/landing/tigo-sitting-portal-builder-transparent.png",
+      "source": "landing/tigo-sitting-portal-builder-transparent.png",
+      "width": 1094,
+      "height": 1094,
+      "content_square_side": 944
+    },
+    {
+      "path": "transparent-square/landing/tigo-sitting-solo-chromakey.png",
+      "source": "landing/tigo-sitting-solo-chromakey.png",
+      "width": 1018,
+      "height": 1018,
+      "content_square_side": 878
+    },
+    {
+      "path": "transparent-square/landing/tigo-sitting-solo-transparent.png",
+      "source": "landing/tigo-sitting-solo-transparent.png",
+      "width": 1018,
+      "height": 1018,
+      "content_square_side": 878
+    },
+    {
+      "path": "transparent-square/pose-sheets/achievement-poses.png",
+      "source": "pose-sheets/achievement-poses.png",
+      "width": 1504,
+      "height": 1504,
+      "content_square_side": 1298
+    },
+    {
+      "path": "transparent-square/pose-sheets/all-poses-12.png",
+      "source": "pose-sheets/all-poses-12.png",
+      "width": 1526,
+      "height": 1526,
+      "content_square_side": 1316
+    },
+    {
+      "path": "transparent-square/pose-sheets/concept-iterations-10.png",
+      "source": "pose-sheets/concept-iterations-10.png",
+      "width": 1805,
+      "height": 1805,
+      "content_square_side": 1557
+    },
+    {
+      "path": "transparent-square/pose-sheets/core-ui-poses.png",
+      "source": "pose-sheets/core-ui-poses.png",
+      "width": 1523,
+      "height": 1523,
+      "content_square_side": 1313
+    },
+    {
+      "path": "transparent-square/pose-sheets/learning-quiz-poses.png",
+      "source": "pose-sheets/learning-quiz-poses.png",
+      "width": 1505,
+      "height": 1505,
+      "content_square_side": 1299
+    },
+    {
+      "path": "transparent-square/pose-sheets/pose-iterations-10.png",
+      "source": "pose-sheets/pose-iterations-10.png",
+      "width": 1829,
+      "height": 1829,
+      "content_square_side": 1577
+    },
+    {
+      "path": "transparent-square/pose-sheets/support-error-poses.png",
+      "source": "pose-sheets/support-error-poses.png",
+      "width": 1556,
+      "height": 1556,
+      "content_square_side": 1342
+    },
+    {
+      "path": "transparent-square/poses/achievement-poses/pose-01.png",
+      "source": "poses/achievement-poses/pose-01.png",
+      "width": 458,
+      "height": 458,
+      "content_square_side": 396
+    },
+    {
+      "path": "transparent-square/poses/achievement-poses/pose-02.png",
+      "source": "poses/achievement-poses/pose-02.png",
+      "width": 489,
+      "height": 489,
+      "content_square_side": 423
+    },
+    {
+      "path": "transparent-square/poses/achievement-poses/pose-03.png",
+      "source": "poses/achievement-poses/pose-03.png",
+      "width": 426,
+      "height": 426,
+      "content_square_side": 368
+    },
+    {
+      "path": "transparent-square/poses/achievement-poses/pose-04.png",
+      "source": "poses/achievement-poses/pose-04.png",
+      "width": 418,
+      "height": 418,
+      "content_square_side": 362
+    },
+    {
+      "path": "transparent-square/poses/achievement-poses/pose-05.png",
+      "source": "poses/achievement-poses/pose-05.png",
+      "width": 410,
+      "height": 410,
+      "content_square_side": 354
+    },
+    {
+      "path": "transparent-square/poses/achievement-poses/pose-06.png",
+      "source": "poses/achievement-poses/pose-06.png",
+      "width": 430,
+      "height": 430,
+      "content_square_side": 372
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-01.png",
+      "source": "poses/all-poses-12/pose-01.png",
+      "width": 330,
+      "height": 330,
+      "content_square_side": 286
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-02.png",
+      "source": "poses/all-poses-12/pose-02.png",
+      "width": 320,
+      "height": 320,
+      "content_square_side": 276
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-03.png",
+      "source": "poses/all-poses-12/pose-03.png",
+      "width": 354,
+      "height": 354,
+      "content_square_side": 306
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-04.png",
+      "source": "poses/all-poses-12/pose-04.png",
+      "width": 314,
+      "height": 314,
+      "content_square_side": 272
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-05.png",
+      "source": "poses/all-poses-12/pose-05.png",
+      "width": 307,
+      "height": 307,
+      "content_square_side": 265
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-06.png",
+      "source": "poses/all-poses-12/pose-06.png",
+      "width": 279,
+      "height": 279,
+      "content_square_side": 241
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-07.png",
+      "source": "poses/all-poses-12/pose-07.png",
+      "width": 334,
+      "height": 334,
+      "content_square_side": 288
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-08.png",
+      "source": "poses/all-poses-12/pose-08.png",
+      "width": 302,
+      "height": 302,
+      "content_square_side": 262
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-09.png",
+      "source": "poses/all-poses-12/pose-09.png",
+      "width": 302,
+      "height": 302,
+      "content_square_side": 262
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-10.png",
+      "source": "poses/all-poses-12/pose-10.png",
+      "width": 290,
+      "height": 290,
+      "content_square_side": 250
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-11.png",
+      "source": "poses/all-poses-12/pose-11.png",
+      "width": 331,
+      "height": 331,
+      "content_square_side": 287
+    },
+    {
+      "path": "transparent-square/poses/all-poses-12/pose-12.png",
+      "source": "poses/all-poses-12/pose-12.png",
+      "width": 310,
+      "height": 310,
+      "content_square_side": 268
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-01.png",
+      "source": "poses/concept-iterations-10/concept-01.png",
+      "width": 324,
+      "height": 324,
+      "content_square_side": 280
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-02.png",
+      "source": "poses/concept-iterations-10/concept-02.png",
+      "width": 400,
+      "height": 400,
+      "content_square_side": 346
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-03.png",
+      "source": "poses/concept-iterations-10/concept-03.png",
+      "width": 315,
+      "height": 315,
+      "content_square_side": 273
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-04.png",
+      "source": "poses/concept-iterations-10/concept-04.png",
+      "width": 365,
+      "height": 365,
+      "content_square_side": 315
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-05.png",
+      "source": "poses/concept-iterations-10/concept-05.png",
+      "width": 326,
+      "height": 326,
+      "content_square_side": 282
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-06.png",
+      "source": "poses/concept-iterations-10/concept-06.png",
+      "width": 337,
+      "height": 337,
+      "content_square_side": 291
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-07.png",
+      "source": "poses/concept-iterations-10/concept-07.png",
+      "width": 398,
+      "height": 398,
+      "content_square_side": 344
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-08.png",
+      "source": "poses/concept-iterations-10/concept-08.png",
+      "width": 276,
+      "height": 276,
+      "content_square_side": 238
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-09.png",
+      "source": "poses/concept-iterations-10/concept-09.png",
+      "width": 369,
+      "height": 369,
+      "content_square_side": 319
+    },
+    {
+      "path": "transparent-square/poses/concept-iterations-10/concept-10.png",
+      "source": "poses/concept-iterations-10/concept-10.png",
+      "width": 311,
+      "height": 311,
+      "content_square_side": 269
+    },
+    {
+      "path": "transparent-square/poses/core-ui-poses/pose-01.png",
+      "source": "poses/core-ui-poses/pose-01.png",
+      "width": 455,
+      "height": 455,
+      "content_square_side": 393
+    },
+    {
+      "path": "transparent-square/poses/core-ui-poses/pose-02.png",
+      "source": "poses/core-ui-poses/pose-02.png",
+      "width": 430,
+      "height": 430,
+      "content_square_side": 372
+    },
+    {
+      "path": "transparent-square/poses/core-ui-poses/pose-03.png",
+      "source": "poses/core-ui-poses/pose-03.png",
+      "width": 439,
+      "height": 439,
+      "content_square_side": 379
+    },
+    {
+      "path": "transparent-square/poses/core-ui-poses/pose-04.png",
+      "source": "poses/core-ui-poses/pose-04.png",
+      "width": 465,
+      "height": 465,
+      "content_square_side": 401
+    },
+    {
+      "path": "transparent-square/poses/core-ui-poses/pose-05.png",
+      "source": "poses/core-ui-poses/pose-05.png",
+      "width": 452,
+      "height": 452,
+      "content_square_side": 390
+    },
+    {
+      "path": "transparent-square/poses/core-ui-poses/pose-06.png",
+      "source": "poses/core-ui-poses/pose-06.png",
+      "width": 403,
+      "height": 403,
+      "content_square_side": 349
+    },
+    {
+      "path": "transparent-square/poses/learning-quiz-poses/pose-01.png",
+      "source": "poses/learning-quiz-poses/pose-01.png",
+      "width": 439,
+      "height": 439,
+      "content_square_side": 379
+    },
+    {
+      "path": "transparent-square/poses/learning-quiz-poses/pose-02.png",
+      "source": "poses/learning-quiz-poses/pose-02.png",
+      "width": 476,
+      "height": 476,
+      "content_square_side": 412
+    },
+    {
+      "path": "transparent-square/poses/learning-quiz-poses/pose-03.png",
+      "source": "poses/learning-quiz-poses/pose-03.png",
+      "width": 378,
+      "height": 378,
+      "content_square_side": 326
+    },
+    {
+      "path": "transparent-square/poses/learning-quiz-poses/pose-04.png",
+      "source": "poses/learning-quiz-poses/pose-04.png",
+      "width": 428,
+      "height": 428,
+      "content_square_side": 370
+    },
+    {
+      "path": "transparent-square/poses/learning-quiz-poses/pose-05.png",
+      "source": "poses/learning-quiz-poses/pose-05.png",
+      "width": 430,
+      "height": 430,
+      "content_square_side": 372
+    },
+    {
+      "path": "transparent-square/poses/learning-quiz-poses/pose-06.png",
+      "source": "poses/learning-quiz-poses/pose-06.png",
+      "width": 406,
+      "height": 406,
+      "content_square_side": 350
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-01.png",
+      "source": "poses/pose-iterations-10/pose-01.png",
+      "width": 351,
+      "height": 351,
+      "content_square_side": 303
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-02.png",
+      "source": "poses/pose-iterations-10/pose-02.png",
+      "width": 344,
+      "height": 344,
+      "content_square_side": 298
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-03.png",
+      "source": "poses/pose-iterations-10/pose-03.png",
+      "width": 337,
+      "height": 337,
+      "content_square_side": 291
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-04.png",
+      "source": "poses/pose-iterations-10/pose-04.png",
+      "width": 358,
+      "height": 358,
+      "content_square_side": 310
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-05.png",
+      "source": "poses/pose-iterations-10/pose-05.png",
+      "width": 323,
+      "height": 323,
+      "content_square_side": 279
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-06.png",
+      "source": "poses/pose-iterations-10/pose-06.png",
+      "width": 331,
+      "height": 331,
+      "content_square_side": 287
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-07.png",
+      "source": "poses/pose-iterations-10/pose-07.png",
+      "width": 320,
+      "height": 320,
+      "content_square_side": 276
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-08.png",
+      "source": "poses/pose-iterations-10/pose-08.png",
+      "width": 331,
+      "height": 331,
+      "content_square_side": 287
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-09.png",
+      "source": "poses/pose-iterations-10/pose-09.png",
+      "width": 325,
+      "height": 325,
+      "content_square_side": 281
+    },
+    {
+      "path": "transparent-square/poses/pose-iterations-10/pose-10.png",
+      "source": "poses/pose-iterations-10/pose-10.png",
+      "width": 329,
+      "height": 329,
+      "content_square_side": 285
+    },
+    {
+      "path": "transparent-square/poses/support-error-poses/pose-01.png",
+      "source": "poses/support-error-poses/pose-01.png",
+      "width": 479,
+      "height": 479,
+      "content_square_side": 413
+    },
+    {
+      "path": "transparent-square/poses/support-error-poses/pose-02.png",
+      "source": "poses/support-error-poses/pose-02.png",
+      "width": 490,
+      "height": 490,
+      "content_square_side": 424
+    },
+    {
+      "path": "transparent-square/poses/support-error-poses/pose-03.png",
+      "source": "poses/support-error-poses/pose-03.png",
+      "width": 455,
+      "height": 455,
+      "content_square_side": 393
+    },
+    {
+      "path": "transparent-square/poses/support-error-poses/pose-04.png",
+      "source": "poses/support-error-poses/pose-04.png",
+      "width": 409,
+      "height": 409,
+      "content_square_side": 353
+    },
+    {
+      "path": "transparent-square/poses/support-error-poses/pose-05.png",
+      "source": "poses/support-error-poses/pose-05.png",
+      "width": 422,
+      "height": 422,
+      "content_square_side": 364
+    },
+    {
+      "path": "transparent-square/poses/support-error-poses/pose-06.png",
+      "source": "poses/support-error-poses/pose-06.png",
+      "width": 439,
+      "height": 439,
+      "content_square_side": 379
+    },
+    {
+      "path": "transparent-square/sprite-sheets/apologetic-shrug.png",
+      "source": "sprite-sheets/apologetic-shrug.png",
+      "width": 2430,
+      "height": 2430,
+      "content_square_side": 2096
+    },
+    {
+      "path": "transparent-square/sprite-sheets/attendance-saved.png",
+      "source": "sprite-sheets/attendance-saved.png",
+      "width": 2381,
+      "height": 2381,
+      "content_square_side": 2053
+    },
+    {
+      "path": "transparent-square/sprite-sheets/celebration-achievement.png",
+      "source": "sprite-sheets/celebration-achievement.png",
+      "width": 2373,
+      "height": 2373,
+      "content_square_side": 2047
+    },
+    {
+      "path": "transparent-square/sprite-sheets/completed-task.png",
+      "source": "sprite-sheets/completed-task.png",
+      "width": 2402,
+      "height": 2402,
+      "content_square_side": 2072
+    },
+    {
+      "path": "transparent-square/sprite-sheets/confused-question.png",
+      "source": "sprite-sheets/confused-question.png",
+      "width": 2388,
+      "height": 2388,
+      "content_square_side": 2060
+    },
+    {
+      "path": "transparent-square/sprite-sheets/correct-answer-approval.png",
+      "source": "sprite-sheets/correct-answer-approval.png",
+      "width": 2397,
+      "height": 2397,
+      "content_square_side": 2067
+    },
+    {
+      "path": "transparent-square/sprite-sheets/credentials-sent.png",
+      "source": "sprite-sheets/credentials-sent.png",
+      "width": 2382,
+      "height": 2382,
+      "content_square_side": 2054
+    },
+    {
+      "path": "transparent-square/sprite-sheets/curious-head-tilt.png",
+      "source": "sprite-sheets/curious-head-tilt.png",
+      "width": 2378,
+      "height": 2378,
+      "content_square_side": 2050
+    },
+    {
+      "path": "transparent-square/sprite-sheets/default-wave.png",
+      "source": "sprite-sheets/default-wave.png",
+      "width": 2413,
+      "height": 2413,
+      "content_square_side": 2081
+    },
+    {
+      "path": "transparent-square/sprite-sheets/delete-confirm.png",
+      "source": "sprite-sheets/delete-confirm.png",
+      "width": 2401,
+      "height": 2401,
+      "content_square_side": 2071
+    },
+    {
+      "path": "transparent-square/sprite-sheets/error-concerned.png",
+      "source": "sprite-sheets/error-concerned.png",
+      "width": 2413,
+      "height": 2413,
+      "content_square_side": 2081
+    },
+    {
+      "path": "transparent-square/sprite-sheets/explaining-pointing.png",
+      "source": "sprite-sheets/explaining-pointing.png",
+      "width": 2393,
+      "height": 2393,
+      "content_square_side": 2063
+    },
+    {
+      "path": "transparent-square/sprite-sheets/focused-studying.png",
+      "source": "sprite-sheets/focused-studying.png",
+      "width": 2283,
+      "height": 2283,
+      "content_square_side": 1969
+    },
+    {
+      "path": "transparent-square/sprite-sheets/form-incomplete.png",
+      "source": "sprite-sheets/form-incomplete.png",
+      "width": 2386,
+      "height": 2386,
+      "content_square_side": 2058
+    },
+    {
+      "path": "transparent-square/sprite-sheets/invoice-generated.png",
+      "source": "sprite-sheets/invoice-generated.png",
+      "width": 2386,
+      "height": 2386,
+      "content_square_side": 2058
+    },
+    {
+      "path": "transparent-square/sprite-sheets/loading-walk.png",
+      "source": "sprite-sheets/loading-walk.png",
+      "width": 2375,
+      "height": 2375,
+      "content_square_side": 2049
+    },
+    {
+      "path": "transparent-square/sprite-sheets/locked-restricted-access.png",
+      "source": "sprite-sheets/locked-restricted-access.png",
+      "width": 2309,
+      "height": 2309,
+      "content_square_side": 1991
+    },
+    {
+      "path": "transparent-square/sprite-sheets/login-success.png",
+      "source": "sprite-sheets/login-success.png",
+      "width": 2397,
+      "height": 2397,
+      "content_square_side": 2067
+    },
+    {
+      "path": "transparent-square/sprite-sheets/maintenance-waiting.png",
+      "source": "sprite-sheets/maintenance-waiting.png",
+      "width": 2293,
+      "height": 2293,
+      "content_square_side": 1977
+    },
+    {
+      "path": "transparent-square/sprite-sheets/neutral-idle.png",
+      "source": "sprite-sheets/neutral-idle.png",
+      "width": 2394,
+      "height": 2394,
+      "content_square_side": 2064
+    },
+    {
+      "path": "transparent-square/sprite-sheets/no-results-looking-around.png",
+      "source": "sprite-sheets/no-results-looking-around.png",
+      "width": 2381,
+      "height": 2381,
+      "content_square_side": 2053
+    },
+    {
+      "path": "transparent-square/sprite-sheets/notification-received.png",
+      "source": "sprite-sheets/notification-received.png",
+      "width": 2427,
+      "height": 2427,
+      "content_square_side": 2093
+    },
+    {
+      "path": "transparent-square/sprite-sheets/peeking-helper.png",
+      "source": "sprite-sheets/peeking-helper.png",
+      "width": 2320,
+      "height": 2320,
+      "content_square_side": 2000
+    },
+    {
+      "path": "transparent-square/sprite-sheets/pointing-left.png",
+      "source": "sprite-sheets/pointing-left.png",
+      "width": 2353,
+      "height": 2353,
+      "content_square_side": 2029
+    },
+    {
+      "path": "transparent-square/sprite-sheets/proud-hands-on-hips.png",
+      "source": "sprite-sheets/proud-hands-on-hips.png",
+      "width": 2360,
+      "height": 2360,
+      "content_square_side": 2036
+    },
+    {
+      "path": "transparent-square/sprite-sheets/proud-milestone.png",
+      "source": "sprite-sheets/proud-milestone.png",
+      "width": 2384,
+      "height": 2384,
+      "content_square_side": 2056
+    },
+    {
+      "path": "transparent-square/sprite-sheets/quiz-master.png",
+      "source": "sprite-sheets/quiz-master.png",
+      "width": 2417,
+      "height": 2417,
+      "content_square_side": 2085
+    },
+    {
+      "path": "transparent-square/sprite-sheets/save-success.png",
+      "source": "sprite-sheets/save-success.png",
+      "width": 2424,
+      "height": 2424,
+      "content_square_side": 2090
+    },
+    {
+      "path": "transparent-square/sprite-sheets/saving-changes.png",
+      "source": "sprite-sheets/saving-changes.png",
+      "width": 2396,
+      "height": 2396,
+      "content_square_side": 2066
+    },
+    {
+      "path": "transparent-square/sprite-sheets/session-expired.png",
+      "source": "sprite-sheets/session-expired.png",
+      "width": 2403,
+      "height": 2403,
+      "content_square_side": 2073
+    },
+    {
+      "path": "transparent-square/sprite-sheets/signup-success.png",
+      "source": "sprite-sheets/signup-success.png",
+      "width": 2393,
+      "height": 2393,
+      "content_square_side": 2063
+    },
+    {
+      "path": "transparent-square/sprite-sheets/sleepy-idle.png",
+      "source": "sprite-sheets/sleepy-idle.png",
+      "width": 2390,
+      "height": 2390,
+      "content_square_side": 2062
+    },
+    {
+      "path": "transparent-square/sprite-sheets/streak-progress-excitement.png",
+      "source": "sprite-sheets/streak-progress-excitement.png",
+      "width": 2428,
+      "height": 2428,
+      "content_square_side": 2094
+    },
+    {
+      "path": "transparent-square/sprite-sheets/student-enrolled.png",
+      "source": "sprite-sheets/student-enrolled.png",
+      "width": 2397,
+      "height": 2397,
+      "content_square_side": 2067
+    },
+    {
+      "path": "transparent-square/sprite-sheets/thinking-hint.png",
+      "source": "sprite-sheets/thinking-hint.png",
+      "width": 2401,
+      "height": 2401,
+      "content_square_side": 2071
+    },
+    {
+      "path": "transparent-square/sprite-sheets/wrong-answer-encouragement.png",
+      "source": "sprite-sheets/wrong-answer-encouragement.png",
+      "width": 2402,
+      "height": 2402,
+      "content_square_side": 2072
+    }
+  ]
+}

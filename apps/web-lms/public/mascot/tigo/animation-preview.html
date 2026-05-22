@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tigo Animation Preview</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --background: #f8fafc;
+        --surface: #ffffff;
+        --border: #dfe5ee;
+        --text: #071943;
+        --muted: #52607e;
+        --accent: #ff5b00;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family:
+          Arial,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        border-bottom: 1px solid var(--border);
+        background: rgba(248, 250, 252, 0.96);
+      }
+
+      .header-inner {
+        display: flex;
+        min-height: 72px;
+        max-width: 1280px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 24px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        line-height: 1.2;
+      }
+
+      .summary {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      button,
+      select {
+        min-height: 40px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--text);
+        font: inherit;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 0 16px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:focus-visible,
+      select:focus-visible {
+        outline: 3px solid rgba(255, 91, 0, 0.28);
+        outline-offset: 2px;
+      }
+
+      select {
+        padding: 0 12px;
+      }
+
+      main {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        display: grid;
+        gap: 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        padding: 14px;
+      }
+
+      .stage {
+        display: grid;
+        position: relative;
+        aspect-ratio: 1;
+        place-items: center;
+        overflow: hidden;
+        border: 1px solid #edf1f6;
+        border-radius: 8px;
+        background:
+          linear-gradient(45deg, #f3f6fa 25%, transparent 25%),
+          linear-gradient(-45deg, #f3f6fa 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #f3f6fa 75%),
+          linear-gradient(-45deg, transparent 75%, #f3f6fa 75%);
+        background-color: #ffffff;
+        background-position:
+          0 0,
+          0 10px,
+          10px -10px,
+          -10px 0;
+        background-size: 20px 20px;
+      }
+
+      .stage img {
+        display: block;
+        width: min(86%, 170px);
+        height: min(86%, 170px);
+        object-fit: contain;
+      }
+
+      .name {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 800;
+        line-height: 1.3;
+      }
+
+      .path {
+        margin: 0;
+        color: var(--muted);
+        font-family:
+          Consolas,
+          "Liberation Mono",
+          monospace;
+        font-size: 11px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+
+      @media (max-width: 720px) {
+        .header-inner {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .controls {
+          justify-content: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <div>
+          <h1>Tigo Animation Preview</h1>
+          <p class="summary">36 animations, 6 original transparent PNG frames each.</p>
+        </div>
+        <div class="controls" aria-label="Animation controls">
+          <button id="play-toggle" type="button">Pause</button>
+          <label>
+            <span class="summary">Speed</span>
+            <select id="speed">
+              <option value="280">Slow</option>
+              <option value="200" selected>Normal</option>
+              <option value="150">Fast</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="grid" id="animation-grid"></div>
+    </main>
+
+    <script>
+      const animations = [
+        'apologetic-shrug',
+        'attendance-saved',
+        'celebration-achievement',
+        'completed-task',
+        'confused-question',
+        'correct-answer-approval',
+        'credentials-sent',
+        'curious-head-tilt',
+        'default-wave',
+        'delete-confirm',
+        'error-concerned',
+        'explaining-pointing',
+        'focused-studying',
+        'form-incomplete',
+        'invoice-generated',
+        'loading-walk',
+        'locked-restricted-access',
+        'login-success',
+        'maintenance-waiting',
+        'neutral-idle',
+        'no-results-looking-around',
+        'notification-received',
+        'peeking-helper',
+        'pointing-left',
+        'proud-hands-on-hips',
+        'proud-milestone',
+        'quiz-master',
+        'save-success',
+        'saving-changes',
+        'session-expired',
+        'signup-success',
+        'sleepy-idle',
+        'streak-progress-excitement',
+        'student-enrolled',
+        'thinking-hint',
+        'wrong-answer-encouragement',
+      ];
+
+      const frameCount = 6;
+      const grid = document.querySelector('#animation-grid');
+      const playToggle = document.querySelector('#play-toggle');
+      const speedSelect = document.querySelector('#speed');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let currentFrame = 1;
+      let intervalId = null;
+      let playing = !reduceMotion;
+
+      function labelFromName(name) {
+        return name
+          .split('-')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      }
+
+      function framePath(name, frame) {
+        return `transparent-square/frames/${name}/frame-${String(frame).padStart(2, '0')}.png`;
+      }
+
+      function renderCards() {
+        grid.innerHTML = animations
+          .map((name) => {
+            const label = labelFromName(name);
+            return `
+              <article class="card">
+                <div class="stage">
+                  <img src="${framePath(name, 1)}" alt="Tigo ${label.toLowerCase()} animation" data-animation="${name}" />
+                </div>
+                <div>
+                  <p class="name">${label}</p>
+                  <p class="path">frames/${name}</p>
+                </div>
+              </article>
+            `;
+          })
+          .join('');
+      }
+
+      function preloadFrames() {
+        animations.forEach((name) => {
+          for (let frame = 1; frame <= frameCount; frame += 1) {
+            const image = new Image();
+            image.src = framePath(name, frame);
+          }
+        });
+      }
+
+      function updateFrames() {
+        currentFrame = currentFrame === frameCount ? 1 : currentFrame + 1;
+        document.querySelectorAll('[data-animation]').forEach((image) => {
+          image.src = framePath(image.dataset.animation, currentFrame);
+        });
+      }
+
+      function setPlaying(nextPlaying) {
+        playing = nextPlaying;
+        playToggle.textContent = playing ? 'Pause' : 'Play';
+
+        if (intervalId) {
+          window.clearInterval(intervalId);
+          intervalId = null;
+        }
+
+        if (playing) {
+          intervalId = window.setInterval(updateFrames, Number(speedSelect.value));
+        }
+      }
+
+      renderCards();
+      preloadFrames();
+      setPlaying(playing);
+
+      playToggle.addEventListener('click', () => setPlaying(!playing));
+      speedSelect.addEventListener('change', () => setPlaying(playing));
+    </script>
+  </body>
+</html>
