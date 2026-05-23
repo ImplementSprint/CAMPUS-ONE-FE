@@ -1,4 +1,6 @@
 import { buildTenantHeaders, getSchoolSlugFromHost } from '@campus-one/api-client';
+import { getCurrentUser } from '@/shared/auth.service';
+import { readCachedBackendAccessToken } from '@/services/backend-session.service';
 
 // API client for backend communication
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -33,12 +35,17 @@ class APIError extends Error {
 
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
+  const currentUser = getCurrentUser();
+  const accessToken = typeof window === 'undefined' ? null : readCachedBackendAccessToken(window.sessionStorage);
   
   const response = await fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
       ...buildTenantHeaders(getSelectedSchoolSlug()),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      ...(currentUser?.id ? { 'X-User-Id': currentUser.id } : {}),
+      ...(currentUser?.role ? { 'X-User-Role': currentUser.role } : {}),
       ...options.headers,
     },
   });
@@ -54,12 +61,15 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 // ─── Profile API ──────────────────────────────────────────────────────────────
 
 export async function getProfile(userId: string) {
-  return fetchAPI(`/api/profile/${userId}`);
+  return fetchAPI('/api/profile/me', {
+    headers: { 'X-User-Id': userId },
+  });
 }
 
 export async function updateProfile(userId: string, data: any) {
-  return fetchAPI(`/api/profile/${userId}`, {
+  return fetchAPI('/api/profile/me', {
     method: 'PUT',
+    headers: { 'X-User-Id': userId },
     body: JSON.stringify(data),
   });
 }
@@ -67,7 +77,9 @@ export async function updateProfile(userId: string, data: any) {
 // ─── Dashboard API ────────────────────────────────────────────────────────────
 
 export async function getDashboardData(userId: string) {
-  return fetchAPI(`/api/dashboard/${userId}`);
+  return fetchAPI('/api/dashboard/me', {
+    headers: { 'X-User-Id': userId },
+  });
 }
 
 // ─── Courses API ──────────────────────────────────────────────────────────────
@@ -80,6 +92,14 @@ export async function getCourses(userId: string) {
 
 export async function getGrades(userId: string) {
   return fetchAPI(`/api/grades/${userId}`);
+}
+
+export async function getGradeSummary(userId: string) {
+  return fetchAPI(`/api/grades/${userId}/summary`);
+}
+
+export async function getTermGradeSummary(userId: string, term: string) {
+  return fetchAPI(`/api/grades/${userId}/terms/${encodeURIComponent(term)}/summary`);
 }
 
 // ─── Subjects API ─────────────────────────────────────────────────────────────
@@ -134,12 +154,72 @@ export async function getEnrollmentHistory(studentId: string) {
   return fetchAPI(`/api/enrollment/history/${studentId}`);
 }
 
+export async function getBillingBalance(studentId: string) {
+  return fetchAPI(`/api/billing/student/${encodeURIComponent(studentId)}/balance`);
+}
+
 export async function getDeficiencies(userId: string) {
   return fetchAPI(`/api/grades/${userId}/deficiencies`);
 }
 
 export async function getGraduationData(userId: string) {
   return fetchAPI(`/api/grades/${userId}/graduation`);
+}
+
+export type UserNotification = {
+  id: string;
+  profile_id: string;
+  title: string;
+  body: string | null;
+  is_read: boolean;
+  created_at: string;
+};
+
+export async function getNotifications(profileId: string) {
+  return fetchAPI(`/api/notifications/${encodeURIComponent(profileId)}`);
+}
+
+export async function markNotificationRead(profileId: string, notificationId: string) {
+  return fetchAPI(
+    `/api/notifications/${encodeURIComponent(profileId)}/${encodeURIComponent(notificationId)}/read`,
+    { method: 'PATCH' },
+  );
+}
+
+export async function markAllNotificationsRead(profileId: string) {
+  return fetchAPI(`/api/notifications/${encodeURIComponent(profileId)}/read-all`, {
+    method: 'PATCH',
+  });
+}
+
+export async function getAdmissionsApplications() {
+  return fetchAPI('/api/application/admin/applications');
+}
+
+export async function getAdmissionsApplicationDetail(applicationId: string) {
+  return fetchAPI(`/api/application/admin/applications/${encodeURIComponent(applicationId)}`);
+}
+
+export async function updateAdmissionsApplicationStatus(
+  applicationId: string,
+  status: string,
+  rejectionReason?: string,
+) {
+  return fetchAPI(`/api/application/admin/applications/${encodeURIComponent(applicationId)}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status, rejectionReason }),
+  });
+}
+
+export async function getAdmissionsDashboardStats() {
+  return fetchAPI('/api/application/admin/stats');
+}
+
+export async function updateAdmissionsProgramSelection(applicationId: string, department: string, program: string) {
+  return fetchAPI(`/api/application/admin/applications/${encodeURIComponent(applicationId)}/program-selection`, {
+    method: 'PUT',
+    body: JSON.stringify({ department, program }),
+  });
 }
 
 // ─── Auth API ─────────────────────────────────────────────────────────────────

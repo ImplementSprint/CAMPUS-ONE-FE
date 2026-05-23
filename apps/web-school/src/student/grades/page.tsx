@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/shared/contexts/AuthContext';
-import { getGrades } from '@/shared/lib/api';
+import { getGrades, getGradeSummary } from '@/shared/lib/api';
 import DashboardLayout from '@/shared/components/DashboardLayout';
 
 type GradeRow = { code: string; subject: string; units: number; grade: string; remarks: string };
@@ -13,17 +13,23 @@ export default function GradesPage() {
   const [studentName, setStudentName] = useState('');
   const [program, setProgram] = useState('');
   const [totalUnits, setTotalUnits] = useState(0);
+  const [passedUnits, setPassedUnits] = useState(0);
+  const [failedUnits, setFailedUnits] = useState(0);
+  const [standing, setStanding] = useState('no_grades');
   const [gwa, setGwa] = useState('—');
 
   useEffect(() => {
     if (authLoading || !user) return;
-    getGrades(user.id)
-      .then(data => {
+    Promise.all([getGrades(user.id), getGradeSummary(user.id)])
+      .then(([data, summary]) => {
         setStudentName(data.studentName);
         setProgram(data.program);
         setGrades(data.grades);
-        setTotalUnits(data.totalUnits);
-        setGwa(data.gwa);
+        setTotalUnits(summary.totalUnits ?? data.totalUnits);
+        setPassedUnits(summary.passedUnits ?? 0);
+        setFailedUnits(summary.failedUnits ?? 0);
+        setGwa(summary.gwa ?? data.gwa);
+        setStanding(summary.status ?? 'no_grades');
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -115,9 +121,14 @@ export default function GradesPage() {
           </div>
           <div className="p-5 grid grid-cols-3 gap-3">
             <div className="bg-amber-400 rounded-2xl p-4"><p className="text-white text-xs font-medium mb-1">Current GWA</p><p className="text-white text-2xl font-black">{gwa}</p></div>
-            <div className="bg-blue-500 rounded-2xl p-4"><p className="text-white text-xs font-medium mb-1">Total Units</p><p className="text-white text-2xl font-black">{totalUnits}</p></div>
-            <div className="bg-green-500 rounded-2xl p-4"><p className="text-white text-xs font-medium mb-1">Subjects</p><p className="text-white text-2xl font-black">{grades.length}</p></div>
+            <div className="bg-blue-500 rounded-2xl p-4"><p className="text-white text-xs font-medium mb-1">Passed Units</p><p className="text-white text-2xl font-black">{passedUnits}</p></div>
+            <div className="bg-green-500 rounded-2xl p-4"><p className="text-white text-xs font-medium mb-1">Standing</p><p className="text-white text-base font-black capitalize">{standing.replace(/_/g, ' ')}</p></div>
           </div>
+          {failedUnits > 0 ? (
+            <div className="mx-5 mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+              {failedUnits} failed unit{failedUnits === 1 ? '' : 's'} need registrar/adviser follow-up.
+            </div>
+          ) : null}
           <div className="px-5 pb-5">
             <div className="bg-gray-50 rounded-xl border border-gray-200 p-4">
               <p className="font-semibold text-gray-900 mb-3 text-sm">Latin Honors Requirements</p>

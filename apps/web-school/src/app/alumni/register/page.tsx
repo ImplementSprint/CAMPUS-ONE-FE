@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import '../alumni.css';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
 const academicUnits = [
   'College of Arts and Sciences', 'College of Business and Accountancy',
@@ -54,7 +54,7 @@ export default function AlumniRegisterPage() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/v1/alumni/register`, {
+      const res = await fetch(`${API_BASE}/api/alumni/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

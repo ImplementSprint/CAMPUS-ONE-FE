@@ -2,8 +2,7 @@
 import { useState, FormEvent } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '../../../components/ProtectedRoute';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
+import { requestAlumniRecord, type AlumniRecordRequest } from '../../services/alumni.service';
 
 function DocumentRequestContent() {
   const { user } = useAuth();
@@ -17,21 +16,24 @@ function DocumentRequestContent() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!consentAccepted) { alert('Please accept the data privacy notice.'); return; }
+    if (!user?.id) { alert('Please sign in again before submitting.'); return; }
     setStatus('loading');
     try {
-      const res = await fetch(`${API_BASE}/api/v1/alumni/records/request`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          documentType, notes: purpose, numberOfCopies,
-          purpose, deliveryMethod, consentAccepted,
-          actor_uuid: user?.id, tenant_id: 'campus_one',
-        }),
+      const result = await requestAlumniRecord({
+        document_type: documentType as AlumniRecordRequest['document_type'],
+        notes: purpose,
+        number_of_copies: numberOfCopies,
+        delivery_method: deliveryMethod,
+        actor_uuid: user.id,
       });
-      if (!res.ok) throw new Error('Request failed');
+      if (result.error) throw new Error(result.error.message);
       setStatus('done');
       alert('Document request submitted!');
       setPurpose('');
+      setDocumentType('');
+      setNumberOfCopies(1);
+      setDeliveryMethod('pickup');
+      setConsentAccepted(false);
     } catch {
       alert('Failed to submit. Please try again.');
       setStatus('idle');
@@ -51,10 +53,10 @@ function DocumentRequestContent() {
             Document Type *
             <select value={documentType} onChange={(e) => setDocumentType(e.target.value)} required>
               <option value="" disabled>Select document type</option>
-              <option>Transcript of Records</option>
-              <option>Diploma</option>
-              <option>Certificate of Graduation</option>
-              <option>Certificate of Enrollment</option>
+              <option value="TOR">Transcript of Records</option>
+              <option value="DIPLOMA">Diploma</option>
+              <option value="CERTIFICATE">Certificate of Graduation</option>
+              <option value="GOOD_MORAL">Good Moral Certificate</option>
             </select>
           </label>
           <label>

@@ -3,7 +3,7 @@ import { useState, FormEvent } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '../../../components/ProtectedRoute';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
 function CardApplicationContent() {
   const { user } = useAuth();
@@ -18,12 +18,13 @@ function CardApplicationContent() {
     if (!consentAccepted) { alert('Please accept the data privacy notice.'); return; }
     setStatus('loading');
     try {
-      const res = await fetch(`${API_BASE}/api/v1/alumni/cards/apply`, {
+      const res = await fetch(`${API_BASE}/api/alumni/card-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          reason: applicationType === 'new' ? 'New Card Application' : 'Replacement Card',
-          applicationType, deliveryMethod, idPhotoFileName, consentAccepted,
+          application_type: applicationType,
+          delivery_method: deliveryMethod,
+          id_photo_url: idPhotoFileName || undefined,
           actor_uuid: user?.id, tenant_id: 'campus_one',
         }),
       });

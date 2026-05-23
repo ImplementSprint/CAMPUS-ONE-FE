@@ -28,13 +28,13 @@ export function ProfessorStudents() {
   }, [user?.id]);
 
   useEffect(() => {
-    if (!selectedClass) return;
+    if (!selectedClass || !user?.id) return;
     setLoadingStudents(true);
-    getClassStudents(selectedClass.id).then(r => {
+    getClassStudents(selectedClass.id, user.id).then(r => {
       setStudents(r.data ?? []);
       setLoadingStudents(false);
     });
-  }, [selectedClass]);
+  }, [selectedClass, user?.id]);
 
   const filtered = students.filter(e =>
     e.student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

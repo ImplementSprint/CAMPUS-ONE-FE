@@ -1,4 +1,4 @@
-import { supabase } from '@/shared/lib/supabase';
+import { writeCachedBackendAccessToken } from '@/services/backend-session.service';
 
 export type UserRole =
   | 'applicant'
@@ -32,67 +32,45 @@ export interface LoginResponse {
   error?: string;
 }
 
-async function detectUserRole(email: string): Promise<UserRole | null> {
-  const applicantDb = supabase.schema('applicant');
-  const studentDb = supabase.schema('student');
-  const facultyDb = supabase.schema('faculty');
-  const alumniDb = supabase.schema('alumni');
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
-  const { data: student } = await studentDb.from('student_accounts').select('id').eq('email', email).maybeSingle();
-  if (student) return 'student';
-
-  // Admin roles: prefer the refactored custom schema data.
-  // Fallback to legacy public `admin_users` only if present.
-  const { data: admin } = await supabase.from('admin_users').select('role').eq('email', email).maybeSingle();
-  if (admin?.role && adminRoles.includes(admin.role as (typeof adminRoles)[number])) return admin.role as UserRole;
-
-
-  // Professor records are keyed by id/UID in backend runtime queries.
-  // Match against auth UID (Supabase user id), not login email.
-const { data: professor } = await facultyDb
-  .from('professor_users')
-  .select('id')
-  .eq('email', email)
-  .maybeSingle();
-
-if (professor) return 'professor';
-
-  const { data: alumni } = await alumniDb.from('alumni').select('id').eq('email', email).maybeSingle();
-  if (alumni) return 'alumni';
-
-  try {
-    const { data: applicant } = await applicantDb
-      .from('applicant_profiles')
-      .select('id')
-      .eq('email', email)
-      .maybeSingle();
-    if (applicant) return 'applicant';
-  } catch {
-    // Non-blocking: applicant_profiles can fail (e.g., 406) for some users.
-    // In that case, continue role detection (e.g., student lookup should still succeed).
-  }
-
-
-  return null;
-}
+type BackendLoginResponse = {
+  user?: {
+    id?: string;
+    email?: string;
+    role?: string;
+  };
+  session?: {
+    access_token?: string;
+  };
+  message?: string;
+};
 
 export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
   const { email, password } = credentials;
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { success: false, error: error.message };
+    const response = await fetch(`${API_BASE_URL}/api/auth/signin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json().catch(() => ({})) as BackendLoginResponse;
+    if (!response.ok) return { success: false, error: data.message ?? 'Login failed' };
 
-    const role = await detectUserRole(email);
-    if (!role) return { success: false, error: 'No account found with this email.' };
+    const role = data.user?.role as UserRole | undefined;
+    if (!data.user?.id || !data.user.email || !role || !data.session?.access_token) {
+      return { success: false, error: 'Login failed' };
+    }
 
     const authUser: AuthUser = {
       id: data.user.id,
-      email: data.user.email ?? email,
+      email: data.user.email,
       role,
     };
 
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('auth_user', JSON.stringify(authUser));
+      writeCachedBackendAccessToken(sessionStorage, data.session.access_token);
     }
 
     return { success: true, user: authUser };
@@ -111,7 +89,8 @@ export function getCurrentUser(): AuthUser | null {
 export function logout(): void {
   if (typeof window !== 'undefined') {
     sessionStorage.removeItem('auth_user');
-    supabase.auth.signOut();
+    sessionStorage.removeItem('backend_access_token');
+    fetch(`${API_BASE_URL}/api/auth/signout`, { method: 'POST' }).catch(() => undefined);
     window.location.href = '/login';
   }
 }

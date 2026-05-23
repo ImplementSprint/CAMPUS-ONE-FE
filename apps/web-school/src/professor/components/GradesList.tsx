@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from "react";
-import { ClipboardList, Edit2, Lock, Unlock, Save, X } from "lucide-react";
-import { getClassGrades, saveGrade, type Grade } from "@/professor/services/professor.service";
+import { ClipboardList, Edit2, Lock, Save, Send, X } from "lucide-react";
+import { getClassGrades, saveGrade, submitGrade, type Grade } from "@/professor/services/professor.service";
 
 interface GradesListProps {
   classId: string;
@@ -26,7 +26,7 @@ export function GradesList({ classId, professorId }: GradesListProps) {
 
   const loadGrades = async () => {
     setLoading(true);
-    const result = await getClassGrades(classId);
+    const result = await getClassGrades(classId, professorId);
     if (result.data) {
       setGrades(result.data);
     }
@@ -68,6 +68,21 @@ export function GradesList({ classId, professorId }: GradesListProps) {
       await loadGrades();
       handleCancel();
     }
+    setSaving(false);
+  };
+
+  const handleSubmit = async (grade: Grade) => {
+    setSaving(true);
+    const result = await submitGrade(grade.enrollment_id, professorId, {
+      prelim_grade: grade.prelim_grade,
+      midterm_grade: grade.midterm_grade,
+      finals_grade: grade.finals_grade,
+      final_grade: grade.final_grade,
+      letter_grade: grade.letter_grade,
+      remarks: grade.remarks,
+    });
+
+    if (!result.error) await loadGrades();
     setSaving(false);
   };
 
@@ -121,6 +136,8 @@ export function GradesList({ classId, professorId }: GradesListProps) {
               <ViewGrade
                 grade={grade}
                 onEdit={() => handleEdit(grade)}
+                onSubmit={() => handleSubmit(grade)}
+                saving={saving}
               />
             )}
           </div>
@@ -130,7 +147,17 @@ export function GradesList({ classId, professorId }: GradesListProps) {
   );
 }
 
-function ViewGrade({ grade, onEdit }: { grade: Grade; onEdit: () => void }) {
+function ViewGrade({
+  grade,
+  onEdit,
+  onSubmit,
+  saving,
+}: {
+  grade: Grade;
+  onEdit: () => void;
+  onSubmit: () => void;
+  saving: boolean;
+}) {
   return (
     <div>
       <div className="flex items-start justify-between mb-3">
@@ -192,6 +219,16 @@ function ViewGrade({ grade, onEdit }: { grade: Grade; onEdit: () => void }) {
         <div className="mt-3 pt-3 border-t border-gray-100">
           <p className="text-xs text-gray-600">Remarks: {grade.remarks}</p>
         </div>
+      )}
+      {!grade.is_locked && (
+        <button
+          onClick={onSubmit}
+          disabled={saving || (grade.prelim_grade == null && grade.midterm_grade == null && grade.finals_grade == null)}
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-[#F59E0B] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+        >
+          <Send className="h-4 w-4" />
+          {saving ? "Submitting..." : "Submit Final Grade"}
+        </button>
       )}
     </div>
   );

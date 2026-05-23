@@ -1,34 +1,27 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/shared/lib/supabase';
-
-type Notification = { id: string; title: string; body: string | null; is_read: boolean; created_at: string };
+import { getCurrentUser } from '@/shared/auth.service';
+import { getNotifications, markNotificationRead, type UserNotification } from '@/shared/lib/api';
 
 export default function TopNav({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const [notifOpen, setNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<UserNotification[]>([]);
+  const profileId = getCurrentUser()?.id;
 
   useEffect(() => {
     const load = async () => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) return;
-      const { data } = await supabase.from('notifications')
-        .select('id, title, body, is_read, created_at')
-        .eq('profile_id', user.user.id)
-        .order('created_at', { ascending: false })
-        .limit(20);
-      if (data) setNotifications(data as Notification[]);
+      if (!profileId) return;
+      const data = await getNotifications(profileId);
+      setNotifications((data.notifications ?? []) as UserNotification[]);
     };
     load();
-
-    const sub = supabase.auth.onAuthStateChange(() => load());
-    return () => sub.data.subscription.unsubscribe();
-  }, []);
+  }, [profileId]);
 
   const unread = notifications.filter(n => !n.is_read).length;
 
   const markRead = async (id: string) => {
-    await supabase.from('notifications').update({ is_read: true }).eq('id', id);
+    if (!profileId) return;
+    await markNotificationRead(profileId, id);
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
   };
 

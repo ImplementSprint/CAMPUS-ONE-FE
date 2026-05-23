@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '../../../components/ProtectedRoute';
 
 type IconType = 'lock' | 'bell' | 'mail' | 'shield' | 'download';
@@ -93,8 +94,32 @@ function Toggle({ checked, onToggle, label }: { checked: boolean; onToggle: () =
 }
 
 function SettingsContent() {
+  const { user } = useAuth();
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
+
+  const storageKey = user?.id ? `campus-one:alumni-settings:${user.id}` : null;
+
+  useEffect(() => {
+    if (!storageKey) return;
+    const stored = window.localStorage.getItem(storageKey);
+    if (!stored) return;
+    try {
+      const parsed = JSON.parse(stored) as { pushNotifications?: boolean; emailNotifications?: boolean };
+      if (typeof parsed.pushNotifications === 'boolean') setPushNotifications(parsed.pushNotifications);
+      if (typeof parsed.emailNotifications === 'boolean') setEmailNotifications(parsed.emailNotifications);
+    } catch {
+      window.localStorage.removeItem(storageKey);
+    }
+  }, [storageKey]);
+
+  useEffect(() => {
+    if (!storageKey) return;
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({ pushNotifications, emailNotifications }),
+    );
+  }, [emailNotifications, pushNotifications, storageKey]);
 
   return (
     <section className="mx-auto w-full max-w-[1450px] rounded-[18px] border border-slate-200 bg-white px-5 py-5 shadow-[0_1px_2px_rgba(15,23,42,0.03),0_14px_34px_rgba(15,23,42,0.04)] sm:px-6 sm:py-6" aria-label="Settings">

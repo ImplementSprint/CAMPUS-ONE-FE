@@ -3,43 +3,31 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { adminRoles, type UserRole } from '@/services/auth.service';
+import { decideProtectedRouteAccess } from '@/services/route-access.service';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: UserRole[];
 }
 
-const rolePaths: Record<UserRole, string> = {
-  applicant: '/admissions',
-  student: '/dashboard',
-  professor: '/professor',
-  alumni: '/alumni/dashboard',
-  super_admin: '/super-admin/dashboard',
-  applicant_admin: '/applicant-admin/dashboard',
-  student_admin: '/student-admin/dashboard',
-  alumni_admin: '/alumni-admin/dashboard',
-};
-
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const router = useRouter();
   const { user, role, loading } = useAuth();
+  const accessDecision = decideProtectedRouteAccess({
+    loading,
+    hasUser: !!user,
+    role,
+    allowedRoles,
+  });
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) { router.replace('/login'); return; }
-    if (allowedRoles && role && !allowedRoles.includes(role)) {
-      router.replace(rolePaths[role] || '/');
+    if (accessDecision.redirectTo) {
+      router.replace(accessDecision.redirectTo);
     }
-  }, [loading, user, role]);
+  }, [accessDecision.redirectTo, router]);
 
-  // Still loading — show nothing
-  if (loading) return null;
-
-  // Not logged in
-  if (!user) return null;
-
-  // Wrong role
-  if (allowedRoles && role && !allowedRoles.includes(role)) return null;
+  // Still loading, not logged in, or wrong role - show nothing
+  if (!accessDecision.canRender) return null;
 
   // Admin desktop check
   if (role && adminRoles.includes(role as (typeof adminRoles)[number])) {

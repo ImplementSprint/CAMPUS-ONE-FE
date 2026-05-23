@@ -29,11 +29,11 @@ export function AnnouncementList({ classId, professorId }: AnnouncementListProps
 
   useEffect(() => {
     loadAnnouncements();
-  }, [classId]);
+  }, [classId, professorId]);
 
   const loadAnnouncements = async () => {
     setLoading(true);
-    const result = await getClassAnnouncements(classId);
+    const result = await getClassAnnouncements(classId, professorId);
     if (result.data) {
       setAnnouncements(result.data);
     }
@@ -78,7 +78,7 @@ export function AnnouncementList({ classId, professorId }: AnnouncementListProps
 
     setSaving(true);
     if (editingId) {
-      await updateAnnouncement(editingId, form);
+      await updateAnnouncement(editingId, professorId, form);
     } else {
       await createAnnouncement(classId, professorId, form);
     }
@@ -89,12 +89,12 @@ export function AnnouncementList({ classId, professorId }: AnnouncementListProps
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this announcement?")) return;
-    await deleteAnnouncement(id);
+    await deleteAnnouncement(id, professorId);
     await loadAnnouncements();
   };
 
   const handleTogglePin = async (announcement: Announcement) => {
-    await updateAnnouncement(announcement.id, {
+    await updateAnnouncement(announcement.id, professorId, {
       is_pinned: !announcement.is_pinned,
     });
     await loadAnnouncements();

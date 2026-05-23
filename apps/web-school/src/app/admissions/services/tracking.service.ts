@@ -1,7 +1,7 @@
-import { supabase } from "@/lib/supabase";
+import { buildTenantHeaders, getSchoolSlugFromHost } from "@campus-one/api-client";
 import type { SupabaseResponse } from "../types/admissions.types";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export interface ApplicationStatus {
   id: string;
@@ -41,121 +41,82 @@ export interface FullApplicationStatus {
   remarks: string | null;
 }
 
-// ─── Fetch Application Status ─────────────────────────────────────────────────
+function getSelectedSchoolSlug(): string | null {
+  if (typeof window === "undefined") {
+    return process.env.NEXT_PUBLIC_SCHOOL_SLUG ?? null;
+  }
+
+  const fromQuery = new URLSearchParams(window.location.search).get("school");
+  if (fromQuery) return fromQuery;
+
+  const fromHost = getSchoolSlugFromHost(
+    window.location.hostname,
+    process.env.NEXT_PUBLIC_SCHOOL_PORTAL_DOMAIN,
+  );
+  if (fromHost) return fromHost;
+
+  const stored = window.localStorage.getItem("campus-one:selected-school");
+  if (!stored) return null;
+
+  try {
+    return JSON.parse(stored).schoolSlug ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function toError<T>(message: string): SupabaseResponse<T> {
+  return { data: null, error: { message } };
+}
+
+async function fetchBackendResponse<T>(path: string): Promise<SupabaseResponse<T>> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        ...buildTenantHeaders(getSelectedSchoolSlug()),
+      },
+    });
+    const payload = await response.json().catch(() => null) as SupabaseResponse<T> | null;
+
+    if (!response.ok) {
+      return toError<T>(payload?.error?.message ?? "Request failed");
+    }
+
+    return payload ?? toError<T>("Invalid backend response");
+  } catch (error: any) {
+    return toError<T>(error?.message ?? "Unable to reach backend");
+  }
+}
 
 export async function fetchApplicationStatus(
   email: string,
-  referenceNumber: string
+  referenceNumber: string,
 ): Promise<SupabaseResponse<FullApplicationStatus>> {
-  try {
-    // Fetch application details
-    const { data: appData, error: appError } = await supabase
-      .from("applicant_profiles")
-      .select("*")
-      .eq("email", email)
-      .eq("reference_number", referenceNumber)
-      .single();
+  const params = new URLSearchParams({
+    email: email.trim(),
+    referenceNumber: referenceNumber.trim(),
+  });
 
-    if (appError || !appData) {
-      return {
-        data: null,
-        error: { message: "Invalid email or reference number" },
-      };
-    }
-
-    // Fetch documents
-    const { data: docsData } = await supabase
-      .from("applicant_documents")
-      .select("*")
-      .eq("applicant_id", appData.id)
-      .order("submitted_at", { ascending: false });
-
-    // Build progress steps
-    const progress = buildProgressSteps(appData);
-
-    const fullStatus: FullApplicationStatus = {
-      application: appData as ApplicationStatus,
-      documents: (docsData || []) as ApplicationDocument[],
-      progress,
-      remarks: appData.rejection_reason,
-    };
-
-    return { data: fullStatus, error: null };
-  } catch (error: any) {
-    return { data: null, error: { message: error.message } };
-  }
+  return fetchBackendResponse<FullApplicationStatus>(`/api/application/status?${params.toString()}`);
 }
-
-// ─── Build Progress Steps ─────────────────────────────────────────────────────
-
-function buildProgressSteps(application: any): ApplicationProgress[] {
-  const steps: ApplicationProgress[] = [
-    {
-      step: 1,
-      label: "Application Submitted",
-      status: "completed",
-      date: application.application_submitted_at,
-    },
-    {
-      step: 2,
-      label: "Under Review",
-      status: application.status === "Under Review" ? "current" : "completed",
-      date: application.application_submitted_at,
-    },
-    {
-      step: 3,
-      label: "Verified by Admin",
-      status:
-        application.status === "Passed" || application.status === "Not Accepted"
-          ? "completed"
-          : "pending",
-      date: application.reviewed_at,
-    },
-    {
-      step: 4,
-      label: "Decision Released",
-      status:
-        application.status === "Passed" || application.status === "Not Accepted"
-          ? "completed"
-          : "pending",
-      date: application.reviewed_at,
-    },
-  ];
-
-  return steps;
-}
-
-// ─── Validate Access ──────────────────────────────────────────────────────────
 
 export async function validateApplicationAccess(
   email: string,
-  referenceNumber: string
+  referenceNumber: string,
 ): Promise<{ valid: boolean; applicantId: string; error?: string }> {
-  try {
-    const { data, error } = await supabase
-      .from("applicant_profiles")
-      .select("id")
-      .eq("email", email)
-      .eq("reference_number", referenceNumber)
-      .single();
+  const params = new URLSearchParams({
+    email: email.trim(),
+    referenceNumber: referenceNumber.trim(),
+  });
+  const result = await fetchBackendResponse<{ valid: boolean; applicantId: string; error?: string }>(
+    `/api/application/validate-access?${params.toString()}`,
+  );
 
-    if (error || !data) {
-      return {
-        valid: false,
-        applicantId: "",
-        error: "Invalid credentials",
-      };
-    }
-
-    return {
-      valid: true,
-      applicantId: data.id,
-    };
-  } catch (error: any) {
-    return {
-      valid: false,
-      applicantId: "",
-      error: error.message,
-    };
+  if (result.error) {
+    return { valid: false, applicantId: "", error: result.error.message };
   }
+
+  return result.data;
 }

@@ -1,7 +1,9 @@
+import { buildTenantHeaders, getSchoolSlugFromHost } from "@campus-one/api-client";
 import { supabase } from "@/lib/supabase";
 
 const facultyDb = supabase.schema("faculty");
 const studentDb = supabase.schema("student");
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -81,197 +83,203 @@ export interface Submission {
   is_late: boolean;
 }
 
+function getSelectedSchoolSlug(): string | null {
+  if (typeof window === "undefined") {
+    return process.env.NEXT_PUBLIC_SCHOOL_SLUG ?? null;
+  }
+
+  const fromQuery = new URLSearchParams(window.location.search).get("school");
+  if (fromQuery) return fromQuery;
+
+  const fromHost = getSchoolSlugFromHost(
+    window.location.hostname,
+    process.env.NEXT_PUBLIC_SCHOOL_PORTAL_DOMAIN,
+  );
+  if (fromHost) return fromHost;
+
+  const stored = window.localStorage.getItem("campus-one:selected-school");
+  if (!stored) return null;
+
+  try {
+    return JSON.parse(stored).schoolSlug ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function backendRequest<T>(path: string, init: RequestInit = {}) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...buildTenantHeaders(getSelectedSchoolSlug()),
+      ...init.headers,
+    },
+  });
+  const payload = await response.json().catch(() => null) as T | null;
+
+  if (!response.ok) {
+    return {
+      data: null,
+      error: {
+        message: (payload as any)?.message ?? (payload as any)?.error ?? "Backend request failed",
+      },
+    };
+  }
+
+  return { data: payload, error: null };
+}
+
 // ─── Professor Classes ────────────────────────────────────────────────────────
 
 export async function getProfessorClasses(professorId: string) {
-  const { data, error } = await facultyDb
-    .from("class_assignments")
-    .select(`
-      id,
-      subject_id,
-      section,
-      schedule,
-      room,
-      max_students
-    `)
-    .eq("professor_id", professorId)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false });
+  const result = await backendRequest<{
+    classes: Array<{
+      id: string;
+      section: string | null;
+      schedule: string | null;
+      room: string | null;
+      max_students: number | null;
+      enrolled_count: number | null;
+      subject: Partial<Subject> | null;
+    }>;
+  }>(`/api/professor/${encodeURIComponent(professorId)}/classes`);
 
-  if (error) {
-    console.error("Error fetching classes:", error);
-    return { data: null, error };
+  if (result.error || !result.data) {
+    return { data: null, error: result.error };
   }
 
-  const subjectIds = [...new Set((data || []).map((classItem: any) => classItem.subject_id).filter(Boolean))];
-  let subjects: Subject[] = [];
-  let subjectsError: any = null;
+  return {
+    data: result.data.classes.map((classItem) => ({
+      id: classItem.id,
+      subject: {
+        id: classItem.subject?.id ?? "",
+        code: classItem.subject?.code ?? "",
+        name: classItem.subject?.name ?? "",
+        description: classItem.subject?.description ?? "",
+        units: classItem.subject?.units ?? 0,
+        semester: classItem.subject?.semester ?? "",
+        school_year: classItem.subject?.school_year ?? "",
+      },
+      section: classItem.section ?? "",
+      schedule: classItem.schedule ?? "",
+      room: classItem.room ?? "",
+      max_students: classItem.max_students ?? 0,
+      enrolled_count: classItem.enrolled_count ?? 0,
+    })),
+    error: null,
+  };
+}
 
-  if (subjectIds.length) {
-    const academicsResult = await supabase
-      .schema("academics")
-      .from("subjects")
-      .select(`
-        id,
-        code,
-        name,
-        description,
-        units,
-        semester,
-        school_year
-      `)
-      .in("id", subjectIds);
+export async function getProfessorSchedule(professorId: string) {
+  const result = await backendRequest<{
+    schedule: Array<{
+      classId: string;
+      section: string | null;
+      schedule: string | null;
+      room: string | null;
+      max_students: number | null;
+      enrolled_count: number | null;
+      subject: Partial<Subject> | null;
+    }>;
+  }>(`/api/professor/${encodeURIComponent(professorId)}/schedule`);
 
-    subjects = (academicsResult.data || []) as Subject[];
-    subjectsError = academicsResult.error;
-
-    if (subjectsError || subjects.length === 0) {
-      const publicResult = await supabase
-        .from("subjects")
-        .select(`
-          id,
-          code,
-          name,
-          description,
-          units,
-          semester,
-          school_year
-        `)
-        .in("id", subjectIds);
-
-      if (publicResult.data?.length) {
-        subjects = publicResult.data as Subject[];
-        subjectsError = null;
-      } else if (publicResult.error && !subjectsError) {
-        subjectsError = publicResult.error;
-      }
-    }
+  if (result.error || !result.data) {
+    return { data: null, error: result.error };
   }
 
-  if (subjectsError) {
-    console.error("Error fetching subjects:", subjectsError);
-    return { data: null, error: subjectsError };
-  }
-
-  const subjectById = new Map((subjects || []).map((subject: any) => [subject.id, subject]));
-
-  // Count enrollments for each class
-  const classesWithCount = await Promise.all(
-    (data || []).map(async (classItem: any) => {
-      const { count } = await supabase
-        .schema("student")
-        .from("class_enrollments")
-        .select("*", { count: "exact", head: true })
-        .eq("class_assignment_id", classItem.id)
-        .eq("enrollment_status", "enrolled");
-
-      return {
-        id: classItem.id,
-        subject: subjectById.get(classItem.subject_id) ?? null,
-        section: classItem.section,
-        schedule: classItem.schedule,
-        room: classItem.room,
-        max_students: classItem.max_students,
-        enrolled_count: count || 0,
-      };
-    })
-  );
-
-  return { data: classesWithCount, error: null };
+  return {
+    data: result.data.schedule.map((classItem) => ({
+      id: classItem.classId,
+      subject: {
+        id: classItem.subject?.id ?? "",
+        code: classItem.subject?.code ?? "",
+        name: classItem.subject?.name ?? "",
+        description: classItem.subject?.description ?? "",
+        units: classItem.subject?.units ?? 0,
+        semester: classItem.subject?.semester ?? "",
+        school_year: classItem.subject?.school_year ?? "",
+      },
+      section: classItem.section ?? "",
+      schedule: classItem.schedule ?? "",
+      room: classItem.room ?? "",
+      max_students: classItem.max_students ?? 0,
+      enrolled_count: classItem.enrolled_count ?? 0,
+    })),
+    error: null,
+  };
 }
 
 // ─── Class Students ───────────────────────────────────────────────────────────
 
-export async function getClassStudents(classId: string) {
-  const { data, error } = await studentDb
-    .from("class_enrollments")
-    .select(`
-      id,
-      enrollment_status,
-      enrolled_at,
-      student_accounts (
-        id,
-        email,
-        student_number,
-        applicant_id,
-        applicant_profiles (
-          full_name
-        )
-      )
-    `)
-    .eq("class_assignment_id", classId)
-    .eq("enrollment_status", "enrolled")
-    .order("enrolled_at", { ascending: true });
+export async function getClassStudents(classId: string, professorId: string) {
+  const result = await backendRequest<{
+    students: Array<{
+      enrollmentId: string;
+      status: string | null;
+      enrolledAt: string | null;
+      student: {
+        id: string | null;
+        email: string | null;
+        studentNumber: string | null;
+        name: string | null;
+        applicantId: string | null;
+      } | null;
+    }>;
+  }>(`/api/professor/${encodeURIComponent(professorId)}/classes/${encodeURIComponent(classId)}/roster`);
 
-  if (error) {
-    console.error("Error fetching students:", error);
-    return { data: null, error };
+  if (result.error || !result.data) {
+    return { data: null, error: result.error };
   }
 
-  const students = (data || []).map((enrollment: any) => ({
-    id: enrollment.id,
-    student: {
-      id: enrollment.student_accounts.id,
-      email: enrollment.student_accounts.email,
-      student_number: enrollment.student_accounts.student_number,
-      name: enrollment.student_accounts.applicant_profiles?.full_name || "N/A",
-      applicant_id: enrollment.student_accounts.applicant_id,
-    },
-    enrollment_status: enrollment.enrollment_status,
-    enrolled_at: enrollment.enrolled_at,
-  }));
-
-  return { data: students, error: null };
+  return {
+    data: result.data.students.map((enrollment) => ({
+      id: enrollment.enrollmentId,
+      student: {
+        id: enrollment.student?.id ?? "",
+        email: enrollment.student?.email ?? "",
+        student_number: enrollment.student?.studentNumber ?? "",
+        name: enrollment.student?.name ?? "Student",
+        applicant_id: enrollment.student?.applicantId ?? "",
+      },
+      enrollment_status: enrollment.status ?? "enrolled",
+      enrolled_at: enrollment.enrolledAt ?? new Date(0).toISOString(),
+    })),
+    error: null,
+  };
 }
 
 // ─── Grades ───────────────────────────────────────────────────────────────────
 
-export async function getClassGrades(classId: string) {
-  const { data: enrollments, error } = await studentDb
-    .from("class_enrollments")
-    .select(`
-      id,
-      student_accounts (
-        id,
-        student_number,
-        applicant_profiles (
-          full_name
-        )
-      ),
-      grades (
-        id,
-        prelim_grade,
-        midterm_grade,
-        finals_grade,
-        final_grade,
-        letter_grade,
-        remarks,
-        is_locked
-      )
-    `)
-    .eq("class_assignment_id", classId)
-    .eq("enrollment_status", "enrolled");
+export async function getClassGrades(classId: string, professorId: string) {
+  const result = await backendRequest<{
+    students: Array<{
+      enrollmentId: string;
+      studentId: string;
+      studentNumber: string | null;
+      applicantId: string | null;
+      grade: any;
+    }>;
+  }>(`/api/grades/professor/${encodeURIComponent(professorId)}/class/${encodeURIComponent(classId)}`);
 
-  if (error) {
-    console.error("Error fetching grades:", error);
-    return { data: null, error };
-  }
+  if (result.error || !result.data) return { data: null, error: result.error };
 
-  const grades = (enrollments || []).map((enrollment: any) => ({
-    id: enrollment.grades?.[0]?.id || null,
-    enrollment_id: enrollment.id,
-    student_name: enrollment.student_accounts.applicant_profiles?.full_name || "N/A",
-    student_number: enrollment.student_accounts.student_number,
-    prelim_grade: enrollment.grades?.[0]?.prelim_grade || null,
-    midterm_grade: enrollment.grades?.[0]?.midterm_grade || null,
-    finals_grade: enrollment.grades?.[0]?.finals_grade || null,
-    final_grade: enrollment.grades?.[0]?.final_grade || null,
-    letter_grade: enrollment.grades?.[0]?.letter_grade || null,
-    remarks: enrollment.grades?.[0]?.remarks || null,
-    is_locked: enrollment.grades?.[0]?.is_locked || false,
-  }));
-
-  return { data: grades, error: null };
+  return {
+    data: result.data.students.map((student) => ({
+      id: student.grade?.id || null,
+      enrollment_id: student.enrollmentId,
+      student_name: student.studentNumber || student.applicantId || "Student",
+      student_number: student.studentNumber || "N/A",
+      prelim_grade: student.grade?.prelim_grade ?? null,
+      midterm_grade: student.grade?.midterm_grade ?? null,
+      finals_grade: student.grade?.finals_grade ?? null,
+      final_grade: student.grade?.final_grade ?? null,
+      letter_grade: student.grade?.letter_grade ?? null,
+      remarks: student.grade?.remarks ?? null,
+      is_locked: student.grade?.is_locked ?? false,
+    })),
+    error: null,
+  };
 }
 
 export async function saveGrade(
@@ -284,57 +292,83 @@ export async function saveGrade(
     remarks?: string;
   }
 ) {
-  // Check if grade exists
-  const { data: existing } = await studentDb
-    .from("grades")
-    .select("id")
-    .eq("enrollment_id", enrollmentId)
-    .single();
-
-  if (existing) {
-    // Update existing grade
-    const { data, error } = await studentDb
-      .from("grades")
-      .update({
-        ...gradeData,
-        encoded_by: professorId,
-        encoded_at: new Date().toISOString(),
-      })
-      .eq("id", existing.id)
-      .select()
-      .single();
-
-    return { data, error };
-  } else {
-    // Insert new grade
-    const { data, error } = await studentDb
-      .from("grades")
-      .insert({
-        enrollment_id: enrollmentId,
-        professor_id: professorId,
-        ...gradeData,
-        encoded_by: professorId,
-        encoded_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    return { data, error };
-  }
+  return backendRequest("/api/grades/professor/save", {
+    method: "POST",
+    body: JSON.stringify({
+      enrollmentId,
+      professorId,
+      prelimGrade: gradeData.prelim_grade,
+      midtermGrade: gradeData.midterm_grade,
+      finalsGrade: gradeData.finals_grade,
+      remarks: gradeData.remarks,
+    }),
+  });
 }
 
 // ─── Announcements ────────────────────────────────────────────────────────────
 
-export async function getClassAnnouncements(classId: string) {
-  const { data, error } = await facultyDb
-    .from("announcements")
-    .select("*")
-    .eq("class_assignment_id", classId)
-    .eq("is_published", true)
-    .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false });
+export async function submitGrade(
+  enrollmentId: string,
+  professorId: string,
+  gradeData: {
+    prelim_grade?: number | null;
+    midterm_grade?: number | null;
+    finals_grade?: number | null;
+    final_grade?: number | null;
+    letter_grade?: string | null;
+    remarks?: string | null;
+  }
+) {
+  const finalGrade = gradeData.final_grade ?? computeFinalGrade([
+    gradeData.prelim_grade,
+    gradeData.midterm_grade,
+    gradeData.finals_grade,
+  ]);
 
-  return { data, error };
+  if (finalGrade == null) {
+    return {
+      data: null,
+      error: { message: "At least one numeric grade is required before submission." },
+    };
+  }
+
+  return backendRequest("/api/grades/professor/submit", {
+    method: "POST",
+    body: JSON.stringify({
+      enrollmentId,
+      professorId,
+      prelimGrade: gradeData.prelim_grade,
+      midtermGrade: gradeData.midterm_grade,
+      finalsGrade: gradeData.finals_grade,
+      finalGrade,
+      letterGrade: gradeData.letter_grade ?? toLetterGrade(finalGrade),
+      remarks: gradeData.remarks ?? (finalGrade >= 75 ? "Passed" : "Failed"),
+    }),
+  });
+}
+
+function computeFinalGrade(values: Array<number | null | undefined>) {
+  const numericValues = values.filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  if (!numericValues.length) return null;
+  return Number((numericValues.reduce((sum, value) => sum + value, 0) / numericValues.length).toFixed(2));
+}
+
+function toLetterGrade(finalGrade: number) {
+  if (finalGrade >= 90) return "A";
+  if (finalGrade >= 85) return "B+";
+  if (finalGrade >= 80) return "B";
+  if (finalGrade >= 75) return "C";
+  return "F";
+}
+
+export async function getClassAnnouncements(classId: string, professorId: string) {
+  const result = await backendRequest<{ announcements: Announcement[] }>(
+    `/api/professor/${encodeURIComponent(professorId)}/classes/${encodeURIComponent(classId)}/announcements`,
+  );
+
+  if (result.error || !result.data) return { data: null, error: result.error };
+
+  return { data: result.data.announcements, error: null };
 }
 
 export async function createAnnouncement(
@@ -347,50 +381,22 @@ export async function createAnnouncement(
     is_pinned?: boolean;
   }
 ) {
-  const { data, error } = await facultyDb
-    .from("announcements")
-    .insert({
-      class_assignment_id: classId,
-      professor_id: professorId,
-      ...announcementData,
-    })
-    .select()
-    .single();
+  const result = await backendRequest<{ announcement: Announcement }>(
+    `/api/professor/${encodeURIComponent(professorId)}/classes/${encodeURIComponent(classId)}/announcements`,
+    {
+      method: "POST",
+      body: JSON.stringify(announcementData),
+    },
+  );
 
-  if (error || !data) {
-    return { data, error };
-  }
+  if (result.error || !result.data) return { data: null, error: result.error };
 
-  const { data: classStudents, error: studentsError } = await getClassStudents(classId);
-
-  if (studentsError) {
-    console.error("Error fetching students for announcement notifications:", studentsError);
-    return { data, error: null };
-  }
-
-  const notificationRows = (classStudents || [])
-    .map((entry: any) => entry?.student?.applicant_id)
-    .filter(Boolean)
-    .map((profileId: string) => ({
-      profile_id: profileId,
-      title: `New announcement: ${announcementData.title}`,
-      body: announcementData.content,
-      is_read: false,
-    }));
-
-  if (notificationRows.length) {
-    const { error: notificationError } = await supabase.from("notifications").insert(notificationRows);
-
-    if (notificationError) {
-      console.error("Error creating announcement notifications:", notificationError);
-    }
-  }
-
-  return { data, error: null };
+  return { data: result.data.announcement, error: null };
 }
 
 export async function updateAnnouncement(
   announcementId: string,
+  professorId: string,
   updates: {
     title?: string;
     content?: string;
@@ -398,27 +404,26 @@ export async function updateAnnouncement(
     is_pinned?: boolean;
   }
 ) {
-  const { data, error } = await facultyDb
-    .from("announcements")
-    .update({
-      ...updates,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", announcementId)
-    .select()
-    .single();
+  const result = await backendRequest<{ announcement: Announcement }>(
+    `/api/professor/${encodeURIComponent(professorId)}/announcements/${encodeURIComponent(announcementId)}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(updates),
+    },
+  );
 
-  return { data, error };
+  if (result.error || !result.data) return { data: null, error: result.error };
+
+  return { data: result.data.announcement, error: null };
 }
 
-export async function deleteAnnouncement(announcementId: string) {
-  const { error } = await supabase
-    .schema("faculty")
-    .from("announcements")
-    .delete()
-    .eq("id", announcementId);
+export async function deleteAnnouncement(announcementId: string, professorId: string) {
+  const result = await backendRequest<{ deleted: boolean }>(
+    `/api/professor/${encodeURIComponent(professorId)}/announcements/${encodeURIComponent(announcementId)}`,
+    { method: "DELETE" },
+  );
 
-  return { error };
+  return { error: result.error };
 }
 
 // ─── Submissions ──────────────────────────────────────────────────────────────

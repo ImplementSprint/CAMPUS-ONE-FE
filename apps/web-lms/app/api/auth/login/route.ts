@@ -21,6 +21,12 @@ export async function POST(request: Request) {
     if (data.user?.email) cookieStore.set("user_email", data.user.email, opts);
     if (data.user?.role) cookieStore.set("user_role", data.user.role, opts);
 
+    const accessToken = data.accessToken ?? data.token ?? data.session?.access_token;
+    if (accessToken) {
+      cookieStore.set("access_token", accessToken, opts);
+      if (data.user?.role === "super_admin") cookieStore.set("platform_access_token", accessToken, opts);
+    }
+
     return Response.json(data);
   } catch {
     return Response.json({ message: "Could not reach the backend server." }, { status: 503 });

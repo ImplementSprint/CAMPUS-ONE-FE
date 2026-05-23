@@ -1,6 +1,13 @@
 import { supabase } from "@/shared/lib/supabase";
 import type { SchoolLevel, ApplicantType, AdmissionStatus, SupabaseResponse } from "@/applicant/types/admissions.types";
 import { sendEmail } from "@/services/email.service";
+import {
+  getAdmissionsApplicationDetail,
+  getAdmissionsApplications,
+  getAdmissionsDashboardStats,
+  updateAdmissionsApplicationStatus,
+  updateAdmissionsProgramSelection,
+} from "@/shared/lib/api";
 
 const applicationDb = supabase.schema("applicant");
 
@@ -87,71 +94,12 @@ export interface DashboardStats {
 
 // ─── Fetch Applications ───────────────────────────────────────────────────────
 export async function fetchAllApplications(): Promise<SupabaseResponse<AdminApplication[]>> {
-  const { data, error } = await applicationDb
-    .from("applicant_profiles")
-    .select("*")
-    .not("application_submitted_at", "is", null)
-    .order("application_submitted_at", { ascending: false });
-
-  if (error) return { data: null, error: { message: error.message } };
-  return { data: data as AdminApplication[], error: null };
+  return getAdmissionsApplications() as Promise<SupabaseResponse<AdminApplication[]>>;
 }
 
 // ─── Fetch Application Detail ─────────────────────────────────────────────────
 export async function fetchApplicationDetail(applicationId: string): Promise<SupabaseResponse<ApplicationDetail>> {
-  // Fetch main profile
-  const { data: profile, error: profileError } = await applicationDb
-    .from("applicant_profiles")
-    .select("*")
-    .eq("id", applicationId)
-    .single();
-
-  if (profileError) return { data: null, error: { message: profileError.message } };
-
-  // Fetch parent info
-  const { data: parentInfo } = await applicationDb
-    .from("parent_information")
-    .select("*")
-    .eq("applicant_id", applicationId)
-    .single();
-
-  // Fetch academic background
-  const { data: academicBg } = await applicationDb
-    .from("academic_background")
-    .select("*")
-    .eq("applicant_id", applicationId)
-    .order("grade_level", { ascending: true });
-
-  // Fetch alumni relatives
-  const { data: alumni } = await applicationDb
-    .from("alumni_relatives")
-    .select("*")
-    .eq("applicant_id", applicationId);
-
-  // Fetch documents
-  const { data: documents } = await applicationDb
-    .from("applicant_documents")
-    .select("*")
-    .eq("applicant_id", applicationId)
-    .order("submitted_at", { ascending: false });
-
-  // Fetch program selection
-  const { data: programSelection } = await applicationDb
-    .from("program_selections")
-    .select("*")
-    .eq("applicant_id", applicationId)
-    .single();
-
-  const detail: ApplicationDetail = {
-    ...(profile as AdminApplication),
-    parent_info: parentInfo as ParentInfo | null,
-    academic_background: (academicBg as AcademicEntry[]) || [],
-    alumni_relatives: (alumni as AlumniRelative[]) || [],
-    documents: (documents as ApplicationDocument[]) || [],
-    program_selection: programSelection as ProgramSelection | null,
-  };
-
-  return { data: detail, error: null };
+  return getAdmissionsApplicationDetail(applicationId) as Promise<SupabaseResponse<ApplicationDetail>>;
 }
 
 // ─── Update Application Status ────────────────────────────────────────────────
@@ -160,40 +108,7 @@ export async function updateApplicationStatus(
   status: AdmissionStatus,
   rejectionReason?: string
 ): Promise<SupabaseResponse<{ success: boolean }>> {
-  const updateData: Record<string, unknown> = {
-    status,
-    reviewed_at: new Date().toISOString(),
-  };
-
-  // Generate applicant number if accepted
-  if (status === "Passed") {
-    const { data: appNumber } = await applicationDb.rpc("generate_applicant_number");
-    updateData.applicant_number = appNumber;
-  }
-
-  if (status === "Not Accepted" && rejectionReason) {
-    updateData.rejection_reason = rejectionReason;
-  }
-
-  const { error } = await applicationDb
-    .from("applicant_profiles")
-    .update(updateData)
-    .eq("id", applicationId);
-
-  if (error) return { data: null, error: { message: error.message } };
-
-  // Send email notification
-  const { data: applicant } = await applicationDb
-    .from("applicant_profiles")
-    .select("email, full_name, reference_number, applicant_number")
-    .eq("id", applicationId)
-    .single();
-
-  if (applicant) {
-    await sendStatusUpdateEmail(applicant, status, rejectionReason);
-  }
-
-  return { data: { success: true }, error: null };
+  return updateAdmissionsApplicationStatus(applicationId, status, rejectionReason) as Promise<SupabaseResponse<{ success: boolean }>>;
 }
 
 // ─── Send Status Update Email ─────────────────────────────────────────────────
@@ -288,21 +203,7 @@ async function sendStatusUpdateEmail(
 
 // ─── Fetch Dashboard Stats ────────────────────────────────────────────────────
 export async function fetchDashboardStats(): Promise<SupabaseResponse<DashboardStats>> {
-  const { data, error } = await supabase
-    .from("applicant_profiles")
-    .select("status")
-    .not("application_submitted_at", "is", null);
-
-  if (error) return { data: null, error: { message: error.message } };
-
-  const stats: DashboardStats = {
-    total: data.length,
-    pending: data.filter(app => app.status === "Under Review").length,
-    accepted: data.filter(app => app.status === "Passed").length,
-    rejected: data.filter(app => app.status === "Not Accepted").length,
-  };
-
-  return { data: stats, error: null };
+  return getAdmissionsDashboardStats() as Promise<SupabaseResponse<DashboardStats>>;
 }
 
 // ─── Update Program Selection ─────────────────────────────────────────────────
@@ -311,20 +212,5 @@ export async function updateProgramSelection(
   department: string,
   program: string
 ): Promise<SupabaseResponse<{ success: boolean }>> {
-  try {
-    // Update program_selections table
-    const { error } = await supabase
-      .from("program_selections")
-      .update({
-        college_department: department,
-        college_program: program,
-      })
-      .eq("applicant_id", applicationId);
-
-    if (error) throw error;
-
-    return { data: { success: true }, error: null };
-  } catch (error: any) {
-    return { data: null, error: { message: error.message } };
-  }
+  return updateAdmissionsProgramSelection(applicationId, department, program) as Promise<SupabaseResponse<{ success: boolean }>>;
 }

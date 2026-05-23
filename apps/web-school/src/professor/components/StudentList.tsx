@@ -5,19 +5,20 @@ import { getClassStudents, type Enrollment } from "@/professor/services/professo
 
 interface StudentListProps {
   classId: string;
+  professorId: string;
 }
 
-export function StudentList({ classId }: StudentListProps) {
+export function StudentList({ classId, professorId }: StudentListProps) {
   const [students, setStudents] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadStudents();
-  }, [classId]);
+  }, [classId, professorId]);
 
   const loadStudents = async () => {
     setLoading(true);
-    const result = await getClassStudents(classId);
+    const result = await getClassStudents(classId, professorId);
     if (result.data) {
       setStudents(result.data);
     }

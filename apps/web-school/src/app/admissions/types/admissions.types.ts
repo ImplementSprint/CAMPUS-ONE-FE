@@ -12,7 +12,16 @@ export type ApplicantType =
   | "Shiftee"
   | "Returnee";
 
-export type AdmissionStatus = "Under Review" | "Passed" | "Not Accepted";
+export type AdmissionStatus =
+  | "Under Review"
+  | "Missing Requirements"
+  | "For Exam"
+  | "For Interview"
+  | "Accepted"
+  | "Rejected"
+  | "Waitlisted"
+  | "Passed"
+  | "Not Accepted";
 
 export type AdmissionEventType =
   | "school_level_selected"

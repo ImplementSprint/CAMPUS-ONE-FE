@@ -2,8 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/shared/contexts/AuthContext';
-import { getEnrollmentOfferings, submitEnrollment } from '@/shared/lib/api';
-import { supabase } from '@/shared/lib/supabase';
+import { getEnrollmentOfferings, getProfile, submitEnrollment } from '@/shared/lib/api';
 import DashboardLayout from '@/shared/components/DashboardLayout';
 
 type Mode = 'block' | 'manual';
@@ -44,17 +43,9 @@ export default function EnrollPage() {
   useEffect(() => {
     if (authLoading || !user) return;
 
-    // Get program info for display
-    supabase.schema('student')
-      .from('student_accounts')
-      .select('applicant_id')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(async ({ data: studentAccount }) => {
-        if (!studentAccount?.applicant_id) return;
-        const { data: profile } = await supabase.schema('applicant').from('applicant_profiles').select('program').eq('id', studentAccount.applicant_id).maybeSingle();
-        if (profile) setProgram(profile.program ?? '');
-      });
+    getProfile(user.id)
+      .then((profile) => setProgram(profile?.program ?? ''))
+      .catch(() => setProgram(''));
 
     // Load offerings from backend (uses curriculum table)
     getEnrollmentOfferings({ studentId: user.id })
@@ -87,14 +78,6 @@ export default function EnrollPage() {
       const result = await submitEnrollment({
         studentId: user.id,
         classAssignmentIds: offeringIds,
-      });
-
-      // Push notification
-      await supabase.from('notifications').insert({
-        profile_id: user.id,
-        title: 'Enrollment Submitted',
-        body: `You have been enrolled in ${result.count} subject(s) for ${term}, AY ${schoolYear}.`,
-        is_read: false,
       });
 
       setSuccess({ count: result.count });

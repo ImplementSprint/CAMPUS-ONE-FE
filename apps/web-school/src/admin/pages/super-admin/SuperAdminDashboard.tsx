@@ -61,6 +61,7 @@ export default function SuperAdminPage() {
           <button id="tab-services" className={`sa-nav-item ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>⚙️ Services</button>
           <button id="tab-users" className={`sa-nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>👥 Admin Users</button>
           <button id="tab-tenants" className={`sa-nav-item ${activeTab === 'tenants' ? 'active' : ''}`} onClick={() => setActiveTab('tenants')}>🏫 Tenants</button>
+          <a id="tab-audit" className="sa-nav-item" href="/super-admin/audit">Audit Events</a>
         </nav>
 
         <div className="sa-sidebar-footer">

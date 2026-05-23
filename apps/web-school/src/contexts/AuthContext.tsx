@@ -3,6 +3,14 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 import { adminRoles, type UserRole } from '@/services/auth.service';
+import {
+  clearCachedBackendSession,
+  loadBackendAuthBootstrap,
+  readCachedBackendAccessToken,
+  readCachedBackendAuthUser,
+  writeCachedBackendAccessToken,
+  writeCachedBackendAuthUser,
+} from '@/services/backend-session.service';
 
 interface AuthContextType {
   user: User | null;
@@ -18,20 +26,7 @@ const AuthContext = createContext<AuthContextType>({
 
 function readStoredAuthUser(): { id: string; email: string; role: UserRole } | null {
   if (typeof window === 'undefined') return null;
-
-  const cached = sessionStorage.getItem('auth_user');
-  if (!cached) return null;
-
-  try {
-    const parsed = JSON.parse(cached) as { id?: string; email?: string; role?: UserRole };
-    if (parsed.id && parsed.email && parsed.role) {
-      return { id: parsed.id, email: parsed.email, role: parsed.role };
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
+  return readCachedBackendAuthUser(sessionStorage);
 }
 
 function isAdminRole(role: UserRole | null | undefined): role is (typeof adminRoles)[number] {
@@ -80,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               const detectedRole = await detectRole(u.email);
               setRole(detectedRole);
               if (detectedRole && typeof window !== 'undefined') {
-                sessionStorage.setItem('auth_user', JSON.stringify({ id: u.id, email: u.email, role: detectedRole }));
+                writeCachedBackendAuthUser(sessionStorage, { id: u.id, email: u.email, role: detectedRole });
               }
             } else {
               setRole(cachedRole);
@@ -94,12 +89,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const detectedRole = await detectRole(u.email);
       setRole(detectedRole);
       if (detectedRole && typeof window !== 'undefined') {
-        sessionStorage.setItem('auth_user', JSON.stringify({ id: u.id, email: u.email, role: detectedRole }));
+        writeCachedBackendAuthUser(sessionStorage, { id: u.id, email: u.email, role: detectedRole });
       }
     } else {
       setRole(null);
       if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('auth_user');
+        clearCachedBackendSession(sessionStorage);
       }
     }
     setLoading(false);
@@ -107,6 +102,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const storedUser = readStoredAuthUser();
+    const storedAccessToken = typeof window !== 'undefined'
+      ? readCachedBackendAccessToken(sessionStorage)
+      : null;
+
+    if (storedAccessToken) {
+      loadBackendAuthBootstrap(storedAccessToken).then((backendBootstrap) => {
+        if (backendBootstrap) {
+          setUser({ id: backendBootstrap.user.id, email: backendBootstrap.user.email } as User);
+          setRole(backendBootstrap.user.role);
+          setLoading(false);
+          return;
+        }
+
+        if (storedUser) {
+          setUser({ id: storedUser.id, email: storedUser.email } as User);
+          setRole(storedUser.role);
+        } else {
+          clearCachedBackendSession(sessionStorage);
+          setUser(null);
+          setRole(null);
+        }
+        setLoading(false);
+      });
+      return;
+    }
 
     if (storedUser) {
       setUser({ id: storedUser.id, email: storedUser.email } as User);
@@ -114,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         detectRole(storedUser.email).then((detectedRole) => {
           setRole(detectedRole);
           if (detectedRole && typeof window !== 'undefined') {
-            sessionStorage.setItem('auth_user', JSON.stringify({ id: storedUser.id, email: storedUser.email, role: detectedRole }));
+            writeCachedBackendAuthUser(sessionStorage, { id: storedUser.id, email: storedUser.email, role: detectedRole });
           }
           setLoading(false);
         });
@@ -125,7 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Get initial session — if refresh token is invalid, sign out cleanly
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
       if (error) {
         // Stale/invalid refresh token — clear everything and treat as logged out
         const cachedUser = readStoredAuthUser();
@@ -137,9 +157,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         supabase.auth.signOut().catch(() => {});
-        if (typeof window !== 'undefined') sessionStorage.removeItem('auth_user');
+        if (typeof window !== 'undefined') clearCachedBackendSession(sessionStorage);
         setUser(null);
         setRole(null);
+        setLoading(false);
+        return;
+      }
+
+      if (typeof window !== 'undefined') {
+        writeCachedBackendAccessToken(sessionStorage, session?.access_token ?? null);
+      }
+      const backendBootstrap = await loadBackendAuthBootstrap(session?.access_token ?? null);
+      if (backendBootstrap) {
+        setUser({ id: backendBootstrap.user.id, email: backendBootstrap.user.email } as User);
+        setRole(backendBootstrap.user.role);
         setLoading(false);
         return;
       }
@@ -160,13 +191,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'TOKEN_REFRESHED' && !session) {
         // Token refresh failed — clear session
-        if (typeof window !== 'undefined') sessionStorage.removeItem('auth_user');
+        if (typeof window !== 'undefined') clearCachedBackendSession(sessionStorage);
         setUser(null);
         setRole(null);
         setLoading(false);
         return;
       }
-      resolveUser(session?.user ?? null);
+      if (typeof window !== 'undefined') {
+        writeCachedBackendAccessToken(sessionStorage, session?.access_token ?? null);
+      }
+      loadBackendAuthBootstrap(session?.access_token ?? null).then((backendBootstrap) => {
+        if (backendBootstrap) {
+          setUser({ id: backendBootstrap.user.id, email: backendBootstrap.user.email } as User);
+          setRole(backendBootstrap.user.role);
+          setLoading(false);
+          return;
+        }
+
+        resolveUser(session?.user ?? null);
+      });
     });
 
     return () => subscription.unsubscribe();

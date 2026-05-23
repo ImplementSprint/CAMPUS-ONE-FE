@@ -1,9 +1,10 @@
  'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { ProtectedRoute } from '../../../components/ProtectedRoute';
+import { getAlumniProfile, type AlumniProfile } from '../../services/alumni.service';
 
 function SettingIcon({ type }: { type: 'lock' | 'bell' | 'mail' | 'shield' | 'download' }) {
   if (type === 'lock') return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" /><path d="M8 10V8a4 4 0 0 1 8 0v2" /></svg>;
@@ -24,8 +25,19 @@ function Toggle({ checked, onToggle, label }: { checked: boolean; onToggle: () =
 function ProfileContent() {
   const { user } = useAuth();
   const router = useRouter();
+  const [profile, setProfile] = useState<AlumniProfile | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    setProfileLoading(true);
+    getAlumniProfile(user.id).then((result) => {
+      setProfile(result.data ?? null);
+      setProfileLoading(false);
+    });
+  }, [user?.id]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -34,6 +46,29 @@ function ProfileContent() {
 
   return (
     <section className="profile-main-layout" aria-label="Profile settings">
+      <aside className="section-card settings-card" aria-label="Alumni profile">
+        <header>
+          <h2>Alumni Profile</h2>
+          <p>{profileLoading ? 'Loading alumni profile...' : profile?.full_name ?? user?.email ?? 'Alumni account'}</p>
+        </header>
+
+        <div className="settings-group">
+          <h3>Academic Record</h3>
+          <div className="setting-row">
+            <span className="setting-copy"><strong>Program</strong><small>{profile?.program ?? 'Not available'}</small></span>
+          </div>
+          <div className="setting-row">
+            <span className="setting-copy"><strong>Academic Unit</strong><small>{profile?.academic_unit ?? 'Not available'}</small></span>
+          </div>
+          <div className="setting-row">
+            <span className="setting-copy"><strong>Graduation Year</strong><small>{profile?.graduation_year ?? 'Not available'}</small></span>
+          </div>
+          <div className="setting-row">
+            <span className="setting-copy"><strong>Student ID</strong><small>{profile?.student_id ?? 'Not available'}</small></span>
+          </div>
+        </div>
+      </aside>
+
       <aside className="section-card settings-card" aria-label="Notifications and privacy settings">
         <header>
           <h2>Settings</h2>

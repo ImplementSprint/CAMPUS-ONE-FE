@@ -1,4 +1,4 @@
-import { createCampusOneClient } from '@campus-one/api-client';
+import { createCampusOneClient, formatCampusOneApiError } from '@campus-one/api-client';
 
 const BACKEND_API_URL = process.env.BACKEND_API_URL ?? process.env.INSTITUTION_SERVICE_URL ?? 'http://localhost:4000';
 
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const schools = await client.searchSchools(search);
     return Response.json(schools);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Could not reach the backend server.';
-    return Response.json({ message }, { status: 503 });
+    const display = formatCampusOneApiError(error);
+    return Response.json({ message: display.message }, { status: display.status ?? 503 });
   }
 }

@@ -1,4 +1,4 @@
-import { createCampusOneClient } from '@campus-one/api-client';
+import { createCampusOneClient, formatCampusOneApiError } from '@campus-one/api-client';
 
 const BACKEND_API_URL = process.env.BACKEND_API_URL ?? process.env.INSTITUTION_SERVICE_URL ?? 'http://localhost:4000';
 
@@ -14,7 +14,7 @@ export async function GET(_request: Request, context: RouteContext) {
     const school = await client.getSchoolBySlug(slug);
     return Response.json(school);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'School not found.';
-    return Response.json({ message }, { status: 404 });
+    const display = formatCampusOneApiError(error, 'School not found.');
+    return Response.json({ message: display.message }, { status: display.status ?? 404 });
   }
 }

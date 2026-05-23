@@ -34,17 +34,17 @@ export function ProfessorAnnouncements() {
   }, [user?.id]);
 
   useEffect(() => {
-    if (!selectedClass) return;
+    if (!selectedClass || !user?.id) return;
     setLoadingAnn(true);
-    getClassAnnouncements(selectedClass.id).then(r => {
+    getClassAnnouncements(selectedClass.id, user.id).then(r => {
       setAnnouncements((r.data as Announcement[]) ?? []);
       setLoadingAnn(false);
     });
-  }, [selectedClass]);
+  }, [selectedClass, user?.id]);
 
   const reload = () => {
-    if (!selectedClass) return;
-    getClassAnnouncements(selectedClass.id).then(r => setAnnouncements((r.data as Announcement[]) ?? []));
+    if (!selectedClass || !user?.id) return;
+    getClassAnnouncements(selectedClass.id, user.id).then(r => setAnnouncements((r.data as Announcement[]) ?? []));
   };
 
   const openCreate = () => {
@@ -62,7 +62,7 @@ export function ProfessorAnnouncements() {
   const handleSave = async () => {
     if (!form.title.trim() || !form.content.trim() || !selectedClass || !user?.id) return;
     setSaving(true);
-    if (editingId) await updateAnnouncement(editingId, form);
+    if (editingId) await updateAnnouncement(editingId, user.id, form);
     else await createAnnouncement(selectedClass.id, user.id, form);
     reload();
     setShowForm(false);
@@ -71,12 +71,14 @@ export function ProfessorAnnouncements() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this announcement?')) return;
-    await deleteAnnouncement(id);
+    if (!user?.id) return;
+    await deleteAnnouncement(id, user.id);
     reload();
   };
 
   const handleTogglePin = async (a: Announcement) => {
-    await updateAnnouncement(a.id, { is_pinned: !a.is_pinned });
+    if (!user?.id) return;
+    await updateAnnouncement(a.id, user.id, { is_pinned: !a.is_pinned });
     reload();
   };
 

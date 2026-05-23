@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, Plus } from 'lucide-react';
 import { ProtectedRoute } from '../../../components/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
+import { getAlumniRecordRequests, type AlumniRecordRequest } from '../../services/alumni.service';
 
 type ServiceType = 'Document Request' | 'Alumni Card' | 'Clearance';
 type RequestStatus = 'Processing' | 'Ready for Pickup' | 'Shipped' | 'Completed' | 'Cancelled' | 'Pending';
@@ -15,16 +17,45 @@ type RequestItem = {
   status: RequestStatus;
   title: string;
   description: string;
+  feeAmount: number | null;
+  paymentStatus: string;
 };
 
-const mockRequests: RequestItem[] = [
-  { id: 'REQ-2024-001', serviceType: 'Alumni Card', dateSubmitted: 'May 1, 2024', status: 'Processing', title: 'Alumni Card Application', description: 'Official alumni identification card' },
-  { id: 'REQ-2024-002', serviceType: 'Document Request', dateSubmitted: 'Apr 28, 2024', status: 'Ready for Pickup', title: 'Diploma Copy Request', description: 'Official diploma copy' },
-  { id: 'REQ-2024-003', serviceType: 'Clearance', dateSubmitted: 'Apr 20, 2024', status: 'Shipped', title: 'Background Clearance', description: 'Background clearance verification' },
-  { id: 'REQ-2024-004', serviceType: 'Document Request', dateSubmitted: 'Mar 15, 2024', status: 'Completed', title: 'Transcript Request', description: 'Academic transcript' },
-  { id: 'REQ-2024-005', serviceType: 'Alumni Card', dateSubmitted: 'Feb 10, 2024', status: 'Completed', title: 'Alumni Card Replacement', description: 'Replacement alumni identification card' },
-  { id: 'REQ-2024-006', serviceType: 'Clearance', dateSubmitted: 'Jan 5, 2024', status: 'Completed', title: 'Employment Verification', description: 'Employment clearance letter' },
-];
+function statusFromCode(statusCode: number): RequestStatus {
+  if (statusCode >= 400) return 'Completed';
+  if (statusCode >= 300) return 'Ready for Pickup';
+  if (statusCode >= 200) return 'Processing';
+  return 'Pending';
+}
+
+function documentLabel(type: AlumniRecordRequest['document_type']) {
+  switch (type) {
+    case 'TOR':
+      return 'Transcript of Records';
+    case 'DIPLOMA':
+      return 'Diploma';
+    case 'GOOD_MORAL':
+      return 'Good Moral Certificate';
+    case 'CERTIFICATE':
+      return 'Certificate of Graduation';
+    default:
+      return type;
+  }
+}
+
+function toRequestItem(record: AlumniRecordRequest): RequestItem {
+  const title = documentLabel(record.document_type);
+  return {
+    id: record.log_id,
+    serviceType: 'Document Request',
+    dateSubmitted: new Date(record.created_at).toLocaleDateString(),
+    status: statusFromCode(record.status_code),
+    title,
+    description: `${title}${record.number_of_copies ? ` - ${record.number_of_copies} cop${record.number_of_copies === 1 ? 'y' : 'ies'}` : ''}`,
+    feeAmount: record.fee_amount ?? null,
+    paymentStatus: record.payment_status ?? 'pending',
+  };
+}
 
 function getStatusClass(status: RequestStatus): string {
   switch (status) {
@@ -46,18 +77,30 @@ function getStatusClass(status: RequestStatus): string {
 }
 
 function MyRequestsContent() {
+  const { user } = useAuth();
+  const [requests, setRequests] = useState<RequestItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [serviceTypeFilter, setServiceTypeFilter] = useState<ServiceType | ''>('');
   const [statusFilter, setStatusFilter] = useState<RequestStatus | ''>('');
 
+  useEffect(() => {
+    if (!user?.id) return;
+    setLoading(true);
+    getAlumniRecordRequests(user.id).then((result) => {
+      setRequests((result.data ?? []).map(toRequestItem));
+      setLoading(false);
+    });
+  }, [user?.id]);
+
   const filteredRequests = useMemo(() => {
-    return mockRequests.filter((request) => {
+    return requests.filter((request) => {
       const matchesSearch = !search || [request.id, request.title, request.description].join(' ').toLowerCase().includes(search.toLowerCase());
       const matchesServiceType = !serviceTypeFilter || request.serviceType === serviceTypeFilter;
       const matchesStatus = !statusFilter || request.status === statusFilter;
       return matchesSearch && matchesServiceType && matchesStatus;
     });
-  }, [search, serviceTypeFilter, statusFilter]);
+  }, [requests, search, serviceTypeFilter, statusFilter]);
 
   return (
     <section className="mx-auto w-full max-w-[1080px] space-y-6 px-2 sm:px-0">
@@ -119,18 +162,26 @@ function MyRequestsContent() {
       </div>
 
       <div className="overflow-hidden rounded-[16px] border border-slate-200 bg-white">
-        <div className="grid grid-cols-[1.4fr_1fr_0.9fr_0.8fr] border-b border-slate-200 bg-[#f8fafc] px-5 py-4 text-[13px] font-bold uppercase tracking-[0.02em] text-slate-500">
+        <div className="grid grid-cols-[1.2fr_0.9fr_0.8fr_0.8fr_0.8fr] border-b border-slate-200 bg-[#f8fafc] px-5 py-4 text-[13px] font-bold uppercase tracking-[0.02em] text-slate-500">
           <div>Reference ID</div>
           <div>Service Type</div>
           <div>Date Submitted</div>
+          <div>Payment</div>
           <div>Status</div>
         </div>
 
-        {filteredRequests.map((request) => (
-          <div key={request.id} className="grid grid-cols-[1.4fr_1fr_0.9fr_0.8fr] items-center border-b border-slate-100 px-5 py-5 last:border-b-0">
+        {loading ? (
+          <div className="px-5 py-8 text-center text-[15px] text-[#58739b]">Loading requests...</div>
+        ) : filteredRequests.length === 0 ? (
+          <div className="px-5 py-8 text-center text-[15px] text-[#58739b]">No requests found.</div>
+        ) : filteredRequests.map((request) => (
+          <div key={request.id} className="grid grid-cols-[1.2fr_0.9fr_0.8fr_0.8fr_0.8fr] items-center border-b border-slate-100 px-5 py-5 last:border-b-0">
             <div className="text-[16px] font-semibold text-slate-950">{request.id}</div>
             <div className="text-[15px] text-slate-700">{request.serviceType}</div>
             <div className="text-[15px] text-slate-700">{request.dateSubmitted}</div>
+            <div className="text-[15px] text-slate-700">
+              {request.feeAmount != null ? `PHP ${request.feeAmount}` : 'TBD'} · {request.paymentStatus}
+            </div>
             <div>
               <span className={`inline-flex rounded-full px-3 py-1.5 text-[13px] font-semibold ${getStatusClass(request.status)}`}>
                 {request.status}
@@ -141,7 +192,7 @@ function MyRequestsContent() {
       </div>
 
       <div className="text-center text-[15px] text-[#58739b]">
-        Showing <span className="font-semibold text-slate-950">{filteredRequests.length}</span> of <span className="font-semibold text-slate-950">{mockRequests.length}</span> requests
+        Showing <span className="font-semibold text-slate-950">{filteredRequests.length}</span> of <span className="font-semibold text-slate-950">{requests.length}</span> requests
       </div>
     </section>
   );

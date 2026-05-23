@@ -111,7 +111,7 @@ export function ClassDetail({ classId, professorId, onBack }: ClassDetailProps) 
       {/* Tab Content */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === "students" && (
-          <StudentList classId={classId} />
+          <StudentList classId={classId} professorId={professorId} />
         )}
         {activeTab === "grades" && (
           <GradesList classId={classId} professorId={professorId} />

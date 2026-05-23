@@ -6,6 +6,7 @@ import {
   getProfessorClasses,
   getClassGrades,
   saveGrade,
+  submitGrade,
   type ClassAssignment,
   type Grade,
 } from '../services/professor.service';
@@ -33,11 +34,12 @@ export function ProfessorGrades() {
   useEffect(() => {
     if (!selectedClass) return;
     setLoadingGrades(true);
-    getClassGrades(selectedClass.id).then(r => {
+    if (!user?.id) return;
+    getClassGrades(selectedClass.id, user.id).then(r => {
       setGrades(r.data ?? []);
       setLoadingGrades(false);
     });
-  }, [selectedClass]);
+  }, [selectedClass, user?.id]);
 
   const handleEdit = () => { setTempGrades(grades.map(g => ({ ...g }))); setIsEditing(true); };
   const handleCancel = () => setIsEditing(false);
@@ -59,7 +61,7 @@ export function ProfessorGrades() {
         remarks: g.remarks ?? undefined,
       });
     }
-    const r = await getClassGrades(selectedClass!.id);
+    const r = await getClassGrades(selectedClass!.id, user.id);
     setGrades(r.data ?? []);
     setIsEditing(false);
     setSaving(false);
@@ -70,15 +72,17 @@ export function ProfessorGrades() {
     setSaving(true);
     for (const g of grades) {
       if (g.prelim_grade !== null || g.midterm_grade !== null || g.finals_grade !== null) {
-        await saveGrade(g.enrollment_id, user.id, {
+        await submitGrade(g.enrollment_id, user.id, {
           prelim_grade: g.prelim_grade ?? undefined,
           midterm_grade: g.midterm_grade ?? undefined,
           finals_grade: g.finals_grade ?? undefined,
-          remarks: 'Submitted',
+          final_grade: g.final_grade ?? undefined,
+          letter_grade: g.letter_grade ?? undefined,
+          remarks: g.remarks ?? undefined,
         });
       }
     }
-    const r = await getClassGrades(selectedClass!.id);
+    const r = await getClassGrades(selectedClass!.id, user.id);
     setGrades(r.data ?? []);
     setSaving(false);
   };

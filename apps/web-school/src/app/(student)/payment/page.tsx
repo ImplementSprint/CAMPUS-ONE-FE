@@ -1,19 +1,26 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getEnrollmentHistory } from '@/lib/api';
+import { getBillingBalance, getEnrollmentHistory } from '@/lib/api';
 import DashboardLayout from '@/components/DashboardLayout';
 
 export default function PaymentPage() {
   const { user, loading: authLoading } = useAuth();
   const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [balance, setBalance] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (authLoading || !user) return;
-    getEnrollmentHistory(user.id)
-      .then(setEnrollments)
-      .catch(() => setEnrollments([]))
+    Promise.all([getEnrollmentHistory(user.id), getBillingBalance(user.id)])
+      .then(([history, balanceData]) => {
+        setEnrollments(history);
+        setBalance(balanceData);
+      })
+      .catch(() => {
+        setEnrollments([]);
+        setBalance(null);
+      })
       .finally(() => setLoading(false));
   }, [user, authLoading]);
 
@@ -39,6 +46,14 @@ export default function PaymentPage() {
             <div className="bg-gray-700 rounded-xl p-4">
               <p className="text-gray-300 text-xs font-medium mb-1">Total Units</p>
               <p className="text-green-400 text-2xl font-black">{totalUnits}</p>
+            </div>
+            <div className="bg-gray-700 rounded-xl p-4">
+              <p className="text-gray-300 text-xs font-medium mb-1">Balance Due</p>
+              <p className="text-amber-300 text-2xl font-black">₱{Number(balance?.balanceDue ?? 0).toLocaleString('en-PH')}</p>
+            </div>
+            <div className="bg-gray-700 rounded-xl p-4">
+              <p className="text-gray-300 text-xs font-medium mb-1">Payment Status</p>
+              <p className="text-white text-lg font-black capitalize">{String(balance?.paymentStatus ?? 'unpaid').replace(/_/g, ' ')}</p>
             </div>
           </div>
         </div>
@@ -70,7 +85,7 @@ export default function PaymentPage() {
           )}
 
         <div className="bg-white rounded-2xl border border-gray-200 p-5">
-          <p className="font-semibold text-gray-900 mb-4">Payment Options</p>
+          <p className="font-semibold text-gray-900 mb-4">Manual Payment Options</p>
           <div className="space-y-3">
             {[['💳', 'Credit/Debit Card', 'Visa, Mastercard, JCB', 'bg-blue-500'],
               ['🏦', 'Online Banking', 'BPI, BDO, Metrobank, UnionBank', 'bg-green-500'],

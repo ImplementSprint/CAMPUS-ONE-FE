@@ -36,6 +36,11 @@ import {
 import { loginWithSupabase } from '@/lib/auth.service';
 
 type AuthTab = 'login' | 'signup';
+type RegistrationErrors = Partial<Record<'name' | 'representative' | 'email' | 'contactNumber' | 'schoolType' | 'targetSubdomain', string>>;
+
+const SCHOOL_SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const RESERVED_SCHOOL_SLUGS = new Set(['api', 'app', 'www', 'admin', 'status', 'portal', 'campus', 'localhost']);
 
 const navItems = [
   { label: 'Product', target: 'product', hasMenu: true },
@@ -188,14 +193,46 @@ export function LandingPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [authRole, setAuthRole] = useState('student_admin');
+  const [schoolName, setSchoolName] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+  const [schoolType, setSchoolType] = useState('');
+  const [targetSubdomain, setTargetSubdomain] = useState('');
+  const [registrationErrors, setRegistrationErrors] = useState<RegistrationErrors>({});
+  const [registrationMessage, setRegistrationMessage] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [authSuccess, setAuthSuccess] = useState(false);
 
   const openAuth = (tab: AuthTab) => {
-    window.location.href = tab === 'login' ? '/login' : '/signup';
     setMobileMenuOpen(false);
+
+    if (tab === 'login') {
+      window.location.href = '/login';
+      return;
+    }
+
+    setAuthTab('signup');
+    setAuthModalOpen(true);
+  };
+
+  const validateRegistration = () => {
+    const errors: RegistrationErrors = {};
+    const slug = targetSubdomain.trim().toLowerCase();
+    const contactDigits = contactNumber.replace(/\D/g, '');
+
+    if (schoolName.trim().length < 2) errors.name = 'Enter the institution name.';
+    if (fullName.trim().length < 2) errors.representative = 'Enter the representative name.';
+    if (!EMAIL_PATTERN.test(email.trim())) errors.email = 'Enter a valid official email address.';
+    if (contactDigits.length < 7 || contactDigits.length > 15) errors.contactNumber = 'Enter a valid contact number.';
+    if (!schoolType.trim()) errors.schoolType = 'Select a school type.';
+    if (!SCHOOL_SLUG_PATTERN.test(slug)) {
+      errors.targetSubdomain = 'Use 3-63 lowercase letters, numbers, or hyphens. Start and end with a letter or number.';
+    } else if (RESERVED_SCHOOL_SLUGS.has(slug)) {
+      errors.targetSubdomain = 'That subdomain is reserved. Choose another school slug.';
+    }
+
+    setRegistrationErrors(errors);
+    return { isValid: Object.keys(errors).length === 0, slug };
   };
 
   const scrollTo = (id: string) => {
@@ -206,6 +243,7 @@ export function LandingPage() {
   const handleAuthSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setAuthError('');
+    setRegistrationMessage('');
     setAuthSuccess(false);
     setAuthLoading(true);
 
@@ -221,22 +259,48 @@ export function LandingPage() {
           setAuthError(result.error ?? 'Invalid credentials.');
         }
       } else {
-        const response = await fetch('/api/auth/signup', {
+        const { isValid, slug } = validateRegistration();
+        if (!isValid) return;
+
+        const availabilityResponse = await fetch(`/api/school/slug-availability?slug=${encodeURIComponent(slug)}`, {
+          cache: 'no-store',
+        });
+        const availability = await availabilityResponse.json();
+        if (availabilityResponse.ok && availability.available === false) {
+          setRegistrationErrors((errors) => ({
+            ...errors,
+            targetSubdomain:
+              availability.reason === 'existing'
+                ? 'That subdomain is already registered.'
+                : availability.reason === 'reserved'
+                  ? 'That subdomain is reserved. Choose another school slug.'
+                  : 'Use a valid school subdomain.',
+          }));
+          return;
+        }
+
+        const response = await fetch('/api/school/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, name: fullName, role: authRole }),
+          body: JSON.stringify({
+            name: schoolName.trim(),
+            representative: fullName.trim(),
+            email: email.trim(),
+            contactNumber: contactNumber.trim(),
+            schoolType: schoolType.trim(),
+            targetSubdomain: slug,
+          }),
         });
         const data = await response.json();
 
         if (response.ok) {
           setAuthSuccess(true);
+          setRegistrationMessage(data.message ?? 'School registration submitted for review.');
           window.setTimeout(() => {
-            setAuthTab('login');
-            setPassword('');
-            setAuthSuccess(false);
-          }, 1200);
+            window.location.href = `/school/submitted?school=${encodeURIComponent(slug)}`;
+          }, 900);
         } else {
-          setAuthError(data.message ?? 'Signup failed. Please try again.');
+          setAuthError(data.message ?? 'School registration failed. Please try again.');
         }
       }
     } catch {
@@ -825,6 +889,20 @@ export function LandingPage() {
             <form onSubmit={handleAuthSubmit} className="space-y-4">
               {authTab === 'signup' && (
                 <label className="block">
+                  <span className="mb-1 block text-xs font-black uppercase text-[#435176]">Institution name</span>
+                  <input
+                    required
+                    value={schoolName}
+                    onChange={(event) => setSchoolName(event.target.value)}
+                    className="h-11 w-full rounded-[8px] border border-[#dfe5ee] bg-[#fbfcfe] px-3 text-sm text-[#071943]"
+                    placeholder="Greenfield Academy"
+                  />
+                  {registrationErrors.name && <span className="mt-1 block text-xs font-bold text-rose-600">{registrationErrors.name}</span>}
+                </label>
+              )}
+
+              {authTab === 'signup' && (
+                <label className="block">
                   <span className="mb-1 block text-xs font-black uppercase text-[#435176]">Representative name</span>
                   <input
                     required
@@ -833,6 +911,7 @@ export function LandingPage() {
                     className="h-11 w-full rounded-[8px] border border-[#dfe5ee] bg-[#fbfcfe] px-3 text-sm text-[#071943]"
                     placeholder="Registrar Officer"
                   />
+                  {registrationErrors.representative && <span className="mt-1 block text-xs font-bold text-rose-600">{registrationErrors.representative}</span>}
                 </label>
               )}
 
@@ -846,43 +925,80 @@ export function LandingPage() {
                   className="h-11 w-full rounded-[8px] border border-[#dfe5ee] bg-[#fbfcfe] px-3 text-sm text-[#071943]"
                   placeholder="name@institution.edu"
                 />
+                {registrationErrors.email && <span className="mt-1 block text-xs font-bold text-rose-600">{registrationErrors.email}</span>}
               </label>
 
-              <label className="block">
-                <span className="mb-1 block text-xs font-black uppercase text-[#435176]">Password</span>
-                <input
-                  required
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  className="h-11 w-full rounded-[8px] border border-[#dfe5ee] bg-[#fbfcfe] px-3 text-sm text-[#071943]"
-                  placeholder="Enter password"
-                />
-              </label>
+              {authTab === 'login' && (
+                <label className="block">
+                  <span className="mb-1 block text-xs font-black uppercase text-[#435176]">Password</span>
+                  <input
+                    required
+                    type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="h-11 w-full rounded-[8px] border border-[#dfe5ee] bg-[#fbfcfe] px-3 text-sm text-[#071943]"
+                    placeholder="Enter password"
+                  />
+                </label>
+              )}
+
+              {authTab === 'signup' && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-black uppercase text-[#435176]">Contact number</span>
+                    <input
+                      required
+                      type="tel"
+                      value={contactNumber}
+                      onChange={(event) => setContactNumber(event.target.value)}
+                      className="h-11 w-full rounded-[8px] border border-[#dfe5ee] bg-[#fbfcfe] px-3 text-sm text-[#071943]"
+                      placeholder="+63 900 000 0000"
+                    />
+                    {registrationErrors.contactNumber && <span className="mt-1 block text-xs font-bold text-rose-600">{registrationErrors.contactNumber}</span>}
+                  </label>
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-black uppercase text-[#435176]">School type</span>
+                    <span className="relative block">
+                      <select
+                        required
+                        value={schoolType}
+                        onChange={(event) => setSchoolType(event.target.value)}
+                        className="h-11 w-full appearance-none rounded-[8px] border border-[#dfe5ee] bg-[#fbfcfe] px-3 text-sm text-[#071943]"
+                      >
+                        <option value="">Select type</option>
+                        <option value="Basic Education">Basic Education</option>
+                        <option value="Higher Education">Higher Education</option>
+                        <option value="Technical Vocational">Technical Vocational</option>
+                        <option value="Training Center">Training Center</option>
+                      </select>
+                      <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-[#66728c]" />
+                    </span>
+                    {registrationErrors.schoolType && <span className="mt-1 block text-xs font-bold text-rose-600">{registrationErrors.schoolType}</span>}
+                  </label>
+                </div>
+              )}
 
               {authTab === 'signup' && (
                 <label className="block">
-                  <span className="mb-1 block text-xs font-black uppercase text-[#435176]">Institutional role</span>
-                  <span className="relative block">
-                    <select
-                      value={authRole}
-                      onChange={(event) => setAuthRole(event.target.value)}
-                      className="h-11 w-full appearance-none rounded-[8px] border border-[#dfe5ee] bg-[#fbfcfe] px-3 text-sm text-[#071943]"
-                    >
-                      <option value="student_admin">School Admin</option>
-                      <option value="professor">Teacher / Instructor</option>
-                      <option value="student">Student / Learner</option>
-                      <option value="applicant">Applicant</option>
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-3 top-3.5 h-4 w-4 text-[#66728c]" />
+                  <span className="mb-1 block text-xs font-black uppercase text-[#435176]">Target subdomain</span>
+                  <input
+                    required
+                    value={targetSubdomain}
+                    onChange={(event) => setTargetSubdomain(event.target.value.trim().toLowerCase())}
+                    className="h-11 w-full rounded-[8px] border border-[#dfe5ee] bg-[#fbfcfe] px-3 text-sm text-[#071943]"
+                    placeholder="greenfield"
+                  />
+                  <span className="mt-1 block text-xs font-semibold text-[#66728c]">
+                    Availability is confirmed during submission while the backend preflight endpoint is pending.
                   </span>
+                  {registrationErrors.targetSubdomain && <span className="mt-1 block text-xs font-bold text-rose-600">{registrationErrors.targetSubdomain}</span>}
                 </label>
               )}
 
               {authError && <p className="rounded-[8px] border border-rose-200 bg-rose-50 p-3 text-sm font-bold text-rose-700">{authError}</p>}
               {authSuccess && (
                 <p className="rounded-[8px] border border-emerald-200 bg-emerald-50 p-3 text-sm font-bold text-emerald-700">
-                  {authTab === 'login' ? 'Authenticated. Redirecting...' : 'Portal setup started. Switch to sign in next.'}
+                  {authTab === 'login' ? 'Authenticated. Redirecting...' : registrationMessage || 'School registration submitted for review.'}
                 </p>
               )}
 

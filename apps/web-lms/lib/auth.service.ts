@@ -88,7 +88,7 @@ export function getRedirectPath(role: UserRole): string {
     student_admin:   '/dashboard',
     applicant_admin: '/dashboard',
     alumni_admin:    '/dashboard',
-    super_admin:     '/dashboard',
+    super_admin:     '/platform/schools',
     student:         '/dashboard',
     professor:       '/dashboard',
     alumni:          '/dashboard',

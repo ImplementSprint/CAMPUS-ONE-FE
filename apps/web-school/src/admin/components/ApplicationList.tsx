@@ -42,8 +42,14 @@ export function ApplicationList({ onSelectApplication, onRefresh, onBack }: Appl
   });
 
   const getStatusBadge = (status: AdmissionStatus) => {
-    const styles = {
+    const styles: Record<AdmissionStatus, string> = {
       "Under Review": "bg-amber-50 text-amber-700 border-amber-200 shadow-sm",
+      "Missing Requirements": "bg-orange-50 text-orange-700 border-orange-200 shadow-sm",
+      "For Exam": "bg-blue-50 text-blue-700 border-blue-200 shadow-sm",
+      "For Interview": "bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm",
+      "Accepted": "bg-green-50 text-green-700 border-green-200 shadow-sm",
+      "Rejected": "bg-red-50 text-red-700 border-red-200 shadow-sm",
+      "Waitlisted": "bg-purple-50 text-purple-700 border-purple-200 shadow-sm",
       "Passed": "bg-green-50 text-green-700 border-green-200 shadow-sm",
       "Not Accepted": "bg-red-50 text-red-700 border-red-200 shadow-sm",
     };

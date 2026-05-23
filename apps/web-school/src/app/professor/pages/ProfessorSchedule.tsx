@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Clock, MapPin, BookOpen, Users } from 'lucide-react';
 import { getCurrentUser } from '@/services/auth.service';
-import { getProfessorClasses, type ClassAssignment } from '../services/professor.service';
+import { getProfessorSchedule, type ClassAssignment } from '../services/professor.service';
 
 // ─── Day order for sorting ────────────────────────────────────────────────────
 const DAY_ORDER: Record<string, number> = {
@@ -116,7 +116,7 @@ export function ProfessorSchedule() {
    */
   useEffect(() => {
     if (!user?.id) return;
-    getProfessorClasses(user.id).then(r => {
+    getProfessorSchedule(user.id).then(r => {
       setClasses(r.data ?? []);
       setLoading(false);
     });
@@ -190,7 +190,12 @@ export function ProfessorSchedule() {
 
                   {/* Classes for this day */}
                   <div className="space-y-3 pl-2 border-l-2 border-gray-200 ml-2">
-                    {dayClasses.map(cls => (
+                    {dayClasses.map(cls => {
+                      const fillPercent = cls.max_students > 0
+                        ? Math.min(Math.round((cls.enrolled_count / cls.max_students) * 100), 100)
+                        : 0;
+
+                      return (
                       <div key={cls.id} className="bg-white rounded-2xl border border-gray-200 p-5 ml-4 hover:border-[#F59E0B] hover:shadow-sm transition-all">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
@@ -235,18 +240,18 @@ export function ProfessorSchedule() {
                           {/* Enrollment fill bar */}
                           <div className="w-28 flex-shrink-0 text-right">
                             <p className="text-xs text-gray-500 mb-1.5">
-                              {Math.round((cls.enrolled_count / cls.max_students) * 100)}% full
+                              {fillPercent}% full
                             </p>
                             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-[#F59E0B] rounded-full transition-all"
-                                style={{ width: `${Math.min((cls.enrolled_count / cls.max_students) * 100, 100)}%` }}
+                                style={{ width: `${fillPercent}%` }}
                               />
                             </div>
                           </div>
                         </div>
                       </div>
-                    ))}
+                    )})}
                   </div>
                 </div>
               );
