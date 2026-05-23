@@ -20,6 +20,9 @@ export async function POST(request: Request) {
     cookieStore.set("user_id", data.user.id, opts);
     if (data.user?.email) cookieStore.set("user_email", data.user.email, opts);
     if (data.user?.role) cookieStore.set("user_role", data.user.role, opts);
+    if (data.session?.access_token) {
+      cookieStore.set("campus_one_access_token", data.session.access_token, opts);
+    }
 
     const accessToken = data.accessToken ?? data.token ?? data.session?.access_token;
     if (accessToken) {

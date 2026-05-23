@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   transpilePackages: ['@campus-one/api-client', '@campus-one/shared-contracts'],
   turbopack: {
     root: path.resolve(__dirname, '../..'),
