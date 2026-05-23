@@ -13,5 +13,6 @@ export async function POST() {
   cookieStore.delete("user_id");
   cookieStore.delete("user_email");
   cookieStore.delete("user_role");
+  cookieStore.delete("campus_one_access_token");
   return Response.json({ message: "Logged out." });
 }

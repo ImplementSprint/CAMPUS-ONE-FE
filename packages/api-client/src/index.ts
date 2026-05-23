@@ -1,9 +1,19 @@
-import type { PublicSchool, SelectedSchool, TenantHeaders } from '@campus-one/shared-contracts';
+import type {
+  PlatformSchoolListResponse,
+  PlatformSchoolReviewActionResponse,
+  PlatformSchoolReviewRecord,
+  PublicSchool,
+  SchoolRegistrationRequest,
+  SchoolRegistrationResponse,
+  SelectedSchool,
+  TenantHeaders,
+} from '@campus-one/shared-contracts';
 
 export type CampusOneClientOptions = {
   baseUrl?: string;
   fetcher?: typeof fetch;
   schoolSlug?: string | null;
+  accessToken?: string | null;
 };
 
 export class CampusOneApiError extends Error {
@@ -84,6 +94,7 @@ export function createCampusOneClient(options: CampusOneClientOptions = {}) {
       ...init,
       headers: {
         'Content-Type': 'application/json',
+        ...(options.accessToken ? { Authorization: `Bearer ${options.accessToken}` } : {}),
         ...buildTenantHeaders(options.schoolSlug),
         ...init.headers,
       },
@@ -104,6 +115,42 @@ export function createCampusOneClient(options: CampusOneClientOptions = {}) {
     },
     getSchoolBySlug(slug: string): Promise<PublicSchool> {
       return request<PublicSchool>(`/api/schools/${encodeURIComponent(slug)}`);
+    },
+    registerSchool(payload: SchoolRegistrationRequest): Promise<SchoolRegistrationResponse> {
+      return request<SchoolRegistrationResponse>('/api/platform/schools/register', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    },
+    listPlatformSchools(status?: string): Promise<PlatformSchoolListResponse> {
+      const params = status?.trim() ? `?status=${encodeURIComponent(status.trim())}` : '';
+      return request<PlatformSchoolListResponse>(`/api/platform/schools${params}`);
+    },
+    getPlatformSchool(id: string): Promise<PlatformSchoolReviewRecord> {
+      return request<PlatformSchoolReviewRecord>(`/api/platform/schools/${encodeURIComponent(id)}`);
+    },
+    approvePlatformSchool(id: string): Promise<PlatformSchoolReviewActionResponse> {
+      return request<PlatformSchoolReviewActionResponse>(`/api/platform/schools/${encodeURIComponent(id)}/approve`, {
+        method: 'POST',
+      });
+    },
+    rejectPlatformSchool(id: string, reason: string): Promise<PlatformSchoolReviewActionResponse> {
+      return request<PlatformSchoolReviewActionResponse>(`/api/platform/schools/${encodeURIComponent(id)}/reject`, {
+        method: 'POST',
+        body: JSON.stringify({ reason }),
+      });
+    },
+    suspendPlatformSchool(id: string, reason?: string): Promise<PlatformSchoolReviewActionResponse> {
+      return request<PlatformSchoolReviewActionResponse>(`/api/platform/schools/${encodeURIComponent(id)}/suspend`, {
+        method: 'POST',
+        body: JSON.stringify({ reason }),
+      });
+    },
+    reactivatePlatformSchool(id: string, reason?: string): Promise<PlatformSchoolReviewActionResponse> {
+      return request<PlatformSchoolReviewActionResponse>(`/api/platform/schools/${encodeURIComponent(id)}/reactivate`, {
+        method: 'POST',
+        body: JSON.stringify({ reason }),
+      });
     },
     request,
   };

@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { UserPlus, LogIn, GraduationCap, ArrowRight, X, Eye, EyeOff, Search } from 'lucide-react';
+import { UserPlus, LogIn, GraduationCap, ArrowRight, X, Eye, EyeOff, Search, Building2 } from 'lucide-react';
 import { buildSchoolPortalUrl } from '@campus-one/api-client';
 import type { PublicSchool } from '@campus-one/shared-contracts';
 import { loginWithSupabase, getRedirectPath } from '@/lib/auth.service';
@@ -153,6 +153,16 @@ export function LandingPage() {
                 </div>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </div>
+            </button>
+            <button
+              onClick={() => router.push('/schools/register')}
+              className="mt-3 flex w-full items-center justify-between rounded-xl border border-white/15 bg-white/[0.04] px-4 py-3 text-left text-sm font-semibold text-white transition-colors hover:bg-white/10"
+            >
+              <span className="flex min-w-0 items-center gap-3">
+                <Building2 className="h-4 w-4 flex-shrink-0 text-[#F59E0B]" />
+                <span className="truncate">Register a school portal</span>
+              </span>
+              <ArrowRight className="h-4 w-4 flex-shrink-0 text-gray-400" />
             </button>
           </div>
 

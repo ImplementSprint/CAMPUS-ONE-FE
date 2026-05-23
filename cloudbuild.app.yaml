@@ -1,0 +1,17 @@
+substitutions:
+  _APP_NAME: web-lms
+  _IMAGE: asia-southeast1-docker.pkg.dev/campus-one-sandbox-260522/campus-one-sandbox-artifacts/campus-one-web-lms:latest
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - Dockerfile
+      - --build-arg
+      - APP_NAME=${_APP_NAME}
+      - -t
+      - ${_IMAGE}
+      - .
+images:
+  - ${_IMAGE}

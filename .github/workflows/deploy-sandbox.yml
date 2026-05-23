@@ -1,0 +1,92 @@
+name: Deploy Frontend Sandbox
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "scripts/**"
+      - "Dockerfile"
+      - "cloudbuild.app.yaml"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/deploy-sandbox.yml"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'campus-one-sandbox-260522' }}
+  GCP_REGION: ${{ vars.GCP_REGION || 'asia-southeast1' }}
+  GKE_CLUSTER_NAME: ${{ vars.GKE_CLUSTER_NAME || 'campus-one-sandbox-gke' }}
+  GKE_NAMESPACE: ${{ vars.GKE_NAMESPACE || 'campus-one-sandbox' }}
+  ARTIFACT_REGISTRY_REPOSITORY: ${{ vars.ARTIFACT_REGISTRY_REPOSITORY || 'campus-one-sandbox-artifacts' }}
+
+jobs:
+  verify-build-deploy:
+    name: Verify, build images, and update sandbox Deployments
+    runs-on: ubuntu-latest
+    environment: sandbox
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - app_name: web-lms
+            image_name: campus-one-web-lms
+            deployment: campus-one-web-lms
+            container: campus-one-web-lms
+          - app_name: web-school
+            image_name: campus-one-web-school
+            deployment: campus-one-web-school
+            container: campus-one-web-school
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Verify
+        run: npm run verify
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOYER_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build and push image with Cloud Build
+        run: |
+          IMAGE="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${ARTIFACT_REGISTRY_REPOSITORY}/${{ matrix.app.image_name }}:${GITHUB_SHA}"
+          echo "IMAGE=${IMAGE}" >> "$GITHUB_ENV"
+          gcloud builds submit \
+            --project="${GCP_PROJECT_ID}" \
+            --config=cloudbuild.app.yaml \
+            --substitutions=_APP_NAME=${{ matrix.app.app_name }},_IMAGE="${IMAGE}" \
+            .
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER_NAME }}
+          location: ${{ env.GCP_REGION }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Update frontend image
+        run: |
+          kubectl -n "${GKE_NAMESPACE}" set image "deployment/${{ matrix.app.deployment }}" "${{ matrix.app.container }}=${IMAGE}"
+          kubectl -n "${GKE_NAMESPACE}" rollout status "deployment/${{ matrix.app.deployment }}" --timeout=600s
