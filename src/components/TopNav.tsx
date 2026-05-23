@@ -9,6 +9,8 @@ export default function TopNav({ onToggleSidebar }: { onToggleSidebar: () => voi
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
+    let mounted = true;
+
     const load = async () => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) return;
@@ -17,12 +19,22 @@ export default function TopNav({ onToggleSidebar }: { onToggleSidebar: () => voi
         .eq('profile_id', user.user.id)
         .order('created_at', { ascending: false })
         .limit(20);
-      if (data) setNotifications(data as Notification[]);
+      if (mounted && data) setNotifications(data as Notification[]);
     };
+
     load();
 
     const sub = supabase.auth.onAuthStateChange(() => load());
-    return () => sub.data.subscription.unsubscribe();
+    const channel = supabase
+      .channel('web-notifications-topnav')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => load())
+      .subscribe();
+
+    return () => {
+      mounted = false;
+      sub.data.subscription.unsubscribe();
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const unread = notifications.filter(n => !n.is_read).length;

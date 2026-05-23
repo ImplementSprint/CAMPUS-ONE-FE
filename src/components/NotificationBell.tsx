@@ -23,9 +23,14 @@ export default function NotificationBell() {
     load();
 
     const sub = supabase.auth.onAuthStateChange(() => load());
+    const channel = supabase
+      .channel('web-notifications-bell')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => load())
+      .subscribe();
     return () => {
       mounted = false;
       sub.data.subscription.unsubscribe();
+      supabase.removeChannel(channel);
     };
   }, []);
 

@@ -73,22 +73,22 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-1 max-h-[calc(100vh-200px)]">
 
         {/* Dashboard */}
-        <NavItem href="/student/dashboard" active={active('/student/dashboard')}>
+        <NavItem href="/dashboard" active={active('/dashboard')}>
           <IconDashboard /> Dashboard
         </NavItem>
 
         {/* Profile */}
-        <NavItem href="/student/profile" active={active('/student/profile')}>
+        <NavItem href="/profile" active={active('/profile')}>
           <IconProfile /> Profile
         </NavItem>
 
         {/* Course Details */}
-        <NavItem href="/student/courses" active={active('/student/courses')}>
+        <NavItem href="/courses" active={active('/courses')}>
           <IconBook /> Course Details
         </NavItem>
 
         {/* Evaluation */}
-        <NavItem href="/student/evaluation" active={active('/student/evaluation')}>
+        <NavItem href="/evaluation" active={active('/evaluation')}>
           <IconClipboard /> Evaluation
         </NavItem>
 
@@ -109,16 +109,16 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
         {enrollOpen && (
           <div className="ml-4 pl-3 border-l border-gray-700 space-y-0.5">
-            <SubNavItem href="/student/enrollment" active={active('/student/enrollment')}>
+            <SubNavItem href="/enrollment" active={active('/enrollment')}>
               <IconDoc /> Online Enrollment
             </SubNavItem>
-            <SubNavItem href="/student/payment" active={active('/student/payment')}>
+            <SubNavItem href="/payment" active={active('/payment')}>
               <IconWallet /> Balance Payment
             </SubNavItem>
-            <SubNavItem href="/student/advised" active={active('/student/advised')}>
+            <SubNavItem href="/advised" active={active('/advised')}>
               <IconList /> Advised Courses
             </SubNavItem>
-            <SubNavItem href="/student/deficiencies" active={active('/student/deficiencies')}>
+            <SubNavItem href="/deficiencies" active={active('/deficiencies')}>
               <IconAlert /> Deficiencies
             </SubNavItem>
           </div>
@@ -128,22 +128,22 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         <div className="h-px bg-gray-700 my-2"></div>
 
         {/* View Semestral Grades */}
-        <NavItem href="/student/grades" active={active('/student/grades')}>
+        <NavItem href="/grades" active={active('/grades')}>
           <IconChart /> View Semestral Grades
         </NavItem>
 
         {/* Graduation */}
-        <NavItem href="/student/graduation" active={active('/student/graduation')}>
+        <NavItem href="/graduation" active={active('/graduation')}>
           <IconGradCap /> Graduation
         </NavItem>
 
         {/* Subjects */}
-        <NavItem href="/student/subjects" active={active('/student/subjects')}>
+        <NavItem href="/subjects" active={active('/subjects')}>
           <IconBook /> Subjects
         </NavItem>
 
         {/* Add/Drop */}
-        <NavItem href="/student/add-drop" active={active('/student/add-drop')}>
+        <NavItem href="/add-drop" active={active('/add-drop')}>
           <IconList /> Add/Drop
         </NavItem>
 

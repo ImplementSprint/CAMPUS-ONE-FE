@@ -6,7 +6,7 @@ const applicationDb = supabase.schema("applicant");
 
 // ─── Admin Types ──────────────────────────────────────────────────────────────
 export interface AdminApplication {
-  id: string;
+   id: string;
   reference_number: string;
   applicant_number: string | null;
   full_name: string;
