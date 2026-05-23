@@ -16,8 +16,8 @@ export function AlumniDashboard() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-gray-100">
-      <div className="relative h-screen w-full max-w-[430px] mx-auto flex flex-col bg-gray-100">
+    <div className="w-screen min-h-screen overflow-hidden bg-gray-100">
+      <div className="relative min-h-screen w-full flex flex-col bg-gray-100">
         {/* Header */}
         <header className="bg-[#1a1a1a] text-white h-14 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-0.5">

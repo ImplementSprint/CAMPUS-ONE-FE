@@ -12,8 +12,8 @@ export function AdminMobileLayout({ children, currentView }: AdminMobileLayoutPr
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-gray-100">
-      <div className="relative h-screen w-full max-w-[430px] mx-auto flex flex-col bg-gray-100 overflow-hidden">
+    <div className="w-screen min-h-screen overflow-hidden bg-gray-100">
+      <div className="relative min-h-screen w-full flex flex-col bg-gray-100 overflow-hidden">
         <AdminSidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}

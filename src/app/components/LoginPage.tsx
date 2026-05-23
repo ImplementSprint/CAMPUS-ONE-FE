@@ -63,8 +63,8 @@ export function LoginPage() {
   );
 
   return (
-    <div className="w-screen h-screen bg-gray-100 flex items-start justify-center">
-      <div className="w-full max-w-[430px] h-screen flex flex-col bg-gray-100">
+    <div className="w-screen min-h-screen bg-gray-100 flex items-start justify-center overflow-y-auto">
+      <div className="w-full min-h-screen flex flex-col bg-gray-100">
         {/* Header */}
         <header className="bg-[#1a1a1a] text-white h-14 flex items-center justify-center px-4 flex-shrink-0">
           <div className="flex items-center gap-0.5">

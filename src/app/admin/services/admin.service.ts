@@ -2,7 +2,8 @@ import { supabase } from "@/lib/supabase";
 const applicationDb = supabase.schema('applicant');
 import type { SchoolLevel, ApplicantType, AdmissionStatus, SupabaseResponse } from "../../admissions/types/admissions.types";
 import { REQUIREMENTS_CONFIG } from "../../admissions/services/requirements.config";
-import { sendEmail } from "@/services/email.service";
+ 
+const APPLICATION_API_BASE_URL = process.env.NEXT_PUBLIC_APPLICATION_API_URL || 'http://localhost:4002';
 
 // ─── Admin Types ──────────────────────────────────────────────────────────────
 export interface AdminApplication {
@@ -160,40 +161,26 @@ export async function updateApplicationStatus(
   status: AdmissionStatus,
   rejectionReason?: string
 ): Promise<SupabaseResponse<{ success: boolean }>> {
-  const updateData: Record<string, unknown> = {
-    status,
-    reviewed_at: new Date().toISOString(),
-  };
+  try {
+    const response = await fetch(`${APPLICATION_API_BASE_URL}/api/application/admin/applications/${applicationId}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, rejectionReason }),
+    });
 
-  // Generate applicant number if accepted
-  if (status === "Passed") {
-    const { data: appNumber } = await supabase.rpc("generate_applicant_number");
-    updateData.applicant_number = appNumber;
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok || payload?.error) {
+      return {
+        data: null,
+        error: { message: payload?.error?.message || payload?.message || 'Failed to update application status' },
+      };
+    }
+
+    return { data: { success: true }, error: null };
+  } catch (error: any) {
+    return { data: null, error: { message: error.message || 'Failed to update application status' } };
   }
-
-  if (status === "Not Accepted" && rejectionReason) {
-    updateData.rejection_reason = rejectionReason;
-  }
-
-  const { error } = await supabase
-    .from("applicant_profiles")
-    .update(updateData)
-    .eq("id", applicationId);
-
-  if (error) return { data: null, error: { message: error.message } };
-
-  // Send email notification
-  const { data: applicant } = await supabase
-    .from("applicant_profiles")
-    .select("email, full_name, reference_number, applicant_number")
-    .eq("id", applicationId)
-    .single();
-
-  if (applicant) {
-    await sendStatusUpdateEmail(applicant, status, rejectionReason);
-  }
-
-  return { data: { success: true }, error: null };
 }
 
 // ─── Send Status Update Email ─────────────────────────────────────────────────
@@ -275,15 +262,9 @@ async function sendStatusUpdateEmail(
     </html>
   `;
 
-  try {
-    await sendEmail({
-      to: applicant.email,
-      subject,
-      html,
-    });
-  } catch (error) {
-    console.error("Failed to send status update email:", error);
-  }
+  // Email delivery is now handled by the application backend.
+  void subject;
+  void html;
 }
 
 // ─── Fetch Dashboard Stats ────────────────────────────────────────────────────
