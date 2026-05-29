@@ -34,6 +34,7 @@ import {
   X,
 } from 'lucide-react';
 import { loginWithSupabase } from '@/lib/auth.service';
+import { resolveSchoolRegistrationNext } from '@/lib/school-registration-validation';
 
 type AuthTab = 'login' | 'signup';
 type RegistrationErrors = Partial<Record<'name' | 'representative' | 'email' | 'contactNumber' | 'schoolType' | 'targetSubdomain', string>>;
@@ -297,7 +298,7 @@ export function LandingPage() {
           setAuthSuccess(true);
           setRegistrationMessage(data.message ?? 'School registration submitted for review.');
           window.setTimeout(() => {
-            window.location.href = `/school/submitted?school=${encodeURIComponent(slug)}`;
+            window.location.href = resolveSchoolRegistrationNext(data.next, slug);
           }, 900);
         } else {
           setAuthError(data.message ?? 'School registration failed. Please try again.');

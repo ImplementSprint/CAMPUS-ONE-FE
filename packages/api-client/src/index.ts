@@ -39,6 +39,9 @@ export type CampusOneClientOptions = {
 
 export type AuthHeaders = {
   Authorization?: string;
+  'X-User-Id'?: string;
+  'X-User-Role'?: string;
+  'X-Institution-Id'?: string;
 };
 
 export class CampusOneApiError extends Error {
@@ -121,10 +124,40 @@ export function buildTenantHeaders(schoolSlug?: string | null): TenantHeaders {
 export function buildAuthHeaders(accessToken?: string | null): AuthHeaders {
   const normalized = accessToken?.trim();
   if (!normalized) return {};
+  const bearerToken = normalized.toLowerCase().startsWith('bearer ') ? normalized.slice('bearer '.length).trim() : normalized;
+  const routeIdentity = decodeRouteIdentityFromJwt(bearerToken);
 
   return {
     Authorization: normalized.toLowerCase().startsWith('bearer ') ? normalized : `Bearer ${normalized}`,
+    ...routeIdentity,
   };
+}
+
+function decodeRouteIdentityFromJwt(token: string): Omit<AuthHeaders, 'Authorization'> {
+  const [, payload] = token.split('.');
+  if (!payload) return {};
+
+  try {
+    const parsed = JSON.parse(decodeBase64Url(payload)) as {
+      sub?: unknown;
+      role?: unknown;
+      activeInstitutionId?: unknown;
+    };
+    return {
+      ...(typeof parsed.sub === 'string' && parsed.sub ? { 'X-User-Id': parsed.sub } : {}),
+      ...(typeof parsed.role === 'string' && parsed.role ? { 'X-User-Role': parsed.role } : {}),
+      ...(typeof parsed.activeInstitutionId === 'string' && parsed.activeInstitutionId ? { 'X-Institution-Id': parsed.activeInstitutionId } : {}),
+    };
+  } catch {
+    return {};
+  }
+}
+
+function decodeBase64Url(value: string): string {
+  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+  if (typeof globalThis.atob === 'function') return globalThis.atob(padded);
+  return Buffer.from(padded, 'base64').toString('utf8');
 }
 
 export function getSchoolSlugFromHost(hostname: string, platformDomain?: string): string | null {

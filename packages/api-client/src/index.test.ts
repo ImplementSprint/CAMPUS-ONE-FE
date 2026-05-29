@@ -17,6 +17,12 @@ function jsonResponse(body: unknown, init: ResponseInit = {}) {
 }
 
 describe('Campus One API client auth bootstrap helpers', () => {
+  function signTestPayload(payload: Record<string, unknown>) {
+    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+    const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+    return `${header}.${body}.signature`;
+  }
+
   it('sends tenant and bearer headers when loading the current auth user', async () => {
     const requests: Array<{ url: string; init?: RequestInit }> = [];
     const client = createCampusOneClient({
@@ -71,6 +77,21 @@ describe('Campus One API client auth bootstrap helpers', () => {
     });
     assert.deepEqual(buildAuthHeaders('  '), {});
     assert.deepEqual(buildAuthHeaders(null), {});
+  });
+
+  it('adds route identity headers when the access token is a JWT', () => {
+    const token = signTestPayload({
+      sub: 'super-1',
+      role: 'super_admin',
+      activeInstitutionId: 'school-1',
+    });
+
+    assert.deepEqual(buildAuthHeaders(token), {
+      Authorization: `Bearer ${token}`,
+      'X-User-Id': 'super-1',
+      'X-User-Role': 'super_admin',
+      'X-Institution-Id': 'school-1',
+    });
   });
 
   it('submits public school registrations to the backend platform route', async () => {

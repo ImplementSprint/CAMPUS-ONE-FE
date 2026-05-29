@@ -1,4 +1,4 @@
-import { buildTenantHeaders, getSchoolSlugFromHost } from '@campus-one/api-client';
+import { buildAuthHeaders, buildTenantHeaders, getSchoolSlugFromHost } from '@campus-one/api-client';
 import { getCurrentUser } from '@/shared/auth.service';
 import { readCachedBackendAccessToken } from '@/services/backend-session.service';
 
@@ -43,7 +43,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     headers: {
       'Content-Type': 'application/json',
       ...buildTenantHeaders(getSelectedSchoolSlug()),
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      ...buildAuthHeaders(accessToken),
       ...(currentUser?.id ? { 'X-User-Id': currentUser.id } : {}),
       ...(currentUser?.role ? { 'X-User-Role': currentUser.role } : {}),
       ...options.headers,

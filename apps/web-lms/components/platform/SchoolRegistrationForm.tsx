@@ -6,17 +6,11 @@ import { ArrowRight, Building2, Loader2 } from 'lucide-react';
 import type { SchoolRegistrationRequest } from '@campus-one/shared-contracts';
 import {
   hasSchoolRegistrationErrors,
+  resolveSchoolRegistrationNext,
   type SchoolRegistrationErrors,
+  SUPPORTED_SCHOOL_TYPES,
   validateSchoolRegistration,
 } from '@/lib/school-registration-validation';
-
-const SCHOOL_TYPES = [
-  'Basic Education',
-  'College',
-  'University',
-  'Training Center',
-  'Review Center',
-];
 
 const EMPTY_FORM: SchoolRegistrationRequest = {
   name: '',
@@ -72,8 +66,7 @@ export function SchoolRegistrationForm() {
         return;
       }
 
-      const next = data.next ?? `/schools/register/submitted?school=${encodeURIComponent(validation.payload.targetSubdomain)}`;
-      router.push(next);
+      router.push(resolveSchoolRegistrationNext(data.next, validation.payload.targetSubdomain));
     } catch {
       setStatusMessage('Network error. Please try again.');
     } finally {
@@ -96,7 +89,7 @@ export function SchoolRegistrationForm() {
           value={form.schoolType}
           error={errors.schoolType}
           onChange={(value) => updateField('schoolType', value)}
-          options={SCHOOL_TYPES}
+          options={[...SUPPORTED_SCHOOL_TYPES]}
           placeholder="Select school type"
         />
         <Field

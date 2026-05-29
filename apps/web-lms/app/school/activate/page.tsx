@@ -1,5 +1,6 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { hasSchoolOwnerActivationErrors, validateSchoolOwnerActivation } from '@/lib/owner-activation-validation';
 
 type ActivatePageProps = {
   searchParams: Promise<{ token?: string; tokenHash?: string }>;
@@ -11,6 +12,11 @@ async function activateOwner(formData: FormData) {
   const token = String(formData.get('token') ?? '').trim();
   const tokenHash = String(formData.get('tokenHash') ?? '').trim();
   const password = String(formData.get('password') ?? '').trim();
+  const validation = validateSchoolOwnerActivation({ token, tokenHash, password });
+
+  if (hasSchoolOwnerActivationErrors(validation.errors)) {
+    throw new Error(Object.values(validation.errors)[0] ?? 'Could not activate owner account.');
+  }
 
   const headerStore = await headers();
   const protocol = headerStore.get('x-forwarded-proto') ?? 'http';
@@ -20,11 +26,7 @@ async function activateOwner(formData: FormData) {
   const response = await fetch(`${baseUrl}/api/school/owner-activation`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      ...(token ? { token } : {}),
-      ...(tokenHash ? { tokenHash } : {}),
-      password,
-    }),
+    body: JSON.stringify(validation.payload),
     cache: 'no-store',
   });
 

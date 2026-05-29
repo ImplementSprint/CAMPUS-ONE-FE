@@ -2,6 +2,16 @@ import type { SchoolRegistrationRequest } from '@campus-one/shared-contracts';
 
 export type SchoolRegistrationErrors = Partial<Record<keyof SchoolRegistrationRequest, string>>;
 
+export const SUPPORTED_SCHOOL_TYPES = [
+  'Basic Education',
+  'College',
+  'University',
+  'Training Center',
+  'Review Center',
+] as const;
+
+const SUPPORTED_SCHOOL_TYPE_SET = new Set<string>(SUPPORTED_SCHOOL_TYPES);
+
 const RESERVED_SUBDOMAINS = new Set([
   'admin',
   'api',
@@ -47,7 +57,11 @@ export function validateSchoolRegistration(input: Partial<SchoolRegistrationRequ
   if (payload.representative.length < 2) errors.representative = 'Representative name is required.';
   if (!EMAIL_PATTERN.test(payload.email)) errors.email = 'Use a valid school representative email.';
   if (!PHONE_PATTERN.test(payload.contactNumber)) errors.contactNumber = 'Use a valid contact number.';
-  if (!payload.schoolType) errors.schoolType = 'Select a school type.';
+  if (!payload.schoolType) {
+    errors.schoolType = 'Select a school type.';
+  } else if (!SUPPORTED_SCHOOL_TYPE_SET.has(payload.schoolType)) {
+    errors.schoolType = 'Select a supported school type.';
+  }
 
   if (!SUBDOMAIN_PATTERN.test(payload.targetSubdomain)) {
     errors.targetSubdomain = 'Use 3-63 lowercase letters, numbers, or hyphens.';
@@ -60,4 +74,11 @@ export function validateSchoolRegistration(input: Partial<SchoolRegistrationRequ
 
 export function hasSchoolRegistrationErrors(errors: SchoolRegistrationErrors): boolean {
   return Object.keys(errors).length > 0;
+}
+
+export function resolveSchoolRegistrationNext(next: string | undefined, targetSubdomain: string): string {
+  if (next?.startsWith('/')) return next;
+
+  const school = encodeURIComponent(targetSubdomain.trim().toLowerCase());
+  return `/schools/register/submitted?school=${school}`;
 }

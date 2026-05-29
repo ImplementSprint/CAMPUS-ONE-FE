@@ -23,7 +23,7 @@ export function UnifiedLoginPage() {
           setLoading(false);
           return;
         }
-        router.push(getRedirectPath(result.user.role));
+        window.location.assign(getRedirectPath(result.user.role));
       } else {
         setError(result.error || 'Login failed. Please try again.');
       }
