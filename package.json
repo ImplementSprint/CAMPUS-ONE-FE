@@ -15,6 +15,7 @@
     "smoke:browser:roles": "node scripts/live-role-flow-smoke.mjs",
     "smoke:browser:registration": "node scripts/live-school-registration-smoke.mjs",
     "verify": "npm run contracts:check && npm run supabase:check && npm run supabase:allowlist:check && npm run test:node && npm run build",
+    "verify:web-apps": "node scripts/verify-web-apps.mjs",
     "dev:web-lms": "npm --workspace apps/web-lms run dev",
     "dev:web-school": "npm --workspace apps/web-school run dev",
     "smoke:web-school:ui": "node scripts/web-school-ui-smoke.mjs",
