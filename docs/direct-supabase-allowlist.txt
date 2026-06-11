@@ -12,7 +12,6 @@ apps/web-school/src/app/(student)/settings/page.tsx
 apps/web-school/src/app/admin/services/admin-auth.service.ts
 apps/web-school/src/app/admin/services/admin.service.ts
 apps/web-school/src/app/admin/services/student-admin.service.ts
-apps/web-school/src/app/admissions/services/admissions.service.ts
 apps/web-school/src/app/alumni/dashboard/profile/page.tsx
 apps/web-school/src/app/alumni/services/alumni.service.ts
 apps/web-school/src/app/professor/components/NotificationBell.tsx

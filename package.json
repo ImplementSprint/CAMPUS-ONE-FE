@@ -11,7 +11,7 @@
     "contracts:check": "node scripts/sync-contracts.mjs --check",
     "supabase:check": "node scripts/check-web-school-supabase.mjs",
     "supabase:allowlist:check": "node scripts/check-direct-supabase-allowlist.mjs",
-    "test:node": "node --test --import sucrase/register/ts.js scripts/check-web-school-supabase.test.mjs scripts/check-direct-supabase-allowlist.mjs scripts/live-school-registration-smoke.test.mjs packages/api-client/src/index.test.ts packages/ui/src/state.test.ts apps/web-lms/lib/platform-auth.test.ts apps/web-lms/lib/school-registration-validation.test.ts apps/web-lms/lib/owner-activation-validation.test.ts apps/web-school/src/services/backend-session.service.test.ts apps/web-school/src/services/route-access.service.test.ts",
+    "test:node": "node --test --import sucrase/register/ts.js scripts/check-web-school-supabase.test.mjs scripts/check-direct-supabase-allowlist.mjs scripts/live-school-registration-smoke.test.mjs packages/api-client/src/index.test.ts packages/ui/src/state.test.ts apps/web-lms/lib/platform-auth.test.ts apps/web-lms/lib/school-registration-validation.test.ts apps/web-lms/lib/owner-activation-validation.test.ts apps/web-school/src/services/backend-session.service.test.ts apps/web-school/src/services/route-access.service.test.ts apps/web-school/src/app/admissions/services/admissions.service.test.ts",
     "smoke:browser:roles": "node scripts/live-role-flow-smoke.mjs",
     "smoke:browser:registration": "node scripts/live-school-registration-smoke.mjs",
     "verify": "npm run contracts:check && npm run supabase:check && npm run supabase:allowlist:check && npm run test:node && npm run build",
