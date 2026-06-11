@@ -3,16 +3,18 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronRight, LogOut } from "lucide-react";
+import { ChevronDown, ChevronRight, LogOut, X } from "lucide-react";
 import { NavItem, navigation } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import { logout } from "@/lib/auth.service";
 
 interface SidebarProps {
   className?: string;
+  onClose?: () => void;
+  onNavigate?: () => void;
 }
 
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar({ className, onClose, onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const fullPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
@@ -31,18 +33,30 @@ export function Sidebar({ className }: SidebarProps) {
   const initials = displayName.slice(0, 2).toUpperCase() || "--";
 
   return (
-    <aside className={cn("flex h-screen w-72 flex-col bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] text-white flex-shrink-0 shadow-2xl", className)}>
+    <aside className={cn("flex h-screen w-72 max-w-[85vw] flex-col bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] text-white shadow-2xl", className)}>
       <div className="p-8 border-b border-gray-800">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#F59E0B] to-[#D97706] flex items-center justify-center">
-            <span className="text-white font-bold text-lg">C</span>
-          </div>
-          <div>
-            <div className="flex items-center gap-1">
-              <span className="text-[#F59E0B] font-bold text-xl">CAMPUS</span>
-              <span className="text-white font-light text-xl">Admin</span>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#F59E0B] to-[#D97706] flex items-center justify-center">
+              <span className="text-white font-bold text-lg">C</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-1">
+                <span className="text-[#F59E0B] font-bold text-xl">CAMPUS</span>
+                <span className="text-white font-light text-xl">Admin</span>
+              </div>
             </div>
           </div>
+          {onClose ? (
+            <button
+              type="button"
+              aria-label="Close navigation"
+              className="rounded-lg p-2 text-gray-300 transition hover:bg-white/10 hover:text-white lg:hidden"
+              onClick={onClose}
+            >
+              <X className="h-5 w-5" />
+            </button>
+          ) : null}
         </div>
         <p className="text-xs text-gray-400 ml-12 -mt-1">Student Management</p>
       </div>
@@ -51,7 +65,7 @@ export function Sidebar({ className }: SidebarProps) {
         <p className="text-xs text-gray-400 mb-3 px-3 uppercase tracking-wider font-semibold">Menu</p>
         <nav className="flex flex-col gap-1">
           {navigation.map((item) => (
-            <SidebarGroup key={item.title} item={item} activePathname={pathname} fullPath={fullPath} />
+            <SidebarGroup key={item.title} item={item} activePathname={pathname} fullPath={fullPath} onNavigate={onNavigate} />
           ))}
         </nav>
       </div>
@@ -75,7 +89,17 @@ export function Sidebar({ className }: SidebarProps) {
   );
 }
 
-function SidebarGroup({ item, activePathname, fullPath }: { item: NavItem; activePathname: string; fullPath: string }) {
+function SidebarGroup({
+  item,
+  activePathname,
+  fullPath,
+  onNavigate,
+}: {
+  item: NavItem;
+  activePathname: string;
+  fullPath: string;
+  onNavigate?: () => void;
+}) {
   const hasSubItems = item.items && item.items.length > 0;
   const isActive = activePathname === item.href || (hasSubItems && item.items?.some(sub => fullPath.startsWith(sub.href)));
   const [isExpanded, setIsExpanded] = useState(isActive);
@@ -92,6 +116,7 @@ function SidebarGroup({ item, activePathname, fullPath }: { item: NavItem; activ
     return (
       <Link
         href={item.href}
+        onClick={onNavigate}
         className={cn(
           "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
           isActive
@@ -134,6 +159,7 @@ function SidebarGroup({ item, activePathname, fullPath }: { item: NavItem; activ
             <Link
               key={subItem.title}
               href={subItem.href}
+              onClick={onNavigate}
               className={cn(
                 "flex items-center justify-between rounded-lg py-1.5 text-[12px] font-medium transition-all group/sub",
                 fullPath === subItem.href

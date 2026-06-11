@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { Bell } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Notification {
@@ -14,9 +14,10 @@ interface Notification {
 
 interface TopNavbarProps {
   className?: string;
+  onOpenSidebar?: () => void;
 }
 
-export function TopNavbar({ className }: TopNavbarProps) {
+export function TopNavbar({ className, onOpenSidebar }: TopNavbarProps) {
   const [instituteName, setInstituteName] = useState<string>("Institute Name");
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -75,7 +76,15 @@ export function TopNavbar({ className }: TopNavbarProps) {
   }
 
   return (
-    <header className={cn("bg-white/80 backdrop-blur-sm border-b border-gray-200 h-20 flex items-center justify-end px-10 flex-shrink-0 shadow-sm sticky top-0 z-30", className)}>
+    <header className={cn("bg-white/80 backdrop-blur-sm border-b border-gray-200 h-16 lg:h-20 flex items-center justify-between px-4 sm:px-6 lg:justify-end lg:px-10 flex-shrink-0 shadow-sm sticky top-0 z-30", className)}>
+      <button
+        type="button"
+        aria-label="Open navigation"
+        className="rounded-xl border border-gray-200 bg-white p-2 text-gray-700 shadow-sm transition hover:bg-gray-50 lg:hidden"
+        onClick={onOpenSidebar}
+      >
+        <Menu className="h-5 w-5" />
+      </button>
       <div className="flex items-center gap-4">
         <div className="relative" ref={panelRef}>
           <button
