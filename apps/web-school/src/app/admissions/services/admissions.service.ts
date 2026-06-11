@@ -49,9 +49,9 @@ export async function createApplicantProfile(dto: {
   return { data: { id: applicantId }, error: null };
 }
 
-// ─── Submit Application (Generates Reference Number) ──────────────────────────
+// Submit Application (Generates Reference Number)
 export async function submitApplication(applicantId: string): Promise<SupabaseResponse<{ reference_number: string }>> {
-  console.log("📝 Submitting application for:", applicantId);
+  console.log("[admissions] Submitting application for:", applicantId);
   
   const { data, error } = await applicationDb
     .from("applicant_profiles")
@@ -64,18 +64,18 @@ export async function submitApplication(applicantId: string): Promise<SupabaseRe
     .single();
   
   if (error) {
-    console.error("❌ Application submission error:", error);
+    console.error("[admissions] Application submission error:", error);
     return { data: null, error: { message: error.message } };
   }
   
-  console.log("✅ Application submitted successfully:", data);
-  console.log("📧 Preparing to send email to:", data.email);
+  console.log("[admissions] Application submitted successfully:", data);
+  console.log("[admissions] Preparing to send email to:", data.email);
   
   // Send confirmation email with reference number
   try {
 const { sendApplicationConfirmationEmail } = await import("@/services/email.service");
     
-    console.log("📤 Sending confirmation email...");
+    console.log("[admissions] Sending confirmation email...");
     const emailResult = await sendApplicationConfirmationEmail({
       to: data.email,
       applicantName: data.full_name || "Applicant",
@@ -85,12 +85,12 @@ const { sendApplicationConfirmationEmail } = await import("@/services/email.serv
     });
     
     if (emailResult.success) {
-      console.log("✅ Confirmation email sent successfully to:", data.email);
+      console.log("[admissions] Confirmation email sent successfully to:", data.email);
     } else {
-      console.error("❌ Email sending failed:", emailResult.error);
+      console.error("[admissions] Email sending failed:", emailResult.error);
     }
   } catch (emailError) {
-    console.error("❌ Failed to send confirmation email:", emailError);
+    console.error("[admissions] Failed to send confirmation email:", emailError);
     // Don't fail the submission if email fails
   }
   

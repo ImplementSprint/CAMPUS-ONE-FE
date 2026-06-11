@@ -12,8 +12,8 @@ export function AdminMobileLayout({ children, currentView }: AdminMobileLayoutPr
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-gray-100">
-      <div className="relative h-screen w-full max-w-[430px] mx-auto flex flex-col bg-gray-100 overflow-hidden">
+    <div className="min-h-screen bg-campus-page">
+      <div className="relative flex min-h-screen w-full flex-col bg-campus-page">
         <AdminSidebar
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
@@ -24,9 +24,9 @@ export function AdminMobileLayout({ children, currentView }: AdminMobileLayoutPr
           <AdminHeader onMenuClick={() => setIsDrawerOpen((prev) => !prev)} />
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <main className="mx-auto w-full max-w-6xl flex-1 overflow-x-hidden px-4 py-6 md:px-6">
           {children}
-        </div>
+        </main>
       </div>
     </div>
   );

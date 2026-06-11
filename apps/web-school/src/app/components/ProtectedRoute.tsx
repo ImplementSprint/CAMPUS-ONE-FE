@@ -26,8 +26,18 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     }
   }, [accessDecision.redirectTo, router]);
 
-  // Still loading, not logged in, or wrong role - show nothing
-  if (!accessDecision.canRender) return null;
+  // Still loading, not logged in, or wrong role.
+  // Keep a visible state so protected routes never look broken or blank while redirecting.
+  if (!accessDecision.canRender) {
+    return (
+      <main className="min-h-screen bg-neutral-50 p-6">
+        <div className="mx-auto mt-24 max-w-sm rounded-lg border border-neutral-200 bg-white p-5 text-center shadow-sm">
+          <p className="text-sm font-medium text-neutral-900">Checking access...</p>
+          <p className="mt-1 text-sm text-neutral-600">You will be redirected to sign in if needed.</p>
+        </div>
+      </main>
+    );
+  }
 
   // Admin desktop check
   if (role && adminRoles.includes(role as (typeof adminRoles)[number])) {

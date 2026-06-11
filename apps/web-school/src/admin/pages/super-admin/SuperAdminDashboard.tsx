@@ -57,10 +57,10 @@ export default function SuperAdminPage() {
         </div>
 
         <nav className="sa-nav">
-          <button id="tab-dashboard" className={`sa-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>🏠 Dashboard</button>
-          <button id="tab-services" className={`sa-nav-item ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>⚙️ Services</button>
-          <button id="tab-users" className={`sa-nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>👥 Admin Users</button>
-          <button id="tab-tenants" className={`sa-nav-item ${activeTab === 'tenants' ? 'active' : ''}`} onClick={() => setActiveTab('tenants')}>🏫 Tenants</button>
+          <button id="tab-dashboard" className={`sa-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard</button>
+          <button id="tab-services" className={`sa-nav-item ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>Services</button>
+          <button id="tab-users" className={`sa-nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>Admin Users</button>
+          <button id="tab-tenants" className={`sa-nav-item ${activeTab === 'tenants' ? 'active' : ''}`} onClick={() => setActiveTab('tenants')}>Tenants</button>
           <a id="tab-audit" className="sa-nav-item" href="/super-admin/audit">Audit Events</a>
         </nav>
 
@@ -83,7 +83,7 @@ export default function SuperAdminPage() {
               {activeTab === 'users' && 'Admin Users'}
               {activeTab === 'tenants' && 'Tenant Management'}
             </h1>
-            <p className="sa-page-sub">Super Admin Portal — Campus One Platform</p>
+            <p className="sa-page-sub">Super Admin Portal - Campus One Platform</p>
           </div>
           <div className="sa-header-badge">SUPER_ADMIN</div>
         </header>
@@ -93,22 +93,22 @@ export default function SuperAdminPage() {
           <section className="sa-section">
             <div className="sa-kpi-grid">
               <div className="sa-kpi sa-kpi--accent">
-                <div className="sa-kpi-icon">⚙️</div>
+                <div className="sa-kpi-icon">Ops</div>
                 <div className="sa-kpi-val">{MOCK_HEALTH.filter(h => h.status === 'online').length}/{MOCK_HEALTH.length}</div>
                 <div className="sa-kpi-label">Services Online</div>
               </div>
               <div className="sa-kpi">
-                <div className="sa-kpi-icon">👥</div>
+                <div className="sa-kpi-icon">Users</div>
                 <div className="sa-kpi-val">{MOCK_USERS.filter(u => u.status === 'active').length}</div>
                 <div className="sa-kpi-label">Active Admins</div>
               </div>
               <div className="sa-kpi">
-                <div className="sa-kpi-icon">🏫</div>
+                <div className="sa-kpi-icon">Sites</div>
                 <div className="sa-kpi-val">{MOCK_TENANTS.length}</div>
                 <div className="sa-kpi-label">Active Tenants</div>
               </div>
               <div className="sa-kpi sa-kpi--warn">
-                <div className="sa-kpi-icon">⚠️</div>
+                <div className="sa-kpi-icon">Warn</div>
                 <div className="sa-kpi-val">{MOCK_HEALTH.filter(h => h.status === 'degraded').length}</div>
                 <div className="sa-kpi-label">Services Degraded</div>
               </div>
@@ -136,7 +136,7 @@ export default function SuperAdminPage() {
               <table className="sa-table">
                 <thead><tr><th>Topic</th><th>Module</th><th>Description</th></tr></thead>
                 <tbody>
-                  <tr><td><code>graduation.verified.v1</code></td><td>graduation → alumni</td><td>Triggers alumni log creation and push notification</td></tr>
+                  <tr><td><code>graduation.verified.v1</code></td><td>graduation to alumni</td><td>Triggers alumni log creation and push notification</td></tr>
                   <tr><td><code>enrollment.subject.selected.v1</code></td><td>enrollment</td><td>Student adds subject to cart</td></tr>
                   <tr><td><code>enrollment.checkout.submitted.v1</code></td><td>enrollment</td><td>Enrollment confirmed button clicked</td></tr>
                   <tr><td><code>alumni.registration.submitted.v1</code></td><td>alumni</td><td>Alumni registration submitted (internal or legacy)</td></tr>

@@ -137,7 +137,7 @@ export function AdminDashboard() {
                         <p className="text-xs text-gray-600">Review and manage submissions</p>
                       </div>
                     </div>
-                    <span className="text-gray-400 group-hover:text-[#F59E0B]">→</span>
+                    <span className="text-xs font-semibold text-gray-400 group-hover:text-[#F59E0B]">Open</span>
                   </button>
 
                   <button className="flex items-center justify-between p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-all opacity-50 cursor-not-allowed">

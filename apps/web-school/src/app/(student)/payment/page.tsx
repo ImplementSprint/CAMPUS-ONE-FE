@@ -35,7 +35,6 @@ export default function PaymentPage() {
 
         <div className="bg-[#374151] rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-white text-xl">💳</span>
             <span className="text-white font-semibold">Account Summary</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -49,7 +48,7 @@ export default function PaymentPage() {
             </div>
             <div className="bg-gray-700 rounded-xl p-4">
               <p className="text-gray-300 text-xs font-medium mb-1">Balance Due</p>
-              <p className="text-amber-300 text-2xl font-black">₱{Number(balance?.balanceDue ?? 0).toLocaleString('en-PH')}</p>
+              <p className="text-amber-300 text-2xl font-black">PHP {Number(balance?.balanceDue ?? 0).toLocaleString('en-PH')}</p>
             </div>
             <div className="bg-gray-700 rounded-xl p-4">
               <p className="text-gray-300 text-xs font-medium mb-1">Payment Status</p>
@@ -70,8 +69,8 @@ export default function PaymentPage() {
                 {enrollments.map(e => (
                   <div key={e.id} className="flex items-center justify-between px-5 py-4">
                     <div>
-                      <p className="font-semibold text-gray-900 text-sm">{e.subjectCode} — {e.subjectName}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{e.section} • {e.schedule ?? 'TBA'}</p>
+                      <p className="font-semibold text-gray-900 text-sm">{e.subjectCode} - {e.subjectName}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{e.section} - {e.schedule ?? 'TBA'}</p>
                       <p className="text-xs text-gray-400">{fmt(e.enrolledAt)}</p>
                     </div>
                     <div className="text-right">
@@ -87,12 +86,12 @@ export default function PaymentPage() {
         <div className="bg-white rounded-2xl border border-gray-200 p-5">
           <p className="font-semibold text-gray-900 mb-4">Manual Payment Options</p>
           <div className="space-y-3">
-            {[['💳', 'Credit/Debit Card', 'Visa, Mastercard, JCB', 'bg-blue-500'],
-              ['🏦', 'Online Banking', 'BPI, BDO, Metrobank, UnionBank', 'bg-green-500'],
-              ['💰', 'Over-the-Counter', '7-Eleven, Cebuana, MLhuillier', 'bg-amber-500']
-            ].map(([icon, title, sub, color]) => (
+            {[['CARD', 'Credit/Debit Card', 'Visa, Mastercard, JCB', 'bg-blue-500'],
+              ['BANK', 'Online Banking', 'BPI, BDO, Metrobank, UnionBank', 'bg-green-500'],
+              ['OTC', 'Over-the-Counter', '7-Eleven, Cebuana, MLhuillier', 'bg-amber-500']
+            ].map(([code, title, sub, color]) => (
               <div key={title} className="flex items-center gap-4 p-4 border border-gray-100 rounded-xl">
-                <div className={`w-11 h-11 ${color} rounded-xl flex items-center justify-center text-xl`}>{icon}</div>
+                <div className={`w-11 h-11 ${color} rounded-xl flex items-center justify-center text-[10px] font-bold text-white`}>{code}</div>
                 <div>
                   <p className="font-semibold text-gray-900 text-sm">{title}</p>
                   <p className="text-xs text-gray-500">{sub}</p>

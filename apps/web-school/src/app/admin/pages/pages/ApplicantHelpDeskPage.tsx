@@ -14,6 +14,7 @@ interface Ticket {
 export function ApplicantHelpDeskPage() {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const [tickets] = useState<Ticket[]>([
     {
@@ -70,13 +71,18 @@ export function ApplicantHelpDeskPage() {
 
   const handleSendReply = () => {
     if (replyText.trim() && selectedTicket) {
-      alert(`Reply sent to ${selectedTicket.applicantName}`);
+      setStatusMessage(`Reply sent to ${selectedTicket.applicantName}.`);
       setReplyText("");
     }
   };
 
   return (
     <div className="p-10">
+      {statusMessage && (
+        <div className="mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700" role="status">
+          {statusMessage}
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Ticket List */}
         <div className="lg:col-span-1">
@@ -122,11 +128,11 @@ export function ApplicantHelpDeskPage() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h2 className="text-xl font-bold text-gray-900 mb-1">{selectedTicket.subject}</h2>
-                    <p className="text-sm text-gray-600">{selectedTicket.applicantName} • {selectedTicket.id}</p>
+                    <p className="text-sm text-gray-600">{selectedTicket.applicantName} - {selectedTicket.id}</p>
                   </div>
                   {selectedTicket.status === "Open" && (
                     <button
-                      onClick={() => alert("Ticket marked as resolved")}
+                      onClick={() => setStatusMessage("Ticket marked as resolved.")}
                       className="px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center gap-2"
                     >
                       <CheckCircle className="w-4 h-4" />

@@ -31,9 +31,9 @@ export function AdminWebLayout({ children, currentView, onNavigate }: AdminWebLa
       <div className="w-64 bg-[#1a1a1a] text-white flex flex-col flex-shrink-0">
         {/* Logo */}
         <div className="p-6 border-b border-gray-700">
-          <div className="flex items-center gap-1">
-            <span className="text-[#F59E0B] font-bold text-xl">CAMPUS</span>
-            <span className="text-white font-normal text-xl">Admin</span>
+          <div className="flex flex-col leading-tight">
+            <span className="text-white font-semibold text-lg">Campus One</span>
+            <span className="text-[#F59E0B] font-medium text-xs uppercase tracking-wide">School Administration</span>
           </div>
           <p className="text-xs text-gray-400 mt-1">Admissions Management</p>
         </div>

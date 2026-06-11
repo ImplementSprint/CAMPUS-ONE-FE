@@ -226,7 +226,7 @@ export function DocumentCenter({ requirements, schoolLevel, applicantType, appli
 
           {requirements.length === 0 && (
             <div className="text-center py-12 text-gray-400">
-              <div className="text-4xl mb-2">📄</div>
+              <div className="mb-2 text-sm font-semibold text-gray-500">No documents</div>
               <p className="text-sm">No requirements found for this selection.</p>
             </div>
           )}

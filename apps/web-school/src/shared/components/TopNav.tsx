@@ -48,9 +48,9 @@ export default function TopNav({ onToggleSidebar }: { onToggleSidebar: () => voi
         {/* Center — logo */}
         <div className="flex-1 flex justify-center items-center gap-2">
           <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
-          <span className="text-sm font-extrabold tracking-wider uppercase">
-            <span className="text-amber-500">CAMPUS</span>
-            <span className="text-white"> Portal</span>
+          <span className="flex flex-col items-center leading-tight">
+            <span className="text-sm font-semibold text-white">Campus One</span>
+            <span className="text-[11px] font-medium text-amber-500">Student Portal</span>
           </span>
         </div>
 

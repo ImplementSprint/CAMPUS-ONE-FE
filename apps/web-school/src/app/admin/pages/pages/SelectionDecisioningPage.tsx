@@ -21,6 +21,7 @@ export function SelectionDecisioningPage() {
   const [decision, setDecision] = useState<"Accept" | "Reject" | "Waitlist" | null>(null);
   const [remarks, setRemarks] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   const loadApplicants = async () => {
     setLoading(true);
@@ -37,6 +38,7 @@ export function SelectionDecisioningPage() {
 
   const handleSubmitDecision = async () => {
     if (!decision || !selectedApplicant) return;
+    setStatusMessage(null);
 
     // Map Accept -> Passed, Reject -> Not Accepted, Waitlist -> Under Review
     const dbStatus = decision === "Accept" 
@@ -56,18 +58,19 @@ export function SelectionDecisioningPage() {
       const res = await updateApplicationStatus(selectedApplicant.id, dbStatus, remarks || undefined);
       if (res.error) throw new Error(res.error.message);
       
-      alert(
-        decision === "Waitlist"
-          ? `Successfully waitlisted ${selectedApplicant.name}!`
-          : `Decision successfully submitted! An automated admission email has been dispatched to ${selectedApplicant.name}.`
-      );
+      setStatusMessage({
+        type: "success",
+        text: decision === "Waitlist"
+          ? `Successfully waitlisted ${selectedApplicant.name}.`
+          : `Decision submitted. An automated admission email has been dispatched to ${selectedApplicant.name}.`,
+      });
 
       setSelectedApplicant(null);
       setDecision(null);
       setRemarks("");
       await loadApplicants();
     } catch (err: any) {
-      alert(`Error submitting decision: ${err.message}`);
+      setStatusMessage({ type: "error", text: `Error submitting decision: ${err.message}` });
     } finally {
       setSubmitting(false);
     }
@@ -84,6 +87,18 @@ export function SelectionDecisioningPage() {
 
   return (
     <div className="p-10">
+      {statusMessage && (
+        <div
+          className={`mb-6 rounded-md border px-4 py-3 text-sm font-medium ${
+            statusMessage.type === "error"
+              ? "border-red-200 bg-red-50 text-red-700"
+              : "border-green-200 bg-green-50 text-green-700"
+          }`}
+          role={statusMessage.type === "error" ? "alert" : "status"}
+        >
+          {statusMessage.text}
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Panel - Applicant List */}
         <div className="lg:col-span-1">

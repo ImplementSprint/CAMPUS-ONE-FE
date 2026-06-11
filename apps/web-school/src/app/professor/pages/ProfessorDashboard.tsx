@@ -1,7 +1,10 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getCurrentUser, logout } from "@/services/auth.service";
-import { LogOut, BookOpen, Users, ClipboardCheck, Bell, Settings, HelpCircle, Menu, X, BarChart3, Calendar } from "lucide-react";
+import { LogOut, BookOpen, Users, ClipboardCheck, Bell, Settings, HelpCircle, BarChart3, Calendar } from "lucide-react";
+import { schoolPortalLabels } from "@/shared/school-reference";
+import { AppShell } from "@/shared/ui/layout/AppShell";
+import type { NavItem } from "@/shared/ui/layout/SideNav";
 import { getProfessorStats } from "../services/professor.service";
 import { ClassList } from "../components/ClassList";
 import { ClassDetail } from "../components/ClassDetail";
@@ -20,18 +23,6 @@ export function ProfessorDashboard() {
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [stats, setStats] = useState({ totalClasses: 0, totalStudents: 0, pendingSubmissions: 0 });
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      setSidebarOpen(window.innerWidth >= 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   useEffect(() => {
     if (user?.id) loadStats();
@@ -63,103 +54,51 @@ export function ProfessorDashboard() {
     setSelectedClassId(null);
   };
 
-  const handleNavClick = () => {
-    if (isMobile) setSidebarOpen(false);
+  const professorNavItems: NavItem[] = [
+    { label: "Dashboard", icon: BarChart3, active: view === "dashboard", onClick: () => setView("dashboard") },
+    { label: "My Classes", icon: BookOpen, active: view === "classes" || view === "class-detail", onClick: () => setView("classes") },
+    { label: "Students", icon: Users, active: view === "students", onClick: () => setView("students") },
+    { label: "Encode Grades", icon: ClipboardCheck, active: view === "grades", onClick: () => setView("grades") },
+    { label: "Announcements", icon: Bell, active: view === "announcements", onClick: () => setView("announcements") },
+    { label: "Schedule", icon: Calendar, active: view === "schedule", onClick: () => setView("schedule") },
+    { label: "Settings", icon: Settings, active: view === "settings", onClick: () => setView("settings") },
+    { label: "Help & Support", icon: HelpCircle, active: view === "help", onClick: () => setView("help") },
+  ];
+
+  const professorSecondaryItems: NavItem[] = [
+    { label: "Log out", icon: LogOut, onClick: logout },
+  ];
+
+  const titleByView: Record<View, string> = {
+    dashboard: "Dashboard",
+    classes: "My Classes",
+    "class-detail": "Class Details",
+    students: "Students",
+    grades: "Encode Grades",
+    announcements: "Announcements",
+    schedule: "Schedule",
+    settings: "Settings",
+    help: "Help & Support",
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {isMobile && sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
-
-      <aside className={`fixed md:relative z-40 h-screen w-64 bg-gradient-to-b from-[#1a1a1a] to-[#0f0f0f] text-white flex flex-col transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-        <div className="px-6 py-6 border-b border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Campus One" className="w-8 h-8 object-contain" />
-              <div>
-                <div className="text-sm font-bold">
-                  <span className="text-[#F59E0B]">CAMPUS</span>
-                  <span className="text-white"> Faculty</span>
-                </div>
-                <p className="text-xs text-gray-400">Professor Portal</p>
-              </div>
-            </div>
-            {isMobile && (
-              <button onClick={() => setSidebarOpen(false)} className="md:hidden p-1 hover:bg-gray-700 rounded-lg transition-colors"><X className="w-5 h-5" /></button>
-            )}
-          </div>
-        </div>
-
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          <div className="space-y-1">
-            <NavButton icon={<BarChart3 className="w-5 h-5" />} label="Dashboard" active={view === "dashboard"} onClick={() => { setView("dashboard"); handleNavClick(); }} />
-            <NavButton icon={<BookOpen className="w-5 h-5" />} label="My Classes" active={view === "classes"} onClick={() => { setView("classes"); handleNavClick(); }} />
-          </div>
-
-          <div className="h-px bg-gray-700 my-4" />
-
-          <div className="space-y-1">
-            <NavButton icon={<Users className="w-5 h-5" />} label="Students" active={view === "students"} onClick={() => { setView("students"); handleNavClick(); }} />
-            <NavButton icon={<ClipboardCheck className="w-5 h-5" />} label="Encode Grades" active={view === "grades"} onClick={() => { setView("grades"); handleNavClick(); }} />
-            <NavButton icon={<Bell className="w-5 h-5" />} label="Announcements" active={view === "announcements"} onClick={() => { setView("announcements"); handleNavClick(); }} />
-            <NavButton icon={<Calendar className="w-5 h-5" />} label="Schedule" active={view === "schedule"} onClick={() => { setView("schedule"); handleNavClick(); }} />
-          </div>
-
-          <div className="h-px bg-gray-700 my-4" />
-
-          <div className="space-y-1">
-            <NavButton icon={<Settings className="w-5 h-5" />} label="Settings" active={view === "settings"} onClick={() => { setView("settings"); handleNavClick(); }} />
-            <NavButton icon={<HelpCircle className="w-5 h-5" />} label="Help & Support" active={view === "help"} onClick={() => { setView("help"); handleNavClick(); }} />
-          </div>
-        </nav>
-
-        <div className="px-4 py-4 border-t border-gray-700">
-          <div className="mb-4 pb-4 border-b border-gray-700">
-            <p className="text-xs text-gray-400 mb-1">Logged in as</p>
-            <p className="text-sm font-semibold text-white truncate">{user?.name || user?.email}</p>
-          </div>
-          <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors font-medium text-sm">
-            <LogOut className="w-5 h-5" />
-            <span>Log Out</span>
-          </button>
-        </div>
-      </aside>
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-4">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"><Menu className="w-6 h-6 text-gray-700" /></button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{view === "dashboard" ? "Dashboard" : view === "classes" ? "My Classes" : "Class Details"}</h1>
-              <p className="text-sm text-gray-500 mt-0.5">Welcome back, Professor</p>
-            </div>
-          </div>
-        </header>
-
-        <main className="flex-1 overflow-y-auto">
-          {view === "dashboard" && <DashboardView user={user} stats={stats} loading={loading} onViewClasses={() => setView("classes")} onViewGrades={() => setView("grades")} onViewAnnouncements={() => setView("announcements")} onViewStudents={() => setView("students")} onViewSchedule={() => setView("schedule")} />}
-          {view === "classes" && <ClassList professorId={user?.id || ""} onViewClass={handleViewClass} onBack={handleBackToDashboard} />}
-          {view === "class-detail" && selectedClassId && <ClassDetail classId={selectedClassId} professorId={user?.id || ""} onBack={handleBackToClasses} />}
-          {view === "students" && <div className="p-6 md:p-8"><ProfessorStudents /></div>}
-          {view === "grades" && <div className="p-6 md:p-8"><ProfessorGrades /></div>}
-          {view === "announcements" && <div className="p-6 md:p-8"><ProfessorAnnouncements /></div>}
-          {view === "schedule" && <div className="p-6 md:p-8"><ProfessorSchedule /></div>}
-          {view === "settings" && <div className="p-6 md:p-8"><ProfessorSettings /></div>}
-          {view === "help" && <div className="p-6 md:p-8"><ProfessorHelp /></div>}
-        </main>
-      </div>
-    </div>
-  );
-}
-
-function NavButton({ icon, label, active, onClick }: { icon: React.ReactNode; label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button onClick={onClick} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${active ? 'bg-[#F59E0B] text-white shadow-lg shadow-[#F59E0B]/20' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}`}>
-      {icon}
-      <span className="font-medium text-sm">{label}</span>
-    </button>
+    <AppShell
+      title={titleByView[view]}
+      navTitle="Faculty Portal"
+      portalLabel={schoolPortalLabels.faculty}
+      navItems={professorNavItems}
+      secondaryItems={professorSecondaryItems}
+    >
+      {view === "dashboard" && <DashboardView user={user} stats={stats} loading={loading} onViewClasses={() => setView("classes")} onViewGrades={() => setView("grades")} onViewAnnouncements={() => setView("announcements")} onViewStudents={() => setView("students")} onViewSchedule={() => setView("schedule")} />}
+      {view === "classes" && <ClassList professorId={user?.id || ""} onViewClass={handleViewClass} onBack={handleBackToDashboard} />}
+      {view === "class-detail" && selectedClassId && <ClassDetail classId={selectedClassId} professorId={user?.id || ""} onBack={handleBackToClasses} />}
+      {view === "students" && <div className="p-6 md:p-8"><ProfessorStudents /></div>}
+      {view === "grades" && <div className="p-6 md:p-8"><ProfessorGrades /></div>}
+      {view === "announcements" && <div className="p-6 md:p-8"><ProfessorAnnouncements /></div>}
+      {view === "schedule" && <div className="p-6 md:p-8"><ProfessorSchedule /></div>}
+      {view === "settings" && <div className="p-6 md:p-8"><ProfessorSettings /></div>}
+      {view === "help" && <div className="p-6 md:p-8"><ProfessorHelp /></div>}
+    </AppShell>
   );
 }
 

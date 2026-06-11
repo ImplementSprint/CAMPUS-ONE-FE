@@ -21,7 +21,7 @@ function ClearanceTrackerContent() {
         {checkpoints.map((cp) => (
           <li key={cp.label} className={cp.done ? 'done' : ''}>
             <strong>{cp.label}</strong>
-            <span>{cp.done ? '✓ Done' : 'Pending'}</span>
+            <span>{cp.done ? 'Done' : 'Pending'}</span>
           </li>
         ))}
       </ul>

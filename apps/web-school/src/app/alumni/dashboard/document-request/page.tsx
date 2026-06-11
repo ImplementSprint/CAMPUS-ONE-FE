@@ -12,11 +12,19 @@ function DocumentRequestContent() {
   const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'courier'>('pickup');
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle');
+  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!consentAccepted) { alert('Please accept the data privacy notice.'); return; }
-    if (!user?.id) { alert('Please sign in again before submitting.'); return; }
+    setMessage(null);
+    if (!consentAccepted) {
+      setMessage({ type: 'error', text: 'Please accept the data privacy notice before submitting.' });
+      return;
+    }
+    if (!user?.id) {
+      setMessage({ type: 'error', text: 'Please sign in again before submitting.' });
+      return;
+    }
     setStatus('loading');
     try {
       const result = await requestAlumniRecord({
@@ -28,14 +36,14 @@ function DocumentRequestContent() {
       });
       if (result.error) throw new Error(result.error.message);
       setStatus('done');
-      alert('Document request submitted!');
+      setMessage({ type: 'success', text: 'Document request submitted. The alumni office will review it next.' });
       setPurpose('');
       setDocumentType('');
       setNumberOfCopies(1);
       setDeliveryMethod('pickup');
       setConsentAccepted(false);
     } catch {
-      alert('Failed to submit. Please try again.');
+      setMessage({ type: 'error', text: 'Failed to submit the request. Please try again.' });
       setStatus('idle');
     }
   };
@@ -47,6 +55,14 @@ function DocumentRequestContent() {
         <p>Submit official document requests</p>
       </header>
       <form className="form-grid" onSubmit={onSubmit}>
+        {message ? (
+          <p
+            className={`form-message form-message--${message.type}`}
+            role={message.type === 'error' ? 'alert' : 'status'}
+          >
+            {message.text}
+          </p>
+        ) : null}
         <div className="form-block">
           <h3>Document Details</h3>
           <label>
@@ -78,7 +94,7 @@ function DocumentRequestContent() {
             </label>
             <label className="option-item">
               <input type="radio" name="delivery" value="courier" checked={deliveryMethod === 'courier'} onChange={() => setDeliveryMethod('courier')} />
-              <span><strong>Courier Delivery</strong><small>₱150 shipping fee</small></span>
+              <span><strong>Courier Delivery</strong><small>PHP 150 shipping fee</small></span>
             </label>
           </div>
         </div>

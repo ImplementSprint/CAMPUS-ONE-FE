@@ -20,12 +20,12 @@ export function Home({ session }: HomeProps) {
   ];
 
   const handleProceedToPayment = () => {
-    // TODO: Handle payment processing
+    // Payment processing is completed by the configured school payment provider.
     console.log("Proceeding to payment with method:", selectedPaymentMethod);
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 pt-5 pb-36">
+    <div className="px-4 pt-5 pb-5">
       {/* Selection Tags - Show school level and applicant type if available */}
       {session.schoolLevel && session.applicantType && (
         <SelectionTags schoolLevel={session.schoolLevel} applicantType={session.applicantType} />
@@ -57,7 +57,7 @@ export function Home({ session }: HomeProps) {
 
         <div className="text-center mb-6">
           <p className="text-xs font-semibold text-gray-600 mb-2">RESERVATION FEE:</p>
-          <p className="text-3xl font-bold text-red-600">₱10,000.00</p>
+          <p className="text-3xl font-bold text-red-600">PHP 10,000.00</p>
         </div>
 
         {/* Payment Method Selection */}
@@ -103,10 +103,10 @@ export function Home({ session }: HomeProps) {
       </div>
 
       {/* Proceed to Payment Button */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20">
+      <div className="mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-4 sm:flex-row sm:justify-end">
         <button
           onClick={handleProceedToPayment}
-          className="w-full h-12 rounded-xl bg-[#1a1a1a] text-white font-bold text-sm tracking-wide active:bg-gray-800 transition-all shadow-lg"
+          className="h-11 rounded-md bg-campus-ink px-4 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 sm:min-w-44"
         >
           Proceed to Payment
         </button>

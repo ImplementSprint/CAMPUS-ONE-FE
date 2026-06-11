@@ -38,7 +38,7 @@ function NavIcon({ type }: { type: NavItem['icon'] }) {
 
 export function Sidebar() {
   const pathname = usePathname()
-  const title = 'APICENTER'
+  const title = 'Campus One'
 
   return (
     <aside className="sidebar" aria-label="Primary navigation">

@@ -62,7 +62,6 @@ export default function AddDropPage() {
           <h1 className="text-xl font-black text-gray-900 mb-1">Adding / Dropping of Courses</h1>
 
           <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 flex gap-3 mb-6">
-            <span className="text-purple-500 mt-0.5">ℹ️</span>
             <div>
               <p className="font-semibold text-gray-900 text-sm">Instructions</p>
               <p className="text-sm text-gray-600 mt-1">Fill out the form below to request adding or dropping courses. Attach the required documentation and submit for advisor approval.</p>
@@ -94,7 +93,6 @@ export default function AddDropPage() {
                 </div>
               ) : (
                 <label className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center cursor-pointer hover:border-amber-400 transition">
-                  <span className="text-2xl mb-2">☁️</span>
                   <p className="font-semibold text-gray-700 text-sm">Click to upload document</p>
                   <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX up to 10MB</p>
                   <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={e => setFile(e.target.files?.[0] ?? null)} />
@@ -114,12 +112,11 @@ export default function AddDropPage() {
 
           {submitted && (
             <div className="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
-              <span className="text-blue-500 mt-0.5">⏳</span>
               <div className="flex-1">
                 <p className="font-semibold text-blue-800 text-sm">Request In Progress</p>
                 <p className="text-sm text-gray-600 mt-0.5">Your add/drop request has been submitted and is under review.</p>
               </div>
-              <button onClick={() => setSubmitted(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+              <button onClick={() => setSubmitted(false)} className="text-gray-400 hover:text-gray-600 text-sm font-semibold">Dismiss</button>
             </div>
           )}
         </div>

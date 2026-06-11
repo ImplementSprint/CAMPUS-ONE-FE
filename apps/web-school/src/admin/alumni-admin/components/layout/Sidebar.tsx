@@ -27,13 +27,13 @@ export function Sidebar() {
   return (
     <aside className="sidebar" aria-label="Primary navigation">
       <div className="sidebar-header">
-        <div className="sidebar-brand" aria-label="CAMPUS Portal">
+        <div className="sidebar-brand" aria-label="Campus One Alumni Services">
           <span className="sidebar-brand-mark" aria-hidden="true">
             <img src="/logo.png" alt="" />
           </span>
           <p className="sidebar-brand-title">
-            <span>CAMPUS</span>
-            <span>Portal</span>
+            <span>Campus One</span>
+            <span>Alumni</span>
           </p>
         </div>
       </div>

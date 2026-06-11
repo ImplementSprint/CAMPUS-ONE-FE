@@ -12,6 +12,7 @@ interface Program {
 
 export function EligibilityCriteriaPage() {
   const [expandedPrograms, setExpandedPrograms] = useState<string[]>(["PROG-001"]);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   
   const [programs] = useState<Program[]>([
     {
@@ -48,6 +49,11 @@ export function EligibilityCriteriaPage() {
 
   return (
     <div className="p-10">
+      {statusMessage && (
+        <div className="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800" role="status">
+          {statusMessage}
+        </div>
+      )}
       <div className="space-y-4">
         {programs.map((program) => {
           const isExpanded = expandedPrograms.includes(program.id);
@@ -72,7 +78,7 @@ export function EligibilityCriteriaPage() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      alert(`Edit ${program.name}`);
+                      setStatusMessage(`Eligibility editing requires the admissions criteria service for ${program.name}.`);
                     }}
                     className="p-2 text-[#F59E0B] hover:bg-amber-50 rounded-lg transition-colors"
                   >

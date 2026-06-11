@@ -21,9 +21,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     <aside className="w-64 min-h-screen bg-black flex flex-col flex-shrink-0">
       {/* Logo + X */}
       <div className="px-5 py-5 flex items-center justify-between border-b border-gray-800">
-        <span className="text-lg font-extrabold">
-          <span className="text-amber-500">CAMPUS</span>
-          <span className="text-white"> Portal</span>
+        <span className="flex flex-col leading-tight">
+          <span className="text-sm font-semibold text-white">Campus One</span>
+          <span className="text-xs font-medium text-amber-500">Student Portal</span>
         </span>
         {onClose && (
           <button onClick={onClose} className="text-white hover:text-amber-400 transition">

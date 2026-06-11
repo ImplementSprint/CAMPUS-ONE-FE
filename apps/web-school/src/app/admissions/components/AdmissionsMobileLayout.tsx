@@ -1,21 +1,23 @@
-'use client'
-import { useState } from "react";
-import type { AppSession, SchoolLevel } from "../types/admissions.types";
-import { MobileHeader } from "./MobileHeader";
-import { SidebarDrawer } from "./SidebarDrawer";
+'use client';
+
+import { useState } from 'react';
+import { schoolPortalLabels } from '@/shared/school-reference';
+import type { AppSession, SchoolLevel } from '../types/admissions.types';
+import { MobileHeader } from './MobileHeader';
+import { SidebarDrawer } from './SidebarDrawer';
 import {
+  Clock,
+  FileText,
+  GraduationCap,
+  HelpCircle,
   Home,
+  LogOut,
+  Settings,
+  Upload,
   User,
   Users,
-  GraduationCap,
   UsersRound,
-  FileText,
-  Upload,
-  Clock,
-  HelpCircle,
-  Settings,
-  LogOut,
-} from "lucide-react";
+} from 'lucide-react';
 
 interface AdmissionsMobileLayoutProps {
   session: AppSession;
@@ -30,69 +32,69 @@ interface MenuItem {
 
 const MENU_BY_SCHOOL_LEVEL: Record<SchoolLevel, MenuItem[]> = {
   Kinder: [
-    { label: "Results", icon: Home },
-    { label: "Personal Information", icon: User },
-    { label: "Parent Information", icon: Users },
-    { label: "Academic Background", icon: GraduationCap },
-    { label: "Documents Uploading", icon: Upload },
-    { label: "Activity Log", icon: Clock },
+    { label: 'Results', icon: Home },
+    { label: 'Personal Information', icon: User },
+    { label: 'Parent Information', icon: Users },
+    { label: 'Academic Background', icon: GraduationCap },
+    { label: 'Documents Uploading', icon: Upload },
+    { label: 'Activity Log', icon: Clock },
   ],
   Elementary: [
-    { label: "Results", icon: Home },
-    { label: "Personal Information", icon: User },
-    { label: "Parent Information", icon: Users },
-    { label: "Academic Background", icon: GraduationCap },
-    { label: "Documents Uploading", icon: Upload },
-    { label: "Activity Log", icon: Clock },
+    { label: 'Results', icon: Home },
+    { label: 'Personal Information', icon: User },
+    { label: 'Parent Information', icon: Users },
+    { label: 'Academic Background', icon: GraduationCap },
+    { label: 'Documents Uploading', icon: Upload },
+    { label: 'Activity Log', icon: Clock },
   ],
-  "Junior High School": [
-    { label: "Results", icon: Home },
-    { label: "Personal Information", icon: User },
-    { label: "Parent Information", icon: Users },
-    { label: "Academic Background", icon: GraduationCap },
-    { label: "Program", icon: FileText },
-    { label: "Documents Uploading", icon: Upload },
-    { label: "Activity Log", icon: Clock },
+  'Junior High School': [
+    { label: 'Results', icon: Home },
+    { label: 'Personal Information', icon: User },
+    { label: 'Parent Information', icon: Users },
+    { label: 'Academic Background', icon: GraduationCap },
+    { label: 'Program', icon: FileText },
+    { label: 'Documents Uploading', icon: Upload },
+    { label: 'Activity Log', icon: Clock },
   ],
-  "Senior High School": [
-    { label: "Results", icon: Home },
-    { label: "Personal Information", icon: User },
-    { label: "Parent Information", icon: Users },
-    { label: "Academic Background", icon: GraduationCap },
-    { label: "Program", icon: FileText },
-    { label: "Documents Uploading", icon: Upload },
-    { label: "Activity Log", icon: Clock },
+  'Senior High School': [
+    { label: 'Results', icon: Home },
+    { label: 'Personal Information', icon: User },
+    { label: 'Parent Information', icon: Users },
+    { label: 'Academic Background', icon: GraduationCap },
+    { label: 'Program', icon: FileText },
+    { label: 'Documents Uploading', icon: Upload },
+    { label: 'Activity Log', icon: Clock },
   ],
   College: [
-    { label: "Results", icon: Home },
-    { label: "Personal Information", icon: User },
-    { label: "Parent Information", icon: Users },
-    { label: "Academic Background", icon: GraduationCap },
-    { label: "Alumni Relative Information", icon: UsersRound },
-    { label: "Program", icon: FileText },
-    { label: "Documents Uploading", icon: Upload },
-    { label: "Activity Log", icon: Clock },
+    { label: 'Results', icon: Home },
+    { label: 'Personal Information', icon: User },
+    { label: 'Parent Information', icon: Users },
+    { label: 'Academic Background', icon: GraduationCap },
+    { label: 'Alumni Relative Information', icon: UsersRound },
+    { label: 'Program', icon: FileText },
+    { label: 'Documents Uploading', icon: Upload },
+    { label: 'Activity Log', icon: Clock },
   ],
 };
 
 function menuItemToStep(label: string): string {
   const map: Record<string, string> = {
-    Results: "result",
-    "Personal Information": "personal-profile",
-    "Parent Information": "parent-info",
-    "Academic Background": "academic-background",
-    "Alumni Relative Information": "alumni-info",
-    Program: "program-selection",
-    "Documents Uploading": "documents",
-    "Activity Log": "activity-log",
+    Results: 'result',
+    'Personal Information': 'personal-profile',
+    'Parent Information': 'parent-info',
+    'Academic Background': 'academic-background',
+    'Alumni Relative Information': 'alumni-info',
+    Program: 'program-selection',
+    'Documents Uploading': 'documents',
+    'Activity Log': 'activity-log',
   };
-  return map[label] || "";
+  return map[label] || '';
 }
 
 function getInitials(first: string, last: string): string {
-  const f = first.trim()[0] ?? "";
-  const l = last.trim()[0] ?? "";
-  return (f + l).toUpperCase() || "?";
+  const f = first.trim()[0] ?? '';
+  const l = last.trim()[0] ?? '';
+  return (f + l).toUpperCase() || '?';
 }
 
 export function AdmissionsMobileLayout({
@@ -102,97 +104,90 @@ export function AdmissionsMobileLayout({
 }: AdmissionsMobileLayoutProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const showHamburger = !!session.applicantId;
+  const showNavigation = !!session.applicantId;
   const menuItems = session.schoolLevel ? MENU_BY_SCHOOL_LEVEL[session.schoolLevel] : [];
-  const initials = session.firstName ? getInitials(session.firstName, session.lastName) : "";
-  const fullName = `${session.firstName} ${session.lastName}`.trim() || "Applicant";
+  const initials = session.firstName ? getInitials(session.firstName, session.lastName) : '';
+  const fullName = `${session.firstName} ${session.lastName}`.trim() || 'Applicant';
 
   return (
-    <div className="w-screen h-screen flex overflow-hidden bg-gray-100 admissions-desktop-layout">
-      {/* 🖥️ Desktop Permanent Sidebar (Visible on Desktop only if logged in) */}
-      {showHamburger && (
-        <aside className="hidden md:flex md:w-64 md:flex-col bg-[#1a1a1a] text-white h-full flex-shrink-0 z-30">
-          {/* Logo / Branding */}
-          <div className="p-6 border-b border-gray-800 flex items-center gap-1.5">
-            <span className="text-[#F59E0B] font-bold text-xl tracking-tight">CAMPUS</span>
-            <span className="text-white font-light text-xl tracking-tight">Portal</span>
+    <div className="min-h-screen bg-neutral-100 admissions-desktop-layout">
+      {showNavigation ? (
+        <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-neutral-800 bg-campus-ink text-white md:flex">
+          <div className="flex items-center gap-2 border-b border-neutral-800 p-6">
+            <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-lg bg-white">
+              <img src="/logo.png" alt="" className="h-7 w-7 object-contain" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold">{schoolPortalLabels.productName}</p>
+              <p className="text-xs text-campus-brand">{schoolPortalLabels.admissions}</p>
+            </div>
           </div>
 
-          {/* User Profile Summary */}
-          <div className="px-4 py-5 border-b border-gray-800 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
-              {initials || "A"}
+          <div className="flex items-center gap-3 border-b border-neutral-800 px-4 py-5">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-neutral-700 text-sm font-bold text-white">
+              {initials || 'A'}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-white truncate">{fullName}</p>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Applicant</p>
+              <p className="truncate text-sm font-semibold text-white">{fullName}</p>
+              <p className="text-xs text-neutral-400">Applicant</p>
             </div>
           </div>
 
-          {/* Sidebar Menu Items */}
-          <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+          <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
             {menuItems.map((item) => {
               const step = menuItemToStep(item.label);
-              const isActive = session.step === step || (session.step === "select" && step === "result");
+              const isActive = session.step === step || (session.step === 'select' && step === 'result');
               const Icon = item.icon;
 
               return (
                 <button
                   key={item.label}
+                  type="button"
                   onClick={() => step && onNavigate?.(step)}
-                  className={`w-full px-4 py-3 rounded-md transition-all duration-150 text-left font-normal text-sm flex items-center gap-3 ${
-                    isActive
-                      ? "bg-[#F59E0B] text-white"
-                      : "text-gray-300 hover:bg-gray-800"
+                  className={`flex h-11 w-full items-center gap-3 rounded-md px-4 text-left text-sm transition-colors ${
+                    isActive ? 'bg-campus-brand text-campus-ink' : 'text-neutral-300 hover:bg-neutral-800'
                   }`}
                 >
-                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <Icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
                   <span>{item.label}</span>
                 </button>
               );
             })}
           </nav>
 
-          {/* Bottom Sidebar Action Items */}
-          <div className="px-3 py-4 space-y-1 border-t border-gray-800">
-            <button className="w-full px-4 py-3 rounded-md text-left font-normal text-sm text-gray-300 hover:bg-gray-800 transition-all duration-150 flex items-center gap-3">
-              <HelpCircle className="w-5 h-5 flex-shrink-0" />
+          <div className="space-y-1 border-t border-neutral-800 px-3 py-4">
+            <button type="button" className="flex h-11 w-full items-center gap-3 rounded-md px-4 text-left text-sm text-neutral-300 transition-colors hover:bg-neutral-800">
+              <HelpCircle className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
               <span>Help</span>
             </button>
-            <button className="w-full px-4 py-3 rounded-md text-left font-normal text-sm text-gray-300 hover:bg-gray-800 transition-all duration-150 flex items-center gap-3">
-              <Settings className="w-5 h-5 flex-shrink-0" />
+            <button type="button" className="flex h-11 w-full items-center gap-3 rounded-md px-4 text-left text-sm text-neutral-300 transition-colors hover:bg-neutral-800">
+              <Settings className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
               <span>Settings</span>
             </button>
-            <button className="w-full px-4 py-3 rounded-md text-left font-normal text-sm text-gray-300 hover:bg-gray-800 transition-all duration-150 flex items-center gap-3">
-              <LogOut className="w-5 h-5 flex-shrink-0" />
+            <button type="button" className="flex h-11 w-full items-center gap-3 rounded-md px-4 text-left text-sm text-neutral-300 transition-colors hover:bg-neutral-800">
+              <LogOut className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
               <span>Log out</span>
             </button>
           </div>
         </aside>
-      )}
+      ) : null}
 
-      {/* Main Screen Layout Container */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
-        {/* Mobile Header (Only visible on Mobile screens, or on initial steps) */}
-        <div className={`${showHamburger ? "md:hidden" : ""} flex-shrink-0 z-20`}>
+      <div className={showNavigation ? 'md:pl-64' : ''}>
+        <div className={`${showNavigation ? 'md:hidden' : ''} sticky top-0 z-20`}>
           <MobileHeader
             session={session}
-            onMenuClick={showHamburger ? () => setIsDrawerOpen((prev) => !prev) : undefined}
+            onMenuClick={showNavigation ? () => setIsDrawerOpen((prev) => !prev) : undefined}
           />
         </div>
 
-        {/* 🖥️ Desktop Header (Visible on Desktop only when logged in) */}
-        {showHamburger && (
-          <header className="hidden md:flex h-14 bg-white border-b border-gray-200 items-center justify-between px-6 flex-shrink-0 z-20">
-            <h2 className="text-sm font-semibold text-gray-700">Admissions Portal</h2>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400 font-medium">Applicant ID: {session.applicantId}</span>
-            </div>
+        {showNavigation ? (
+          <header className="sticky top-0 z-20 hidden h-16 items-center justify-between border-b border-neutral-200 bg-white px-6 md:flex">
+            <h2 className="text-sm font-semibold text-campus-ink">{schoolPortalLabels.admissions}</h2>
+            <span className="text-xs font-medium text-campus-muted">Applicant ID: {session.applicantId}</span>
           </header>
-        )}
+        ) : null}
 
-        {/* Sliding Sidebar Drawer for Mobile */}
-        {showHamburger && (
+        {showNavigation ? (
           <div className="md:hidden">
             <SidebarDrawer
               isOpen={isDrawerOpen}
@@ -205,19 +200,13 @@ export function AdmissionsMobileLayout({
               }}
             />
           </div>
-        )}
+        ) : null}
 
-        {/* Scrollable Page Content */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 flex flex-col">
-          {/* Mobile Simulator View (Mobile screens) vs Spacious Desktop Frame */}
-          <div className="flex-1 md:w-full md:max-w-4xl md:mx-auto md:px-6 md:py-8 flex flex-col md:justify-start">
-            <div className="flex-1 flex flex-col bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-200 overflow-hidden relative">
-              <div className="flex-1 flex flex-col relative">
-                {children}
-              </div>
-            </div>
+        <main className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 md:px-6">
+          <div className="min-w-0 overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm">
+            {children}
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

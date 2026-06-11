@@ -199,7 +199,7 @@ export function AcademicBackground({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 pt-5 pb-36">
+    <div className="px-4 pt-5 pb-5">
       <SelectionTags schoolLevel={schoolLevel} applicantType={applicantType} />
 
       {/* Academic Background Card */}
@@ -335,7 +335,7 @@ export function AcademicBackground({
       </div>
 
       {/* Bottom Action Buttons */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 space-y-2.5 z-20">
+      <div className="mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-4 sm:flex-row sm:justify-end">
         {errors.general && (
           <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-600 mb-2">
             {errors.general}
@@ -344,14 +344,14 @@ export function AcademicBackground({
         <button
           onClick={handleSave}
           disabled={loading}
-          className="w-full h-12 rounded-xl bg-[#1a1a1a] text-white font-semibold text-sm tracking-wide active:bg-black transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
+          className="inline-flex h-11 w-full items-center justify-center rounded-md bg-campus-ink px-4 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-32"
         >
           {loading ? "Saving..." : "Next"}
         </button>
         <button
           onClick={onBack}
           disabled={loading}
-          className="w-full h-12 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold text-sm tracking-wide active:bg-gray-50 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          className="h-11 rounded-md border border-neutral-300 px-4 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-28"
         >
           Back
         </button>

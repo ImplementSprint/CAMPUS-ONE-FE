@@ -53,9 +53,9 @@ export function MobileHeader({ session, onMenuClick }: MobileHeaderProps) {
       )}
 
       {/* Center: branding */}
-      <div className="flex items-center gap-0.5">
-        <span className="text-[#F59E0B] font-bold text-base tracking-tight">CAMPUS</span>
-        <span className="text-white font-light text-base tracking-tight">Portal</span>
+      <div className="flex flex-col items-center leading-tight">
+        <span className="text-sm font-semibold tracking-tight text-white">Campus One</span>
+        <span className="text-[11px] font-medium text-[#F59E0B]">School Portal</span>
       </div>
 
       {/* Right: avatar or notifications */}

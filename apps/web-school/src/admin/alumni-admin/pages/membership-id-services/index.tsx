@@ -68,6 +68,7 @@ export function MembershipIdServicesPage() {
   const [applications, setApplications] = useState<IdCardApplicationRecord[]>([])
   const [benefits, setBenefits] = useState(benefitFulfillmentRecords)
   const [loading, setLoading] = useState(true)
+  const [statusMessage, setStatusMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -79,22 +80,28 @@ export function MembershipIdServicesPage() {
 
   const updateCardStatus = async (applicationId: string, status: CardStatus) => {
     const previous = applications
+    setStatusMessage(null)
     setApplications((current) => current.map((record) => record.application_id === applicationId ? { ...record, application_status: status } : record))
     const result = await updateAlumniCardApplicationStatus(applicationId, STATUS_CODES[status])
     if (result.error) {
       setApplications(previous)
-      alert(result.error.message)
+      setStatusMessage({ type: 'error', text: result.error.message })
+    } else {
+      setStatusMessage({ type: 'success', text: `Card status updated to ${status}.` })
     }
   }
 
   const markCardPaid = async (applicationId: string) => {
     const previous = applications
     const current = previous.find((record) => record.application_id === applicationId)
+    setStatusMessage(null)
     setApplications((records) => records.map((record) => record.application_id === applicationId ? { ...record, payment_status: 'paid' } : record))
     const result = await updateAlumniCardApplicationStatus(applicationId, STATUS_CODES[current?.application_status ?? 'Queued'], 'paid')
     if (result.error) {
       setApplications(previous)
-      alert(result.error.message)
+      setStatusMessage({ type: 'error', text: result.error.message })
+    } else {
+      setStatusMessage({ type: 'success', text: 'Card payment marked paid.' })
     }
   }
 
@@ -106,6 +113,11 @@ export function MembershipIdServicesPage() {
           <p>Process alumni ID applications and track benefit fulfillment from the same member and graduation-linked record set.</p>
         </div>
       </header>
+      {statusMessage ? (
+        <div className={`rounded-md border px-4 py-3 text-sm font-medium ${statusMessage.type === 'error' ? 'border-red-200 bg-red-50 text-red-700' : 'border-green-200 bg-green-50 text-green-700'}`} role={statusMessage.type === 'error' ? 'alert' : 'status'}>
+          {statusMessage.text}
+        </div>
+      ) : null}
 
       <section className="summary-grid" aria-label="Membership and ID services summary">
         <article className="summary-card"><strong>{applications.filter((item) => item.application_status === 'Queued').length}</strong><span>Queued ID applications</span></article>

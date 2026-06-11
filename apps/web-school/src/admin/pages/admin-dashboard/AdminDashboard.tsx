@@ -15,6 +15,7 @@ export function AdminDashboard() {
     rejected: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     loadStats();
@@ -22,11 +23,23 @@ export function AdminDashboard() {
 
   const loadStats = async () => {
     setLoading(true);
-    const result = await fetchDashboardStats();
-    if (result.data) {
-      setStats(result.data);
+    setLoadError(null);
+
+    try {
+      const timeout = new Promise<never>((_, reject) => {
+        window.setTimeout(() => reject(new Error("Dashboard stats request timed out")), 5000);
+      });
+      const result = await Promise.race([fetchDashboardStats(), timeout]);
+      if (result.data) {
+        setStats(result.data);
+      } else if (result.error) {
+        setLoadError(result.error.message);
+      }
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : "Dashboard stats are unavailable.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSelectApplication = (id: string) => {
@@ -56,14 +69,6 @@ export function AdminDashboard() {
         </div>
       ) : view === "dashboard" ? (
         <div className="p-8">
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#F59E0B] mx-auto"></div>
-                <p className="mt-4 text-sm text-gray-600">Loading dashboard...</p>
-              </div>
-            </div>
-          ) : (
             <div className="space-y-6">
               {/* Page Header */}
               <div>
@@ -72,6 +77,18 @@ export function AdminDashboard() {
                   Monitor and manage all admission applications
                 </p>
               </div>
+
+              {loadError && (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" role="status">
+                  Dashboard counts are temporarily unavailable. You can still open and manage applications.
+                </div>
+              )}
+
+              {loading && !loadError && (
+                <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600" role="status">
+                  Refreshing dashboard counts...
+                </div>
+              )}
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -137,7 +154,7 @@ export function AdminDashboard() {
                         <p className="text-xs text-gray-600">Review and manage submissions</p>
                       </div>
                     </div>
-                    <span className="text-gray-400 group-hover:text-[#F59E0B]">→</span>
+                    <span className="text-xs font-semibold text-gray-400 group-hover:text-[#F59E0B]">Open</span>
                   </button>
 
                   <button className="flex items-center justify-between p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-all opacity-50 cursor-not-allowed">
@@ -154,7 +171,6 @@ export function AdminDashboard() {
                 </div>
               </div>
             </div>
-          )}
         </div>
       ) : (
         <div className="p-8">

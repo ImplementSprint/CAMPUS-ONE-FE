@@ -17,6 +17,7 @@ export function ApplicationDetail({ applicationId, onBack }: ApplicationDetailPr
   const [showProgramModal, setShowProgramModal] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedProgram, setSelectedProgram] = useState("");
+  const [statusMessage, setStatusMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   useEffect(() => {
     loadApplication();
@@ -75,19 +76,20 @@ export function ApplicationDetail({ applicationId, onBack }: ApplicationDetailPr
   };
 
   const handleUpdateProgram = async () => {
+    setStatusMessage(null);
     if (!selectedDepartment || !selectedProgram) {
-      alert("Please select both department and program");
+      setStatusMessage({ type: "error", text: "Please select both department and program." });
       return;
     }
 
     setUpdating(true);
     const result = await updateProgramSelection(applicationId, selectedDepartment, selectedProgram);
     if (result.data) {
-      alert("Program updated successfully!");
+      setStatusMessage({ type: "success", text: "Program updated successfully." });
       setShowProgramModal(false);
       await loadApplication();
     } else {
-      alert("Failed to update program: " + result.error?.message);
+      setStatusMessage({ type: "error", text: "Failed to update program: " + result.error?.message });
     }
     setUpdating(false);
   };
@@ -97,31 +99,33 @@ export function ApplicationDetail({ applicationId, onBack }: ApplicationDetailPr
     
     if (!confirm("Are you sure you want to ACCEPT this application?")) return;
 
+    setStatusMessage(null);
     setUpdating(true);
     const result = await updateApplicationStatus(applicationId, "Passed");
     if (result.data) {
-      alert("Application accepted! Email notification sent to applicant.");
+      setStatusMessage({ type: "success", text: "Application accepted. Email notification sent to applicant." });
       await loadApplication();
     } else {
-      alert("Failed to update application: " + result.error?.message);
+      setStatusMessage({ type: "error", text: "Failed to update application: " + result.error?.message });
     }
     setUpdating(false);
   };
 
   const handleReject = async () => {
+    setStatusMessage(null);
     if (!rejectionReason.trim()) {
-      alert("Please provide a reason for rejection");
+      setStatusMessage({ type: "error", text: "Please provide a reason for rejection." });
       return;
     }
 
     setUpdating(true);
     const result = await updateApplicationStatus(applicationId, "Not Accepted", rejectionReason);
     if (result.data) {
-      alert("Application rejected. Email notification sent to applicant.");
+      setStatusMessage({ type: "success", text: "Application rejected. Email notification sent to applicant." });
       setShowRejectModal(false);
       await loadApplication();
     } else {
-      alert("Failed to update application: " + result.error?.message);
+      setStatusMessage({ type: "error", text: "Failed to update application: " + result.error?.message });
     }
     setUpdating(false);
   };
@@ -191,6 +195,19 @@ export function ApplicationDetail({ applicationId, onBack }: ApplicationDetailPr
 
       {/* Content */}
       <div className="px-4 pt-4 pb-28 space-y-3">
+        {statusMessage && (
+          <div
+            className={`rounded-md border px-4 py-3 text-sm font-medium ${
+              statusMessage.type === "error"
+                ? "border-red-200 bg-red-50 text-red-700"
+                : "border-green-200 bg-green-50 text-green-700"
+            }`}
+            role={statusMessage.type === "error" ? "alert" : "status"}
+          >
+            {statusMessage.text}
+          </div>
+        )}
+
         {/* Applicant Number (if accepted) */}
         {application.applicant_number && (
           <div className="bg-green-50 border border-green-200 rounded-xl p-4">
@@ -284,7 +301,7 @@ export function ApplicationDetail({ applicationId, onBack }: ApplicationDetailPr
             )}
             {application.school_level === "College" && !application.program_selection?.college_program && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-2">
-                <p className="text-xs text-amber-700 font-medium">⚠️ No program assigned yet. Click "Edit" to assign a program.</p>
+                <p className="text-xs text-amber-700 font-medium">No program assigned yet. Click "Edit" to assign a program.</p>
               </div>
             )}
           </div>
@@ -391,7 +408,7 @@ export function ApplicationDetail({ applicationId, onBack }: ApplicationDetailPr
                 <div key={index} className="border-l-2 border-purple-500 pl-3 py-1">
                   <p className="text-sm font-semibold text-gray-900">{relative.name}</p>
                   <p className="text-xs text-gray-600">{relative.relationship} - {relative.college}</p>
-                  <p className="text-xs text-gray-500">Batch {relative.batch_year} • {relative.contact_number}</p>
+                  <p className="text-xs text-gray-500">Batch {relative.batch_year} - {relative.contact_number}</p>
                 </div>
               ))}
             </div>
@@ -462,13 +479,13 @@ export function ApplicationDetail({ applicationId, onBack }: ApplicationDetailPr
         )}
       </div>
 
-      {/* Action Buttons (Fixed at bottom) */}
+      {/* Action Buttons */}
       {application.status === "Under Review" && (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2">
+        <div className="mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 px-4 pt-4 sm:flex-row sm:justify-end">
           <button
             onClick={handleAccept}
             disabled={updating}
-            className="w-full h-12 rounded-xl bg-green-600 text-white font-bold text-sm flex items-center justify-center gap-2 active:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-green-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             <CheckCircle className="w-5 h-5" />
             Accept Application
@@ -476,7 +493,7 @@ export function ApplicationDetail({ applicationId, onBack }: ApplicationDetailPr
           <button
             onClick={() => setShowRejectModal(true)}
             disabled={updating}
-            className="w-full h-12 rounded-xl bg-red-600 text-white font-bold text-sm flex items-center justify-center gap-2 active:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-red-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             <XCircle className="w-5 h-5" />
             Reject Application

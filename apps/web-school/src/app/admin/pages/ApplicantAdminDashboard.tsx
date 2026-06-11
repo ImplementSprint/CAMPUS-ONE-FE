@@ -241,7 +241,7 @@ export function ApplicantAdminDashboard({}: ApplicantAdminDashboardProps) {
                     <p className="text-sm text-gray-500 mt-0.5">Review new submissions</p>
                   </div>
                 </div>
-                <div className="relative text-2xl text-gray-300 group-hover:text-[#F59E0B] group-hover:translate-x-1 transition-all duration-300">→</div>
+                <div className="relative text-xs font-semibold text-gray-400 group-hover:text-[#F59E0B] transition-all duration-300">Open</div>
               </button>
 
               <button
@@ -258,7 +258,7 @@ export function ApplicantAdminDashboard({}: ApplicantAdminDashboardProps) {
                     <p className="text-sm text-gray-500 mt-0.5">Manage entrance exams</p>
                   </div>
                 </div>
-                <div className="relative text-2xl text-gray-300 group-hover:text-purple-500 group-hover:translate-x-1 transition-all duration-300">→</div>
+                <div className="relative text-xs font-semibold text-gray-400 group-hover:text-purple-500 transition-all duration-300">Open</div>
               </button>
 
               <button
@@ -275,7 +275,7 @@ export function ApplicantAdminDashboard({}: ApplicantAdminDashboardProps) {
                     <p className="text-sm text-gray-500 mt-0.5">Audit trail of communications</p>
                   </div>
                 </div>
-                <div className="relative text-2xl text-gray-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all duration-300">→</div>
+                <div className="relative text-xs font-semibold text-gray-400 group-hover:text-blue-500 transition-all duration-300">Open</div>
               </button>
 
               <button
@@ -292,7 +292,7 @@ export function ApplicantAdminDashboard({}: ApplicantAdminDashboardProps) {
                     <p className="text-sm text-gray-500 mt-0.5">Explore mobile mapping & audit parameters</p>
                   </div>
                 </div>
-                <div className="relative text-2xl text-gray-300 group-hover:text-amber-500 group-hover:translate-x-1 transition-all duration-300">→</div>
+                <div className="relative text-xs font-semibold text-gray-400 group-hover:text-amber-500 transition-all duration-300">Open</div>
               </button>
             </div>
           </div>
@@ -308,7 +308,7 @@ export function ApplicantAdminDashboard({}: ApplicantAdminDashboardProps) {
                 onClick={() => setView("application-queue")}
                 className="text-sm font-semibold text-[#F59E0B] hover:text-[#D97706] transition-colors"
               >
-                View All →
+                View All
               </button>
             </div>
             <div className="text-center py-12">

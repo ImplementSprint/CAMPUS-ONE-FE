@@ -3,14 +3,14 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'Campus Portal',
-  description: 'Student enrollment and academic portal',
+  title: 'Campus One School Portal',
+  description: 'Admissions, student, faculty, alumni, and school administration portal',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-100 antialiased">
+      <body className="min-h-screen bg-campus-page text-campus-ink antialiased">
         <Providers>
           <div className="min-h-screen">
             {children}

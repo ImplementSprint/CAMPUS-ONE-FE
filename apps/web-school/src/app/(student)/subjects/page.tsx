@@ -23,6 +23,7 @@ export default function SubjectsPage() {
   const [view, setView] = useState<'search' | 'cart'>('search');
   const [submitting, setSubmitting] = useState(false);
   const [userName, setUserName] = useState('');
+  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -49,11 +50,13 @@ export default function SubjectsPage() {
 
   const addToCart = (o: Offering) => {
     if (inCart(o.id) || o.isFull || totalUnits + o.units > 24) return;
+    setMessage(null);
     setCart(prev => [...prev, { offeringId: o.id, subjectCode: o.subjectCode, subjectTitle: o.subjectTitle, units: o.units }]);
   };
 
   const handleSubmit = async () => {
     if (!user || cart.length === 0) return;
+    setMessage(null);
     setSubmitting(true);
     try {
       await submitEnrollment({
@@ -62,9 +65,9 @@ export default function SubjectsPage() {
       });
       setCart([]);
       setView('search');
-      alert('Enrollment submitted successfully!');
+      setMessage({ type: 'success', text: 'Enrollment submitted successfully.' });
     } catch (error: any) {
-      alert(error.message || 'Enrollment failed. Please try again.');
+      setMessage({ type: 'error', text: error.message || 'Enrollment failed. Please try again.' });
     } finally {
       setSubmitting(false);
     }
@@ -81,12 +84,25 @@ export default function SubjectsPage() {
               <p className="text-sm text-gray-500">Find and enroll in your subjects</p>
             </div>
 
+            {message ? (
+              <div
+                className={`rounded-md border px-4 py-3 text-sm font-medium ${
+                  message.type === 'error'
+                    ? 'border-red-200 bg-red-50 text-red-700'
+                    : 'border-green-200 bg-green-50 text-green-700'
+                }`}
+                role={message.type === 'error' ? 'alert' : 'status'}
+              >
+                {message.text}
+              </div>
+            ) : null}
+
             {/* Enrollment summary */}
             <div className="bg-white rounded-2xl border border-gray-200 p-4 flex justify-between items-center">
               <div>
                 <p className="text-xs text-gray-500 font-semibold">Current Enrollment</p>
                 <p className="text-3xl font-black text-gray-900">{totalUnits}</p>
-                <p className="text-xs text-gray-400">units selected • Maximum: 24 units</p>
+                <p className="text-xs text-gray-400">units selected - Maximum: 24 units</p>
               </div>
               <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">In Progress</span>
             </div>
@@ -94,19 +110,18 @@ export default function SubjectsPage() {
             {/* Search */}
             <div className="relative">
               <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search subjects..."
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 pl-10" />
-              <span className="absolute left-3 top-3.5 text-gray-400">🔍</span>
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400" />
             </div>
 
             {/* Filter */}
             <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3">
               <span className="text-sm font-semibold text-gray-900">All Departments</span>
-              <span className="text-gray-400">▾</span>
+              <span className="text-gray-400">Open</span>
             </div>
 
             <div className="flex justify-between items-center">
               <p className="font-black text-gray-900">Available Subjects</p>
-              <p className="text-sm text-gray-500">{loading ? '…' : `${filtered.length} results`}</p>
+              <p className="text-sm text-gray-500">{loading ? 'Loading...' : `${filtered.length} results`}</p>
             </div>
 
             {loading ? <div className="text-center py-10 text-gray-400">Loading...</div> : (
@@ -123,16 +138,16 @@ export default function SubjectsPage() {
                           <div className="flex-1">
                             <p className="font-black text-gray-900">{o.subjectTitle}</p>
                             <p className="text-xs text-gray-500 mt-0.5">{o.subjectCode}</p>
-                            {o.schedule && <p className="text-xs text-gray-500 mt-1">🕐 {o.schedule}</p>}
-                            {o.instructor && <p className="text-xs text-gray-500">👤 {o.instructor}</p>}
+                            {o.schedule && <p className="text-xs text-gray-500 mt-1">Schedule: {o.schedule}</p>}
+                            {o.instructor && <p className="text-xs text-gray-500">Instructor: {o.instructor}</p>}
                             <p className={`text-xs mt-1 font-semibold ${low ? 'text-red-500' : 'text-gray-500'}`}>
-                              👥 {slotsLeft} / {o.slotsTotal} slots available
+                              {slotsLeft} / {o.slotsTotal} slots available
                             </p>
                           </div>
                           <button onClick={() => addToCart(o)} disabled={o.isFull || added}
-                            className={`w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-lg transition
+                            className={`h-9 min-w-12 rounded-xl px-2 flex items-center justify-center text-white font-black text-xs transition
                               ${added ? 'bg-green-500' : o.isFull ? 'bg-gray-300' : 'bg-amber-500 hover:bg-amber-600'}`}>
-                            {added ? '✓' : o.isFull ? '✕' : '+'}
+                            {added ? 'Added' : o.isFull ? 'Full' : '+'}
                           </button>
                         </div>
                         <div className="flex justify-between mt-3 pt-3 border-t border-gray-100">
@@ -148,13 +163,12 @@ export default function SubjectsPage() {
           </>
         ) : (
           <>
-            <button onClick={() => setView('search')} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700">← Back to Search</button>
+            <button onClick={() => setView('search')} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700">Back to Search</button>
             <h1 className="text-2xl font-black text-gray-900">Subject Cart</h1>
             <p className="text-sm text-gray-500">Review your selected subjects before enrolling</p>
 
             {cart.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center">
-                <p className="text-4xl mb-3">🛒</p>
                 <p className="font-black text-gray-900">Your cart is empty</p>
                 <p className="text-sm text-gray-500 mt-1">Add subjects from the search page</p>
                 <button onClick={() => setView('search')} className="mt-4 bg-amber-500 text-white px-5 py-2 rounded-xl font-semibold text-sm hover:bg-amber-600">Browse Subjects</button>
@@ -166,10 +180,10 @@ export default function SubjectsPage() {
                     <div key={ci.offeringId} className="bg-white rounded-2xl border border-gray-200 p-4 flex justify-between items-center">
                       <div>
                         <p className="font-black text-gray-900">{ci.subjectTitle}</p>
-                        <p className="text-xs text-gray-500">{ci.subjectCode} • {ci.units} units</p>
+                        <p className="text-xs text-gray-500">{ci.subjectCode} - {ci.units} units</p>
                       </div>
                       <button onClick={() => setCart(prev => prev.filter(i => i.offeringId !== ci.offeringId))}
-                        className="text-gray-400 hover:text-red-500 text-lg">✕</button>
+                        className="text-gray-400 hover:text-red-500 text-sm font-semibold">Remove</button>
                     </div>
                   ))}
                 </div>
@@ -185,9 +199,9 @@ export default function SubjectsPage() {
                     <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${Math.min((totalUnits / 24) * 100, 100)}%` }} />
                   </div>
                   <div className="mt-3 space-y-1 text-xs text-gray-500">
-                    <p>• Review your selected subjects carefully</p>
-                    <p>• Enrollment is subject to slot availability</p>
-                    <p>• Changes can be made during add/drop period</p>
+                    <p>- Review your selected subjects carefully</p>
+                    <p>- Enrollment is subject to slot availability</p>
+                    <p>- Changes can be made during add/drop period</p>
                   </div>
                 </div>
 
@@ -204,8 +218,8 @@ export default function SubjectsPage() {
       {/* Cart FAB */}
       {view === 'search' && cart.length > 0 && (
         <button onClick={() => setView('cart')}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-lg flex items-center justify-center text-xl transition">
-          🛒
+          className="fixed bottom-6 right-6 h-14 min-w-14 bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-3 shadow-lg flex items-center justify-center text-xs font-bold transition">
+          Cart
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-black w-5 h-5 rounded-full flex items-center justify-center">{cart.length}</span>
         </button>
       )}

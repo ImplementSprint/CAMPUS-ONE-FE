@@ -58,13 +58,13 @@ export default function AlumniAdminPage() {
         </div>
         <nav className="admin-nav">
           <button id="tab-registrations" className={`admin-nav-item ${activeTab === 'registrations' ? 'active' : ''}`} onClick={() => setActiveTab('registrations')}>
-            👤 Alumni Registrations
+            Alumni Registrations
           </button>
           <button id="tab-records" className={`admin-nav-item ${activeTab === 'records' ? 'active' : ''}`} onClick={() => setActiveTab('records')}>
-            📄 Record Requests
+            Record Requests
           </button>
           <button id="tab-notifications" className={`admin-nav-item ${activeTab === 'notifications' ? 'active' : ''}`} onClick={() => setActiveTab('notifications')}>
-            🔔 Notifications
+            Notifications
           </button>
         </nav>
         <div className="admin-sidebar-footer">
@@ -85,7 +85,7 @@ export default function AlumniAdminPage() {
               {activeTab === 'records' && 'Record Requests'}
               {activeTab === 'notifications' && 'Notifications'}
             </h1>
-            <p className="admin-page-sub">Alumni Admin Portal — Campus One</p>
+            <p className="admin-page-sub">Alumni Admin Portal - Campus One</p>
           </div>
           <div className="admin-stats-row">
             <div className="admin-stat"><span className="admin-stat-val">{MOCK_ALUMNI.length}</span><span className="admin-stat-label">Total Alumni</span></div>
@@ -101,7 +101,7 @@ export default function AlumniAdminPage() {
               <input
                 id="alumni-search"
                 type="search"
-                placeholder="Search by name, email, or unit…"
+                placeholder="Search by name, email, or unit"
                 className="admin-search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -165,7 +165,7 @@ export default function AlumniAdminPage() {
                     <tr key={r.log_id}>
                       <td><code className="admin-uuid">{r.actor_uuid}</code></td>
                       <td><span className="admin-badge badge-doc">{r.document_type}</span></td>
-                      <td>₱ {r.fee_amount}</td>
+                      <td>PHP {r.fee_amount}</td>
                       <td><span className={`admin-badge ${r.payment_status === 'PAID' ? 'badge-success' : 'badge-pending'}`}>{r.payment_status}</span></td>
                       <td><code className="admin-event-code">alumni.record.requested.v1</code></td>
                       <td className="admin-cell-date">{new Date(r.created_at).toLocaleDateString()}</td>
@@ -182,15 +182,15 @@ export default function AlumniAdminPage() {
           <section className="admin-section">
             <div className="admin-notif-list">
               <div className="admin-notif-item admin-notif--info">
-                <div className="admin-notif-icon">🎓</div>
+                <div className="admin-notif-icon">Grad</div>
                 <div>
                   <div className="admin-notif-title">Graduation event received</div>
-                  <div className="admin-notif-body">actor_uuid: uuid-003 — graduation.verified.v1 processed via Kafka. Alumni log created.</div>
+                  <div className="admin-notif-body">actor_uuid: uuid-003 - graduation.verified.v1 processed via Kafka. Alumni log created.</div>
                   <div className="admin-notif-time">Just now</div>
                 </div>
               </div>
               <div className="admin-notif-item admin-notif--warning">
-                <div className="admin-notif-icon">📋</div>
+                <div className="admin-notif-icon">Review</div>
                 <div>
                   <div className="admin-notif-title">Legacy verification pending</div>
                   <div className="admin-notif-body">Maria Santos (uuid-002) submitted a legacy registration. Manual identity verification required by Registrar.</div>
@@ -198,7 +198,7 @@ export default function AlumniAdminPage() {
                 </div>
               </div>
               <div className="admin-notif-item admin-notif--success">
-                <div className="admin-notif-icon">✅</div>
+                <div className="admin-notif-icon">Done</div>
                 <div>
                   <div className="admin-notif-title">New alumni registered</div>
                   <div className="admin-notif-body">Juan dela Cruz successfully registered via standard student ID verification.</div>

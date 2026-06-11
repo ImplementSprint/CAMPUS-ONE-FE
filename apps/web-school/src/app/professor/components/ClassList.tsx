@@ -117,7 +117,7 @@ export function ClassList({ professorId, onViewClass, onBack }: ClassListProps) 
               {/* Semester Info */}
               <div className="mt-3 pt-3 border-t border-gray-100">
                 <p className="text-xs text-gray-500">
-                  {classItem.subject.semester} • {classItem.subject.school_year}
+                  {classItem.subject.semester} - {classItem.subject.school_year}
                 </p>
               </div>
             </button>

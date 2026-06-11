@@ -2,10 +2,10 @@
 import type { SchoolLevel } from "../types/admissions.types";
 
 const LEVELS: { level: SchoolLevel; sub: string }[] = [
-  { level: "Kinder", sub: "Ages 5–6" },
-  { level: "Elementary", sub: "Grades 1–6" },
-  { level: "Junior High School", sub: "Grades 7–10" },
-  { level: "Senior High School", sub: "Grades 11–12" },
+  { level: "Kinder", sub: "Ages 5-6" },
+  { level: "Elementary", sub: "Grades 1-6" },
+  { level: "Junior High School", sub: "Grades 7-10" },
+  { level: "Senior High School", sub: "Grades 11-12" },
   { level: "College", sub: "Undergraduate" },
 ];
 

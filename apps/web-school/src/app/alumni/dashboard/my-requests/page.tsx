@@ -180,7 +180,7 @@ function MyRequestsContent() {
             <div className="text-[15px] text-slate-700">{request.serviceType}</div>
             <div className="text-[15px] text-slate-700">{request.dateSubmitted}</div>
             <div className="text-[15px] text-slate-700">
-              {request.feeAmount != null ? `PHP ${request.feeAmount}` : 'TBD'} · {request.paymentStatus}
+              {request.feeAmount != null ? `PHP ${request.feeAmount}` : 'TBD'} - {request.paymentStatus}
             </div>
             <div>
               <span className={`inline-flex rounded-full px-3 py-1.5 text-[13px] font-semibold ${getStatusClass(request.status)}`}>

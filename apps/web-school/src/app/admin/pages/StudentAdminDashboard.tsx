@@ -176,7 +176,7 @@ function DashboardOverview({
                       <p className="mt-0.5 text-xs text-gray-500">{description}</p>
                     </div>
                   </div>
-                  <span className="text-gray-300 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#F59E0B]">→</span>
+                  <span className="text-xs font-semibold text-gray-400 transition-all duration-300 group-hover:text-[#F59E0B]">Open</span>
                 </button>
               ))}
             </div>
@@ -189,7 +189,7 @@ function DashboardOverview({
                 <p className="mt-1 text-sm text-gray-500">Latest student enrollments and record updates</p>
               </div>
               <button onClick={() => onNavigate("directory")} className="text-sm font-semibold text-[#F59E0B] transition-colors hover:text-[#D97706]">
-                View Directory →
+                View Directory
               </button>
             </div>
             <div className="text-center py-12">

@@ -43,14 +43,24 @@ export default function AlumniRegisterPage() {
     password: '', confirmPassword: '', consent: false,
   });
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
 
   const set = (field: string, value: string | boolean) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) { alert('Passwords do not match!'); return; }
-    if (!formData.consent) { alert('You must accept the Terms and Conditions.'); return; }
+    setMessage(null);
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage({ type: 'error', text: 'Passwords do not match.' });
+      return;
+    }
+
+    if (!formData.consent) {
+      setMessage({ type: 'error', text: 'You must accept the terms and privacy notice before creating an account.' });
+      return;
+    }
 
     setLoading(true);
     try {
@@ -73,10 +83,10 @@ export default function AlumniRegisterPage() {
         }),
       });
       if (!res.ok) throw new Error('Registration failed');
-      alert('Registration successful! Please wait for admin approval.');
+      setMessage({ type: 'success', text: 'Registration submitted. Please wait for alumni office approval.' });
       router.push('/login');
     } catch {
-      alert('Failed to register. Please try again.');
+      setMessage({ type: 'error', text: 'Failed to register. Please check the details and try again.' });
     } finally {
       setLoading(false);
     }
@@ -86,7 +96,7 @@ export default function AlumniRegisterPage() {
     <div className="registration-page">
       <header className="registration-topbar">
         <Link className="back-link" href="/">
-          <span aria-hidden="true">←</span>
+          <span aria-hidden="true">&lt;</span>
           <strong>Register</strong>
         </Link>
       </header>
@@ -98,6 +108,15 @@ export default function AlumniRegisterPage() {
         </section>
 
         <form className="registration-form" onSubmit={handleSubmit}>
+          {message ? (
+            <div
+              className={`registration-message registration-message--${message.type}`}
+              role={message.type === 'error' ? 'alert' : 'status'}
+            >
+              {message.text}
+            </div>
+          ) : null}
+
           <section className="registration-section">
             <h2>Personal Info</h2>
             <div className="field-grid single-column">
@@ -124,12 +143,12 @@ export default function AlumniRegisterPage() {
             <div className="field-grid single-column">
               <label className="form-field">
                 <span>Password <strong>*</strong></span>
-                <input type="password" required value={formData.password} onChange={(e) => set('password', e.target.value)} />
-                <small style={{ color: '#8b93a3' }}>At least 8 characters</small>
+                <input type="password" required minLength={8} value={formData.password} onChange={(e) => set('password', e.target.value)} />
+                <small className="field-help">At least 8 characters</small>
               </label>
               <label className="form-field">
                 <span>Confirm Password <strong>*</strong></span>
-                <input type="password" required value={formData.confirmPassword} onChange={(e) => set('confirmPassword', e.target.value)} />
+                <input type="password" required minLength={8} value={formData.confirmPassword} onChange={(e) => set('confirmPassword', e.target.value)} />
               </label>
             </div>
           </section>
@@ -137,7 +156,7 @@ export default function AlumniRegisterPage() {
           <section className="registration-consent">
             <label className="checkbox-row">
               <input type="checkbox" checked={formData.consent} onChange={(e) => set('consent', e.target.checked)} />
-              <span>I agree to the <a href="#" style={{ color: '#f5a623' }}>Terms and Conditions</a> and <a href="#" style={{ color: '#f5a623' }}>Privacy Policy</a></span>
+              <span>I agree to the terms and privacy notice for alumni records processing.</span>
             </label>
           </section>
 

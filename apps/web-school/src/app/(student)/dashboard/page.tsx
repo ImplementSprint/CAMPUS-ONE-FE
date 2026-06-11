@@ -1,10 +1,14 @@
 'use client';
+
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { BookOpen, ClipboardList, GraduationCap, Loader2, ShoppingCart } from 'lucide-react';
 import { getDashboardData } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
-import DashboardLayout from '@/components/DashboardLayout';
-import Link from 'next/link';
+import { AppShell } from '@/shared/ui/layout/AppShell';
+import { PageHeader } from '@/shared/ui/layout/PageHeader';
+import { Surface } from '@/shared/ui/layout/Surface';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -16,7 +20,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { router.push('/login'); return; }
+    if (!user) {
+      router.push('/login');
+      return;
+    }
 
     const loadDashboard = async () => {
       try {
@@ -30,68 +37,94 @@ export default function DashboardPage() {
         setLoading(false);
       }
     };
-    
+
     loadDashboard();
   }, [user, authLoading, router]);
 
   const stats = [
-    { label: 'Subjects in Cart', value: '0', color: 'text-amber-500', icon: '🛒' },
-    { label: 'Cart Units', value: '0', color: 'text-blue-500', icon: '📅' },
-    { label: 'Enrolled Courses', value: String(enrolledCourses), color: 'text-green-500', icon: '⏱️' },
-    { label: 'Enrolled Units', value: String(enrolledUnits), color: 'text-purple-500', icon: '📈' },
+    { label: 'Subjects in Cart', value: '0', icon: ShoppingCart },
+    { label: 'Cart Units', value: '0', icon: ClipboardList },
+    { label: 'Enrolled Courses', value: String(enrolledCourses), icon: BookOpen },
+    { label: 'Enrolled Units', value: String(enrolledUnits), icon: GraduationCap },
   ];
 
   return (
-    <DashboardLayout>
-      <div className="p-3.5 md:p-6 w-full pb-8">
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-sm text-gray-500">Loading dashboard...</p>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="mb-3">
-              <h1 className="text-xl font-black text-gray-900">Dashboard</h1>
-              <p className="text-xs text-gray-500 mt-1">Welcome back, {name || 'Student'}</p>
-            </div>
-
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 gap-2.5 mb-3">
-          {stats.map(s => (
-            <div key={s.label} className="bg-white rounded-xl p-4 shadow-sm">
-              <span className={`text-xl mb-1 block ${s.color}`}>{s.icon}</span>
-              <p className="text-lg font-black text-gray-900 mb-1">{s.value}</p>
-              <p className="text-xs text-gray-500 leading-tight">{s.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Enrollment Status */}
-        <div className="bg-[#0B1220] rounded-xl p-4 mb-3">
-          <p className="text-white font-black mb-2 text-sm">Enrollment Status</p>
-          <div className="space-y-1.5 text-xs">
-            <div className="flex justify-between py-1.5"><span className="text-gray-300 font-bold">Current Semester</span><span className="text-white font-semibold">Spring 2026</span></div>
-            <div className="flex justify-between py-1.5"><span className="text-gray-300 font-bold">Enrollment Period</span><span className="text-green-400 font-semibold">Open</span></div>
-            <div className="flex justify-between py-1.5"><span className="text-gray-300 font-bold">Cart Units</span><span className="text-amber-400 font-semibold">0 / 24</span></div>
-            <div className="flex justify-between py-1.5"><span className="text-gray-300 font-bold">Enrolled Units</span><span className="text-blue-400 font-semibold">{enrolledUnits}</span></div>
+    <AppShell title="Student Dashboard">
+      {loading ? (
+        <div className="flex items-center justify-center py-24">
+          <div className="text-center">
+            <Loader2 className="mx-auto mb-3 h-10 w-10 animate-spin text-campus-brand" aria-hidden="true" />
+            <p className="text-sm text-campus-muted">Loading dashboard...</p>
           </div>
         </div>
+      ) : (
+        <>
+          <PageHeader
+            title="Dashboard"
+            description={`Welcome back, ${name || 'Student'}. Review enrollment status, units, and quick actions.`}
+          />
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-xl p-4 shadow-sm">
-          <p className="font-semibold text-gray-900 mb-2.5 text-sm">Quick Actions</p>
-          <div className="space-y-2.5">
-            <Link href="/subjects" className="block w-full text-center py-2.5 rounded-xl font-semibold text-sm bg-gray-100 text-gray-900 hover:bg-amber-500 hover:text-white transition">Browse Subjects</Link>
-            <Link href="/courses" className="block w-full text-center py-2.5 rounded-xl font-semibold text-sm bg-gray-100 text-gray-900 hover:bg-amber-500 hover:text-white transition">View My Schedule</Link>
-            <Link href="/grades" className="block w-full text-center py-2.5 rounded-xl font-semibold text-sm bg-gray-100 text-gray-900 hover:bg-amber-500 hover:text-white transition">Check Grades</Link>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <Surface key={stat.label} className="p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-2xl font-semibold text-campus-ink">{stat.value}</p>
+                      <p className="mt-1 text-sm text-campus-muted">{stat.label}</p>
+                    </div>
+                    <span className="grid h-10 w-10 place-items-center rounded-lg bg-[#fbfaf6] text-campus-brandStrong">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                  </div>
+                </Surface>
+              );
+            })}
           </div>
-        </div>
-          </>
-        )}
-      </div>
-    </DashboardLayout>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_360px]">
+            <Surface className="p-5">
+              <h2 className="text-base font-semibold text-campus-ink">Enrollment Status</h2>
+              <div className="mt-4 divide-y divide-campus-border text-sm">
+                <StatusRow label="Current Semester" value="Spring 2026" />
+                <StatusRow label="Enrollment Period" value="Open" />
+                <StatusRow label="Cart Units" value="0 / 24" />
+                <StatusRow label="Enrolled Units" value={String(enrolledUnits)} />
+              </div>
+            </Surface>
+
+            <Surface className="p-5">
+              <h2 className="text-base font-semibold text-campus-ink">Quick Actions</h2>
+              <div className="mt-4 grid gap-2">
+                <QuickAction href="/subjects">Browse Subjects</QuickAction>
+                <QuickAction href="/courses">View My Schedule</QuickAction>
+                <QuickAction href="/grades">Check Grades</QuickAction>
+              </div>
+            </Surface>
+          </div>
+        </>
+      )}
+    </AppShell>
+  );
+}
+
+function StatusRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-3">
+      <span className="text-campus-muted">{label}</span>
+      <span className="font-medium text-campus-ink">{value}</span>
+    </div>
+  );
+}
+
+function QuickAction({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="flex h-11 items-center justify-center rounded-md border border-campus-border px-4 text-sm font-medium text-campus-ink transition-colors hover:bg-[#fbfaf6]"
+    >
+      {children}
+    </Link>
   );
 }

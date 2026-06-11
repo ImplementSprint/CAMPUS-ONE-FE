@@ -55,11 +55,10 @@ export default function GradesPage() {
         {/* Student Summary */}
         <div className="bg-[#374151] rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-white text-lg">🎖️</span>
             <span className="text-white font-semibold">Student Summary</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[['Student Name', studentName || '—'], ['Program', program || '—'], ['Year Level', '—'], ['Semester', 'AY 2025-2026']].map(([l, v]) => (
+            {[['Student Name', studentName || 'N/A'], ['Program', program || 'N/A'], ['Year Level', 'N/A'], ['Semester', 'AY 2025-2026']].map(([l, v]) => (
               <div key={l}>
                 <p className="text-gray-300 text-xs font-medium mb-1">{l}</p>
                 <p className="text-white text-sm font-semibold">{v}</p>
@@ -116,7 +115,6 @@ export default function GradesPage() {
         {/* GWA + Honors */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
-            <span className="text-amber-500">📈</span>
             <p className="font-semibold text-gray-900">Latin Honors Eligibility</p>
           </div>
           <div className="p-5 grid grid-cols-3 gap-3">
@@ -132,7 +130,7 @@ export default function GradesPage() {
           <div className="px-5 pb-5">
             <div className="bg-gray-50 rounded-xl border border-gray-200 p-4">
               <p className="font-semibold text-gray-900 mb-3 text-sm">Latin Honors Requirements</p>
-              {[['Summa Cum Laude', 'GWA ≤ 1.20', 'bg-amber-400'], ['Magna Cum Laude', 'GWA 1.21 – 1.45', 'bg-blue-500'], ['Cum Laude', 'GWA 1.46 – 1.75', 'bg-green-500']].map(([l, r, c]) => (
+              {[['Summa Cum Laude', 'GWA <= 1.20', 'bg-amber-400'], ['Magna Cum Laude', 'GWA 1.21 - 1.45', 'bg-blue-500'], ['Cum Laude', 'GWA 1.46 - 1.75', 'bg-green-500']].map(([l, r, c]) => (
                 <div key={l} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
                   <span className="text-sm text-gray-700">{l}</span>
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${c}`}>{r}</span>

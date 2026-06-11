@@ -99,11 +99,11 @@ export function AdmissionResultPortal({
     );
   }
 
-  // No result row yet — application is still being processed
+  // No result row yet - application is still being processed
   if (!result) {
     return (
       <div className="rounded-xl border-2 border-yellow-200 bg-yellow-50 p-5 text-center space-y-2">
-        <div className="text-3xl">⏳</div>
+        <div className="text-sm font-semibold text-yellow-700">Pending Review</div>
         <p className="text-sm font-bold text-yellow-800">Application Under Review</p>
         <p className="text-xs text-yellow-700 leading-relaxed">
           Your application has been submitted and is currently being reviewed. You will be notified once a decision is made.

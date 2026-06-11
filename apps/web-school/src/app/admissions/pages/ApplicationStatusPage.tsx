@@ -155,7 +155,7 @@ export function ApplicationStatusPage() {
                     {status.application.full_name}
                   </h2>
                   <p className="text-sm text-gray-600">
-                    {status.application.school_level} • {status.application.applicant_type}
+                    {status.application.school_level} - {status.application.applicant_type}
                   </p>
                 </div>
                 <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 ${getStatusColor(status.application.status)}`}>

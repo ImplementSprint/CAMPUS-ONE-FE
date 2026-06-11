@@ -113,7 +113,7 @@ export default function ProfilePage() {
         {alumni.length > 0 && (
           <Section title="Alumni Information">
             {alumni.map((row, i) => (
-              <InfoRow key={i} icon="people" label={row.relationship} value={`${row.name} • ${row.college} • ${row.batch_year}`} isLast={i === alumni.length - 1} />
+              <InfoRow key={i} icon="people" label={row.relationship} value={`${row.name} - ${row.college} - ${row.batch_year}`} isLast={i === alumni.length - 1} />
             ))}
           </Section>
         )}

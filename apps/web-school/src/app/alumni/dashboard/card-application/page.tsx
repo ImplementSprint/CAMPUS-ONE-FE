@@ -12,10 +12,15 @@ function CardApplicationContent() {
   const [idPhotoFileName, setIdPhotoFileName] = useState('');
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle');
+  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!consentAccepted) { alert('Please accept the data privacy notice.'); return; }
+    setMessage(null);
+    if (!consentAccepted) {
+      setMessage({ type: 'error', text: 'Please accept the data privacy notice before submitting.' });
+      return;
+    }
     setStatus('loading');
     try {
       const res = await fetch(`${API_BASE}/api/alumni/card-request`, {
@@ -30,9 +35,9 @@ function CardApplicationContent() {
       });
       if (!res.ok) throw new Error('Request failed');
       setStatus('done');
-      alert('Card application submitted!');
+      setMessage({ type: 'success', text: 'Card application submitted. The alumni office will review it next.' });
     } catch {
-      alert('Failed to submit. Please try again.');
+      setMessage({ type: 'error', text: 'Failed to submit the application. Please try again.' });
       setStatus('idle');
     }
   };
@@ -44,11 +49,19 @@ function CardApplicationContent() {
         <p>Request or renew your alumni ID</p>
       </header>
       <form className="form-grid" onSubmit={onSubmit}>
+        {message ? (
+          <p
+            className={`form-message form-message--${message.type}`}
+            role={message.type === 'error' ? 'alert' : 'status'}
+          >
+            {message.text}
+          </p>
+        ) : null}
         <div className="form-block">
           <h3>Card Preview</h3>
           <div className="card-preview-shell">
             <div className="card-preview-face">
-              <p>CAMPUS ONE</p>
+              <p>Campus One</p>
               <strong>ALUMNI CARD</strong>
             </div>
           </div>
@@ -58,9 +71,9 @@ function CardApplicationContent() {
           <h3>Card Application Info</h3>
           <ul>
             <li>For new cards or replacements</li>
-            <li>Processing: 5–7 business days</li>
+            <li>Processing: 5-7 business days</li>
             <li>Validity: Lifetime</li>
-            <li>Fee: ₱300 (pay upon delivery/pick-up)</li>
+            <li>Fee: PHP 300 (pay upon delivery/pick-up)</li>
           </ul>
         </div>
 
@@ -87,7 +100,7 @@ function CardApplicationContent() {
             </label>
             <label className="option-item">
               <input type="radio" name="delivery" value="delivery" checked={deliveryMethod === 'delivery'} onChange={() => setDeliveryMethod('delivery')} />
-              <span><strong>Delivery</strong><small>₱150 shipping fee</small></span>
+              <span><strong>Delivery</strong><small>PHP 150 shipping fee</small></span>
             </label>
           </div>
         </div>
@@ -96,7 +109,7 @@ function CardApplicationContent() {
           <h3>ID Photo</h3>
           <label className="upload-label">
             <input type="file" accept="image/jpeg,image/png" onChange={(e) => setIdPhotoFileName(e.target.files?.[0]?.name ?? '')} />
-            <span>{idPhotoFileName || 'Upload 2x2 Photo (JPG, PNG – Max. 5MB)'}</span>
+            <span>{idPhotoFileName || 'Upload 2x2 Photo (JPG, PNG - Max. 5MB)'}</span>
           </label>
         </div>
 

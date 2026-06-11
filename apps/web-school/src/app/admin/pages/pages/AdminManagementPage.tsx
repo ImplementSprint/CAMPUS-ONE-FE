@@ -18,6 +18,7 @@ export function AdminManagementPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<AdminUser | null>(null);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   // Form state
   const [formData, setFormData] = useState<CreateAdminData>({
@@ -42,15 +43,16 @@ export function AdminManagementPage() {
 
   const handleCreateAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setStatusMessage(null);
     
     const { data, error } = await createAdminAccount(formData);
     
     if (error) {
-      alert(`Error: ${error}`);
+      setStatusMessage({ type: "error", text: `Error: ${error}` });
       return;
     }
 
-    alert(`Admin account created successfully!\nEmail: ${formData.email}`);
+    setStatusMessage({ type: "success", text: `Admin account created successfully for ${formData.email}.` });
     setShowCreateModal(false);
     setFormData({
       email: '',
@@ -65,14 +67,15 @@ export function AdminManagementPage() {
 
   const handleDeactivate = async (adminId: string) => {
     if (!confirm('Are you sure you want to deactivate this admin?')) return;
+    setStatusMessage(null);
     
     const { error } = await deactivateAdminUser(adminId);
     if (error) {
-      alert(`Error: ${error}`);
+      setStatusMessage({ type: "error", text: `Error: ${error}` });
       return;
     }
 
-    alert('Admin deactivated successfully');
+    setStatusMessage({ type: "success", text: "Admin deactivated successfully." });
     loadAdmins();
   };
 
@@ -112,6 +115,19 @@ export function AdminManagementPage() {
           Create Admin Account
         </button>
       </div>
+
+      {statusMessage && (
+        <div
+          className={`mb-6 rounded-md border px-4 py-3 text-sm font-medium ${
+            statusMessage.type === "error"
+              ? "border-red-200 bg-red-50 text-red-700"
+              : "border-green-200 bg-green-50 text-green-700"
+          }`}
+          role={statusMessage.type === "error" ? "alert" : "status"}
+        >
+          {statusMessage.text}
+        </div>
+      )}
 
       {/* Admin List */}
       {loading ? (

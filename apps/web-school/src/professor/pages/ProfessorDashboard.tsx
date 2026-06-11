@@ -90,11 +90,8 @@ export function ProfessorDashboard() {
                 <BookOpen className="w-5 h-5 text-black" />
               </div>
               <div>
-                <div className="text-sm font-bold">
-                  <span className="text-[#F59E0B]">CAMPUS</span>
-                  <span className="text-white"> Faculty</span>
-                </div>
-                <p className="text-xs text-gray-400">Professor Portal</p>
+                <div className="text-sm font-semibold text-white">Campus One</div>
+                <p className="text-xs text-[#F59E0B]">Faculty Portal</p>
               </div>
             </div>
             {isMobile && (

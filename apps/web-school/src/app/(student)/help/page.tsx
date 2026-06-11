@@ -1,9 +1,9 @@
 import DashboardLayout from '@/components/DashboardLayout';
 
 const support = [
-  { icon: '✉️', title: 'Email Support', desc: 'support@university.edu.ph', color: 'bg-amber-500' },
-  { icon: '📞', title: 'Phone Support', desc: '+63 2 1234 5678', color: 'bg-blue-500' },
-  { icon: '💬', title: 'Live Chat', desc: 'Available Mon-Fri, 8AM-5PM', color: 'bg-green-500' },
+  { icon: 'Email', title: 'Email Support', desc: 'support@university.edu.ph', color: 'bg-amber-500' },
+  { icon: 'Call', title: 'Phone Support', desc: '+63 2 1234 5678', color: 'bg-blue-500' },
+  { icon: 'Chat', title: 'Live Chat', desc: 'Available Mon-Fri, 8AM-5PM', color: 'bg-green-500' },
 ];
 
 const faqs = [
@@ -23,7 +23,7 @@ export default function HelpPage() {
         <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-3">
           {support.map(s => (
             <div key={s.title} className="flex items-center gap-4 border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition cursor-pointer">
-              <div className={`w-11 h-11 ${s.color} rounded-xl flex items-center justify-center text-xl`}>{s.icon}</div>
+              <div className={`w-11 h-11 ${s.color} rounded-xl flex items-center justify-center text-[10px] font-bold text-white`}>{s.icon}</div>
               <div>
                 <p className="font-semibold text-gray-900">{s.title}</p>
                 <p className="text-sm text-gray-500 mt-0.5">{s.desc}</p>

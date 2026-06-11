@@ -100,6 +100,7 @@ function deliveryTone(status: DeliveryManagementRecord['dispatch_status']) {
 export function RecordDocumentFulfillmentPage() {
   const [requests, setRequests] = useState<DocumentRequestQueueRecord[]>([])
   const [loading, setLoading] = useState(true)
+  const [statusMessage, setStatusMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null)
 
   const deliveries = useMemo<DeliveryManagementRecord[]>(() => (
     requests
@@ -125,22 +126,28 @@ export function RecordDocumentFulfillmentPage() {
 
   const updateRequestStatus = async (requestId: string, status: RequestStatus) => {
     const previous = requests
+    setStatusMessage(null)
     setRequests((cur) => cur.map((request) => request.request_id === requestId ? { ...request, request_status: status } : request))
     const result = await updateAlumniRecordRequestStatus(requestId, STATUS_CODES[status])
     if (result.error) {
       setRequests(previous)
-      alert(result.error.message)
+      setStatusMessage({ type: 'error', text: result.error.message })
+    } else {
+      setStatusMessage({ type: 'success', text: `Request status updated to ${status}.` })
     }
   }
 
   const updatePaymentStatus = async (requestId: string, paymentStatus: 'pending' | 'paid') => {
     const previous = requests
+    setStatusMessage(null)
     setRequests((cur) => cur.map((request) => request.request_id === requestId ? { ...request, payment_status: paymentStatus } : request))
     const current = previous.find((request) => request.request_id === requestId)
     const result = await updateAlumniRecordRequestStatus(requestId, STATUS_CODES[current?.request_status ?? 'Queued'], paymentStatus)
     if (result.error) {
       setRequests(previous)
-      alert(result.error.message)
+      setStatusMessage({ type: 'error', text: result.error.message })
+    } else {
+      setStatusMessage({ type: 'success', text: `Payment status updated to ${paymentStatus}.` })
     }
   }
 
@@ -152,6 +159,11 @@ export function RecordDocumentFulfillmentPage() {
           <p>Operate the request queue and coordinate pick-up or courier release from the same alumni request and graduation context.</p>
         </div>
       </header>
+      {statusMessage ? (
+        <div className={`rounded-md border px-4 py-3 text-sm font-medium ${statusMessage.type === 'error' ? 'border-red-200 bg-red-50 text-red-700' : 'border-green-200 bg-green-50 text-green-700'}`} role={statusMessage.type === 'error' ? 'alert' : 'status'}>
+          {statusMessage.text}
+        </div>
+      ) : null}
 
       <section className="summary-grid" aria-label="Record and document fulfillment summary">
         <article className="summary-card"><strong>{requests.filter((r) => r.request_status === 'Queued').length}</strong><span>Queued requests</span></article>

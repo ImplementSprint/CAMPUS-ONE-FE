@@ -27,8 +27,7 @@ export function AdminSidebar({ isOpen, onClose, currentView }: AdminSidebarProps
         {/* Header */}
         <div className="h-14 bg-[#1a1a1a] flex items-center justify-between px-4">
           <div className="flex items-center gap-0.5">
-            <span className="text-[#F59E0B] font-bold text-base tracking-tight">CAMPUS</span>
-            <span className="text-white font-light text-base tracking-tight">Admin</span>
+            <span className="text-white font-semibold text-base tracking-tight">Campus One Admin</span>
           </div>
           <button
             onClick={onClose}
@@ -68,7 +67,7 @@ export function AdminSidebar({ isOpen, onClose, currentView }: AdminSidebarProps
         {/* Footer */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
           <div className="text-xs text-gray-500 text-center">
-            Admin Portal v1.0
+            School Administration
           </div>
         </div>
       </div>

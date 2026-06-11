@@ -5,7 +5,6 @@ apps/web-lms/lib/supabase.ts
 apps/web-school/src/admin/pages/alumni-admin/views/AdminSettingsPage.tsx
 apps/web-school/src/admin/services/admin.service.ts
 apps/web-school/src/admin/services/student-admin.service.ts
-apps/web-school/src/alumni/pages/AlumniDashboard.tsx
 apps/web-school/src/app/(student)/add-drop/page.tsx
 apps/web-school/src/app/(student)/advised/page.tsx
 apps/web-school/src/app/(student)/enrollment/enroll/page.tsx
@@ -14,15 +13,10 @@ apps/web-school/src/app/admin/services/admin-auth.service.ts
 apps/web-school/src/app/admin/services/admin.service.ts
 apps/web-school/src/app/admin/services/student-admin.service.ts
 apps/web-school/src/app/admissions/services/admissions.service.ts
-apps/web-school/src/app/alumni/dashboard/layout.tsx
 apps/web-school/src/app/alumni/dashboard/profile/page.tsx
 apps/web-school/src/app/alumni/services/alumni.service.ts
-apps/web-school/src/app/components/LoginPage.tsx
 apps/web-school/src/app/professor/components/NotificationBell.tsx
 apps/web-school/src/app/professor/services/professor.service.ts
-apps/web-school/src/applicant/components/ActivityLog.tsx
-apps/web-school/src/applicant/services/admissions.service.ts
-apps/web-school/src/applicant/services/tracking.service.ts
 apps/web-school/src/components/NotificationBell.tsx
 apps/web-school/src/components/Sidebar.tsx
 apps/web-school/src/components/TopNav.tsx
@@ -34,7 +28,6 @@ apps/web-school/src/shared/auth.service.ts
 apps/web-school/src/shared/components/Sidebar.tsx
 apps/web-school/src/shared/components/TopNav.tsx
 apps/web-school/src/shared/contexts/AuthContext.tsx
-apps/web-school/src/shared/ui/LoginPage.tsx
 apps/web-school/src/student/add-drop/page.tsx
 apps/web-school/src/student/advised/page.tsx
 apps/web-school/src/student/enrollment/enroll/page.tsx

@@ -65,8 +65,8 @@ export function AdminShell({ children }: AdminShellProps) {
         <header className="top-bar">
           <div className="top-bar-brand">
             <div>
-              <strong>APICENTER Super Admin</strong>
-              <p>System administration, tenant management, and service health monitoring</p>
+              <strong>Campus One Super Admin</strong>
+              <p>School administration, tenant management, and service health monitoring</p>
             </div>
           </div>
 

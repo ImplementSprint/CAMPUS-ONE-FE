@@ -66,12 +66,12 @@ export default function SettingsPage() {
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">New Password</label>
-              <input type="password" value={newPw} onChange={e => setNewPw(e.target.value)} required placeholder="••••••••"
+              <input type="password" value={newPw} onChange={e => setNewPw(e.target.value)} required placeholder="New password"
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Confirm New Password</label>
-              <input type="password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} required placeholder="••••••••"
+              <input type="password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} required placeholder="Confirm password"
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
             </div>
             {msg && <p className={`text-sm font-medium ${msg.includes('success') ? 'text-green-600' : 'text-red-500'}`}>{msg}</p>}

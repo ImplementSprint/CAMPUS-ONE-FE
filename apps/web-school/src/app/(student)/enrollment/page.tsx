@@ -96,7 +96,7 @@ export default function EnrollmentPage() {
                         className={`w-full flex justify-between items-center px-3 py-3 text-xs text-left hover:bg-amber-50 border-b border-gray-100 last:border-0 transition
                           ${t === selectedTerm ? 'bg-amber-50 font-semibold text-gray-900' : 'text-gray-700'}`}>
                         <span>A.Y. {schoolYear}: {t}</span>
-                        {t === selectedTerm && <span className="text-amber-500 text-sm">✓</span>}
+                        {t === selectedTerm && <span className="text-amber-600 text-xs font-semibold">Selected</span>}
                       </button>
                     ))}
                   </div>
@@ -110,7 +110,6 @@ export default function EnrollmentPage() {
               ) : enrollment ? (
                 <div className="bg-green-50 border border-green-200 rounded-xl p-3.5">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-green-600 text-lg">✓</span>
                     <span className="font-semibold text-green-700 text-xs">Already Enrolled</span>
                   </div>
                   <p className="text-xs text-gray-600">Status: <strong>{enrollment.status}</strong></p>

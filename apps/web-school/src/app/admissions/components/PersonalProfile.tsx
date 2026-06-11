@@ -205,7 +205,7 @@ export function PersonalProfile({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 pt-5 pb-36">
+    <div className="px-4 pt-5 pb-5">
       <SelectionTags schoolLevel={schoolLevel} applicantType={applicantType} />
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
@@ -327,11 +327,11 @@ export function PersonalProfile({
         )}
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 space-y-2.5 z-20">
+      <div className="mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-4 sm:flex-row sm:justify-end">
         <button
           onClick={handleSave}
           disabled={loading}
-          className="w-full h-12 rounded-xl bg-[#F59E0B] text-white font-bold text-sm tracking-wide shadow-lg shadow-amber-100 active:bg-[#D97706] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-campus-brand px-4 text-sm font-semibold text-campus-ink transition-colors hover:bg-campus-brandStrong hover:text-white disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-36"
         >
           {loading ? (
             <>
@@ -359,7 +359,7 @@ export function PersonalProfile({
 
         <button
           onClick={onBack}
-          className="w-full h-11 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm hover:border-gray-300 transition-colors"
+          className="h-11 rounded-md border border-neutral-300 px-4 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 sm:min-w-28"
         >
           Back
         </button>

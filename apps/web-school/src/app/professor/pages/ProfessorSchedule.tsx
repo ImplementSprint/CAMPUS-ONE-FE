@@ -35,9 +35,9 @@ const DAY_COLORS: Record<string, string> = {
 /**
  * parseScheduleDays
  * Extracts day abbreviations from a schedule string like:
- *   "MWF 9:00 AM - 10:00 AM"  → ['Monday', 'Wednesday', 'Friday']
- *   "TTH 10:30 AM - 12:00 PM" → ['Tuesday', 'Thursday']
- *   "Monday 8:00 AM"           → ['Monday']
+ *   "MWF 9:00 AM - 10:00 AM"  maps to ['Monday', 'Wednesday', 'Friday']
+ *   "TTH 10:30 AM - 12:00 PM" maps to ['Tuesday', 'Thursday']
+ *   "Monday 8:00 AM"          maps to ['Monday']
  */
 function parseScheduleDays(schedule: string): string[] {
   if (!schedule) return ['Unscheduled'];
@@ -80,7 +80,7 @@ function parseScheduleDays(schedule: string): string[] {
 /**
  * groupByDay
  * Takes the flat list of class assignments and returns a map of
- * day → list of classes that meet on that day, sorted by day order.
+ * day maps to the list of classes that meet on that day, sorted by day order.
  */
 function groupByDay(classes: ClassAssignment[]): Map<string, ClassAssignment[]> {
   const map = new Map<string, ClassAssignment[]>();
@@ -205,7 +205,7 @@ export function ProfessorSchedule() {
                                 {cls.subject.code}
                               </span>
                               <span className="text-xs text-gray-500 font-medium">Section {cls.section}</span>
-                              <span className="text-xs text-gray-400">•</span>
+                              <span className="text-xs text-gray-400">-</span>
                               <span className="text-xs text-gray-400">{cls.subject.semester} {cls.subject.school_year}</span>
                             </div>
 

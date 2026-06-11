@@ -59,7 +59,7 @@ export function CreateAccount({ schoolLevel, applicantType, onSuccess }: CreateA
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 pt-5 pb-28">
+    <div className="px-4 pt-5 pb-5">
       <SelectionTags schoolLevel={schoolLevel} applicantType={applicantType} />
 
       {/* Context banner */}
@@ -95,19 +95,19 @@ export function CreateAccount({ schoolLevel, applicantType, onSuccess }: CreateA
       </div>
 
       {/* Fixed Bottom */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 space-y-3 z-20">
+      <div className="mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-4 sm:flex-row sm:items-center sm:justify-end">
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full h-12 rounded-xl bg-[#F59E0B] text-white font-bold text-sm tracking-wide shadow-lg shadow-amber-100 active:bg-[#D97706] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-campus-brand px-4 text-sm font-semibold text-campus-ink transition-colors hover:bg-campus-brandStrong hover:text-white disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-44"
         >
           {loading ? (
-            <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"/><path fill="currentColor" className="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Starting Application…</>
-          ) : "Start Application →"}
+            <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"/><path fill="currentColor" className="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Starting Application...</>
+          ) : "Start Application"}
         </button>
-        <p className="text-center text-xs text-gray-400">
+        <p className="text-center text-xs text-gray-500 sm:mr-auto sm:text-left">
           Already have a reference number?{" "}
-          <a href="/admissions/track" className="text-[#F59E0B] font-semibold hover:underline">
+          <a href="/admissions/track" className="font-semibold text-campus-brandStrong hover:underline">
             Track your application
           </a>
         </p>

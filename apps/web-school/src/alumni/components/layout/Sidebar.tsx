@@ -141,10 +141,10 @@ export function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-brand-lockup" aria-label="Campus Portal">
+        <div className="sidebar-brand-lockup" aria-label="Campus One Alumni Services">
           <p>
-            <span className="sidebar-brand-campus">CAMPUS</span>
-            <span className="sidebar-brand-portal"> Portal</span>
+            <span className="sidebar-brand-campus">Campus One</span>
+            <span className="sidebar-brand-portal"> Alumni</span>
           </p>
         </div>
       </div>

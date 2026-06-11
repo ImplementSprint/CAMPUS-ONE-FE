@@ -98,7 +98,7 @@ function EnrollPageContent() {
       <div className="p-6 w-full space-y-5">
         <div>
           <h1 className="text-xl font-black text-gray-900">Enrollment</h1>
-          <p className="text-sm text-gray-500">{program} • A.Y. {schoolYear}: {term}</p>
+          <p className="text-sm text-gray-500">{program} - A.Y. {schoolYear}: {term}</p>
         </div>
 
         {/* Mode toggle */}
@@ -106,12 +106,12 @@ function EnrollPageContent() {
           <button onClick={() => setMode('block')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition
               ${mode === 'block' ? 'bg-amber-500 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
-            ⊞ Block Schedule
+            Block Schedule
           </button>
           <button onClick={() => setMode('manual')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition
               ${mode === 'manual' ? 'bg-amber-500 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
-            ☰ Pick Subjects
+            Pick Subjects
           </button>
         </div>
 
@@ -122,11 +122,10 @@ function EnrollPageContent() {
         {loading ? <div className="text-center py-10 text-gray-400">Loading...</div> : (
 
           mode === 'block' ? (
-            /* ── BLOCK SCHEDULE ── */
+            /* BLOCK SCHEDULE */
             <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
               {offerings.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-3xl mb-3">⚠️</p>
                   <p className="font-semibold text-gray-700">No curriculum found for your program.</p>
                   <p className="text-sm text-gray-400 mt-1">Please use "Pick Subjects" mode or contact your adviser.</p>
                 </div>
@@ -135,7 +134,7 @@ function EnrollPageContent() {
                   <div className="flex justify-between bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-sm">
                     <span className="text-gray-500">Courses: <strong className="text-gray-900">{offerings.length}</strong></span>
                     <span className="text-gray-500">Units: <strong className="text-gray-900">{blockTotal}</strong></span>
-                    <span className="text-gray-500">Section: <strong className="text-gray-900">{offerings[0]?.section ?? '—'}</strong></span>
+                    <span className="text-gray-500">Section: <strong className="text-gray-900">{offerings[0]?.section ?? 'N/A'}</strong></span>
                   </div>
 
                   <div className="space-y-3">
@@ -145,9 +144,9 @@ function EnrollPageContent() {
                           <div className="flex-1">
                             <p className="font-black text-gray-900">{o.subjectCode}</p>
                             <p className="text-sm font-semibold text-gray-700 mt-0.5">{o.subjectTitle}</p>
-                            {o.schedule && <p className="text-xs text-gray-400 mt-2">🕐 {o.schedule}</p>}
-                            {o.room && <p className="text-xs text-gray-400">📍 {o.room}</p>}
-                            {!o.hasAssignment && <p className="text-xs text-amber-500 mt-1">⚠️ No class assigned yet</p>}
+                            {o.schedule && <p className="text-xs text-gray-400 mt-2">Schedule: {o.schedule}</p>}
+                            {o.room && <p className="text-xs text-gray-400">Room: {o.room}</p>}
+                            {!o.hasAssignment && <p className="text-xs text-amber-500 mt-1">No class assigned yet</p>}
                           </div>
                           <span className="bg-amber-400 text-white text-xs font-semibold px-3 py-1.5 rounded-full whitespace-nowrap">{o.units} Units</span>
                         </div>
@@ -171,14 +170,13 @@ function EnrollPageContent() {
               )}
             </div>
           ) : (
-            /* ── PICK SUBJECTS ── */
+            /* PICK SUBJECTS */
             <div className="space-y-4">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search subjects..."
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
 
               {filtered.length === 0 ? (
                 <div className="text-center py-8 text-gray-400">
-                  <p className="text-3xl mb-2">📚</p>
                   <p className="text-sm">No subjects available. Contact your adviser.</p>
                 </div>
               ) : (
@@ -194,18 +192,18 @@ function EnrollPageContent() {
                           <p className="text-xs text-gray-400 mt-1">{o.schedule ?? 'TBA'}</p>
                           {o.hasAssignment ? (
                             <p className={`text-xs mt-1 font-semibold ${low ? 'text-red-500' : 'text-gray-400'}`}>
-                              👥 {o.slotsTotal - o.slotsTaken}/{o.slotsTotal} slots
+                              {o.slotsTotal - o.slotsTaken}/{o.slotsTotal} slots
                             </p>
                           ) : (
-                            <p className="text-xs mt-1 text-amber-500">⚠️ No class assigned yet</p>
+                            <p className="text-xs mt-1 text-amber-500">No class assigned yet</p>
                           )}
                         </div>
                         <button
                           onClick={() => added ? setCart(p => p.filter(i => i.offeringId !== o.id)) : addToCart(o)}
                           disabled={(o.isFull || !o.hasAssignment) && !added}
-                          className={`w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-lg flex-shrink-0 transition
+                          className={`h-9 min-w-12 rounded-xl px-2 flex items-center justify-center text-white font-black text-xs flex-shrink-0 transition
                             ${added ? 'bg-green-500' : (o.isFull || !o.hasAssignment) ? 'bg-gray-300' : 'bg-amber-500 hover:bg-amber-600'}`}>
-                          {added ? '✓' : (o.isFull || !o.hasAssignment) ? '✕' : '+'}
+                          {added ? 'Added' : (o.isFull || !o.hasAssignment) ? 'Full' : '+'}
                         </button>
                       </div>
                     );
@@ -266,7 +264,6 @@ function EnrollPageContent() {
       {success && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-6">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center">
-            <p className="text-5xl mb-3">✅</p>
             <p className="font-black text-gray-900 text-lg mb-2">Enrollment Successful!</p>
             <p className="text-sm text-gray-500 mb-5">You have been enrolled in {success.count} subject{success.count !== 1 ? 's' : ''}.</p>
             <button onClick={() => { setSuccess(null); router.push('/dashboard'); }}

@@ -99,7 +99,7 @@ export default function AdvisedCoursesPage() {
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex justify-between text-sm">
                 <span className="text-gray-500">Total Courses: <strong className="text-gray-900">{courses.length}</strong></span>
                 <span className="text-gray-500">Total Units: <strong className="text-gray-900">{totalUnits}</strong></span>
-                <span className="text-gray-500">Section: <strong className="text-gray-900">{courses[0]?.section ?? '—'}</strong></span>
+                <span className="text-gray-500">Section: <strong className="text-gray-900">{courses[0]?.section ?? 'N/A'}</strong></span>
               </div>
 
               <div className="space-y-3">
@@ -109,9 +109,9 @@ export default function AdvisedCoursesPage() {
                     <div className="flex-1">
                       <p className="font-black text-gray-900">{c.code}</p>
                       <p className="text-sm text-gray-700 mt-0.5">{c.title}</p>
-                      <p className="text-xs text-gray-400 mt-1.5">Section: {c.section} • {c.units} Units</p>
-                      {c.schedule && <p className="text-xs text-gray-400">🕐 {c.schedule}</p>}
-                      {c.room && <p className="text-xs text-gray-400">📍 {c.room}</p>}
+                      <p className="text-xs text-gray-400 mt-1.5">Section: {c.section} - {c.units} Units</p>
+                      {c.schedule && <p className="text-xs text-gray-400">Schedule: {c.schedule}</p>}
+                      {c.room && <p className="text-xs text-gray-400">Room: {c.room}</p>}
                     </div>
                   </div>
                 ))}
@@ -134,7 +134,6 @@ export default function AdvisedCoursesPage() {
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <h2 className="text-lg font-black text-gray-900 mb-1">Adding / Dropping of Courses</h2>
             <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 flex gap-3 mb-5">
-              <span className="text-purple-500 mt-0.5">ℹ️</span>
               <div>
                 <p className="font-semibold text-gray-900 text-sm">Instructions</p>
                 <p className="text-sm text-gray-600 mt-1">Fill out the form and attach the required documentation. Submit for advisor approval.</p>
@@ -166,7 +165,6 @@ export default function AdvisedCoursesPage() {
                   </div>
                 ) : (
                   <label className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center cursor-pointer hover:border-amber-400 transition">
-                    <span className="text-2xl mb-2">☁️</span>
                     <p className="font-semibold text-gray-700 text-sm">Click to upload document</p>
                     <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX up to 10MB</p>
                     <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={e => setFile(e.target.files?.[0] ?? null)} />
@@ -182,12 +180,11 @@ export default function AdvisedCoursesPage() {
 
             {submitted && (
               <div className="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
-                <span className="text-blue-500 mt-0.5">⏳</span>
                 <div className="flex-1">
                   <p className="font-semibold text-blue-800 text-sm">Request In Progress</p>
                   <p className="text-sm text-gray-600 mt-0.5">Your add/drop request has been submitted and is under review.</p>
                 </div>
-                <button onClick={() => setSubmitted(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+                <button onClick={() => setSubmitted(false)} className="text-gray-400 hover:text-gray-600 text-sm font-semibold">Dismiss</button>
               </div>
             )}
           </div>

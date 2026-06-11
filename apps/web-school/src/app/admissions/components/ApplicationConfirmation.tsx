@@ -66,7 +66,7 @@ export function ApplicationConfirmation({
             </div>
             <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
               <p className="text-xs text-amber-800 font-semibold">
-                ⚠️ IMPORTANT: Save this reference number! You'll need it to track your application.
+                Important: Save this reference number. You'll need it to track your application.
               </p>
             </div>
           </div>

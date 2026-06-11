@@ -54,7 +54,7 @@ export function DashboardPage() {
     <section className="dashboard-screen">
       <header className="dashboard-hero">
         <div>
-          <h2>APICENTER Alumni Operations</h2>
+          <h2>Campus One Alumni Operations</h2>
           <p>Five-module admin workspace aligned to alumni registration, profile, card, record request, and graduation verification fields.</p>
         </div>
       </header>
@@ -90,7 +90,7 @@ export function DashboardPage() {
                   <strong>{moduleCard.title}</strong>
                   <small>{moduleCard.description}</small>
                 </span>
-                <span aria-hidden="true">→</span>
+                <span aria-hidden="true">Open</span>
               </Link>
             ))}
           </div>

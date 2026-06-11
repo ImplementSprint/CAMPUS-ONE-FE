@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from "react";
 import { Search, Eye, ArrowLeft, FileText } from "lucide-react";
-import type { AdmissionStatus } from "@/applicant/types/admissions.types";
+import type { AdmissionStatus } from "@/app/admissions/types/admissions.types";
 import { fetchAllApplications, type AdminApplication } from "@/admin/services/admin.service";
 
 interface ApplicationListProps {

@@ -23,6 +23,7 @@ export function ApplicationQueuePage({ onSelectApplication }: ApplicationQueuePa
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingBulk, setProcessingBulk] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   const loadApplications = async () => {
     setLoading(true);
@@ -55,16 +56,17 @@ export function ApplicationQueuePage({ onSelectApplication }: ApplicationQueuePa
     if (selectedApps.length === 0) return;
     if (!confirm(`Are you sure you want to approve the ${selectedApps.length} selected applications?\nThis will generate applicant numbers and send official acceptance emails.`)) return;
 
+    setStatusMessage(null);
     setProcessingBulk(true);
     try {
       await Promise.all(
         selectedApps.map(id => updateApplicationStatus(id, "Passed"))
       );
-      alert("Successfully approved selected applications!");
+      setStatusMessage({ type: "success", text: "Selected applications approved successfully." });
       setSelectedApps([]);
       await loadApplications();
     } catch (err: any) {
-      alert(`Error updating applications: ${err.message}`);
+      setStatusMessage({ type: "error", text: `Error updating applications: ${err.message}` });
     } finally {
       setProcessingBulk(false);
     }
@@ -78,16 +80,17 @@ export function ApplicationQueuePage({ onSelectApplication }: ApplicationQueuePa
     );
     if (reason === null) return; // User cancelled prompt
 
+    setStatusMessage(null);
     setProcessingBulk(true);
     try {
       await Promise.all(
         selectedApps.map(id => updateApplicationStatus(id, "Not Accepted", reason))
       );
-      alert("Successfully rejected selected applications.");
+      setStatusMessage({ type: "success", text: "Selected applications rejected successfully." });
       setSelectedApps([]);
       await loadApplications();
     } catch (err: any) {
-      alert(`Error updating applications: ${err.message}`);
+      setStatusMessage({ type: "error", text: `Error updating applications: ${err.message}` });
     } finally {
       setProcessingBulk(false);
     }
@@ -139,6 +142,18 @@ export function ApplicationQueuePage({ onSelectApplication }: ApplicationQueuePa
 
   return (
     <div className="p-10">
+      {statusMessage && (
+        <div
+          className={`mb-6 rounded-md border px-4 py-3 text-sm font-medium ${
+            statusMessage.type === "error"
+              ? "border-red-200 bg-red-50 text-red-700"
+              : "border-green-200 bg-green-50 text-green-700"
+          }`}
+          role={statusMessage.type === "error" ? "alert" : "status"}
+        >
+          {statusMessage.text}
+        </div>
+      )}
       {/* Filter Bar */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

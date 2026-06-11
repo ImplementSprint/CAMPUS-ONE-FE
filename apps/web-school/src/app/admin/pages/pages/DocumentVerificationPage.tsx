@@ -25,6 +25,7 @@ export function DocumentVerificationPage() {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   const loadVerificationList = async () => {
     setLoading(true);
@@ -42,14 +43,15 @@ export function DocumentVerificationPage() {
   const handleVerifyAll = async (applicantId: string, name: string) => {
     if (!confirm(`Are you sure you want to verify and approve all uploaded documents for ${name}?`)) return;
     
+    setStatusMessage(null);
     setActionId(applicantId);
     try {
       const res = await verifyApplicantDocuments(applicantId);
       if (res.error) throw new Error(res.error.message);
-      alert(`Successfully verified all documents for ${name}!`);
+      setStatusMessage({ type: "success", text: `Successfully verified all documents for ${name}.` });
       await loadVerificationList();
     } catch (err: any) {
-      alert(`Error verifying documents: ${err.message}`);
+      setStatusMessage({ type: "error", text: `Error verifying documents: ${err.message}` });
     } finally {
       setActionId(null);
     }
@@ -58,14 +60,15 @@ export function DocumentVerificationPage() {
   const handleRequestReupload = async (applicantId: string, name: string) => {
     if (!confirm(`Are you sure you want to flag missing or incorrect documents for ${name}?\nThis will request the student to re-upload them from their mobile app.`)) return;
 
+    setStatusMessage(null);
     setActionId(applicantId);
     try {
       const res = await requestApplicantDocumentReupload(applicantId);
       if (res.error) throw new Error(res.error.message);
-      alert(`Documents successfully flagged. Re-upload requests dispatched to ${name}'s mobile dashboard!`);
+      setStatusMessage({ type: "success", text: `Documents flagged. Re-upload requests dispatched to ${name}'s dashboard.` });
       await loadVerificationList();
     } catch (err: any) {
-      alert(`Error initiating re-upload request: ${err.message}`);
+      setStatusMessage({ type: "error", text: `Error initiating re-upload request: ${err.message}` });
     } finally {
       setActionId(null);
     }
@@ -111,6 +114,18 @@ export function DocumentVerificationPage() {
 
   return (
     <div className="p-10">
+      {statusMessage && (
+        <div
+          className={`mb-6 rounded-md border px-4 py-3 text-sm font-medium ${
+            statusMessage.type === "error"
+              ? "border-red-200 bg-red-50 text-red-700"
+              : "border-green-200 bg-green-50 text-green-700"
+          }`}
+          role={statusMessage.type === "error" ? "alert" : "status"}
+        >
+          {statusMessage.text}
+        </div>
+      )}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-32 bg-white rounded-2xl border border-gray-200 shadow-sm">
           <Loader2 className="w-12 h-12 text-[#F59E0B] animate-spin mb-4" />

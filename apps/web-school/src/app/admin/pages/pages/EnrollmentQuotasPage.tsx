@@ -10,6 +10,7 @@ interface Quota {
 }
 
 export function EnrollmentQuotasPage() {
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [quotas] = useState<Quota[]>([
     { id: "Q-001", program: "BS Computer Science", totalSlots: 120, accepted: 98, remaining: 22 },
     { id: "Q-002", program: "BS Business Administration", totalSlots: 100, accepted: 85, remaining: 15 },
@@ -29,6 +30,11 @@ export function EnrollmentQuotasPage() {
 
   return (
     <div className="p-10">
+      {statusMessage && (
+        <div className="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800" role="status">
+          {statusMessage}
+        </div>
+      )}
       <div className="space-y-6">
         {quotas.map((quota) => {
           const percentFilled = getPercentFilled(quota.accepted, quota.totalSlots);
@@ -51,7 +57,7 @@ export function EnrollmentQuotasPage() {
                   <p className="text-sm text-gray-500 font-mono">{quota.id}</p>
                 </div>
                 <button
-                  onClick={() => alert(`Edit quota for ${quota.program}`)}
+                  onClick={() => setStatusMessage(`Quota editing requires the enrollment quota service for ${quota.program}.`)}
                   className="p-2 text-[#F59E0B] hover:bg-amber-50 rounded-lg transition-colors"
                 >
                   <Edit className="w-5 h-5" />

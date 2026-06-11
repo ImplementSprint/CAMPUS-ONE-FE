@@ -93,6 +93,9 @@
 .form-block h3 { margin: 0; color: #f8f9fc; font-size: 1rem; }
 .form-grid label { display: grid; gap: 6px; color: #f4f6fa; font-size: 0.9rem; }
 .form-grid input, .form-grid select, .form-grid textarea { border: 1px solid var(--line); background: #0d121a; color: #f2f6ff; border-radius: 10px; padding: 10px 11px; font: inherit; width: 100%; }
+.form-message { border: 1px solid; border-radius: 10px; margin: 0; padding: 11px 12px; font-size: 0.9rem; font-weight: 650; }
+.form-message--error { border-color: #7f3030; background: #2a1618; color: #ffc9c9; }
+.form-message--success { border-color: #2f6e46; background: #12291d; color: #b9efca; }
 .option-stack { display: grid; gap: 10px; }
 .option-item { border: 1px solid var(--line); background: #0d121a; border-radius: 10px; padding: 10px 12px; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; cursor: pointer; }
 .option-item input { width: 16px; height: 16px; margin: 0; accent-color: var(--brand); }
@@ -148,6 +151,9 @@
 .registration-hero h1 { margin: 0 0 8px; color: #f5b000; font-size: clamp(1.2rem, 2vw, 1.6rem); }
 .registration-hero p { margin: 0; color: #d6dde8; font-size: 0.95rem; }
 .registration-form { display: grid; gap: 12px; }
+.registration-message { border-radius: 10px; border: 1px solid; padding: 12px 14px; font-size: 0.94rem; font-weight: 650; }
+.registration-message--error { border-color: #f0b8b8; background: #fff1f1; color: #8d2424; }
+.registration-message--success { border-color: #9fd5b4; background: #effaf3; color: #1e6b3a; }
 .registration-section { padding: 16px 12px 14px; background: #ffffff; border-radius: 14px; box-shadow: 0 0 0 1px rgba(17,17,17,0.03); }
 .registration-section h2 { margin: 0 0 14px; color: #18263f; font-size: 1.1rem; }
 .field-grid { display: grid; gap: 12px; }
@@ -155,6 +161,7 @@
 .form-field { display: grid; gap: 7px; }
 .form-field > span { font-size: 0.88rem; color: #374b6b; font-weight: 700; }
 .form-field > span strong { color: #e94f4f; }
+.field-help { color: #6d7890; }
 .form-field input, .form-field select { width: 100%; border: 1px solid #d9dfeb; border-radius: 10px; min-height: 44px; padding: 0 14px; font: inherit; color: #142036; background: #ffffff; }
 .registration-consent { padding: 14px 12px; background: #ffffff; border-radius: 14px; }
 .registration-submit { min-height: 58px; border: 0; border-radius: 12px; background: #f5b000; color: #111111; font-size: 1.05rem; font-weight: 800; cursor: pointer; width: 100%; }

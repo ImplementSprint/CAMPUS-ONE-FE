@@ -31,7 +31,6 @@ export default function CoursesPage() {
         {loading ? <div className="text-center py-10 text-gray-400">Loading...</div>
           : courses.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center">
-              <p className="text-3xl mb-3">📚</p>
               <p className="font-black text-gray-900">No enrolled courses</p>
               <p className="text-sm text-gray-500 mt-1">You are not enrolled in any courses yet.</p>
             </div>
@@ -48,11 +47,11 @@ export default function CoursesPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <p className="font-black text-gray-900">{c.subjectName}</p>
-                        <p className="text-sm text-gray-500 mt-0.5">{c.subjectCode} • {c.section} • {c.units} units</p>
+                        <p className="text-sm text-gray-500 mt-0.5">{c.subjectCode} - {c.section} - {c.units} units</p>
                         <div className="mt-3 space-y-1.5">
-                          {c.schedule && <p className="text-sm text-gray-600">🕐 {c.schedule}</p>}
-                          {c.room && <p className="text-sm text-gray-600">📍 {c.room}</p>}
-                          {c.instructor && <p className="text-sm text-gray-600">👤 {c.instructor}</p>}
+                          {c.schedule && <p className="text-sm text-gray-600">Schedule: {c.schedule}</p>}
+                          {c.room && <p className="text-sm text-gray-600">Room: {c.room}</p>}
+                          {c.instructor && <p className="text-sm text-gray-600">Instructor: {c.instructor}</p>}
                         </div>
                       </div>
                       <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full whitespace-nowrap">Enrolled</span>

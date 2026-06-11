@@ -56,9 +56,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="px-5 py-5 flex items-center justify-between border-b border-gray-800">
         <div className="flex items-center gap-3">
           <img src="/logo.png" alt="Campus One" className="w-10 h-10 object-contain rounded-sm" />
-          <div className="text-sm font-extrabold">
-            <span className="text-amber-500">CAMPUS</span>
-            <span className="text-white"> Portal</span>
+          <div className="flex flex-col leading-tight">
+            <span className="text-sm font-semibold text-white">Campus One</span>
+            <span className="text-xs font-medium text-amber-500">Student Portal</span>
           </div>
         </div>
         {onClose && (

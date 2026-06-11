@@ -19,8 +19,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
 
       {/* Center: branding */}
       <div className="flex items-center gap-0.5">
-        <span className="text-[#F59E0B] font-bold text-base tracking-tight">CAMPUS</span>
-        <span className="text-white font-light text-base tracking-tight">Admin</span>
+        <span className="text-white font-semibold text-base tracking-tight">Campus One Admin</span>
       </div>
 
       {/* Right: admin avatar */}

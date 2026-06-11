@@ -136,7 +136,7 @@ export function ProgramSelection({
     schoolLevel === "Kinder"
   ) {
     return (
-      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-36">
+      <div className="px-4 pt-5 pb-5">
         <SelectionTags schoolLevel={schoolLevel} applicantType={applicantType} />
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -152,16 +152,16 @@ export function ProgramSelection({
           </div>
         </div>
 
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
+        <div className="mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-4 sm:flex-row sm:justify-end">
           <button
             onClick={handleContinue}
-            className="w-full h-12 rounded-xl bg-[#F59E0B] text-white font-bold text-sm tracking-wide shadow-lg shadow-amber-100 active:bg-[#D97706] transition-all"
+            className="h-11 rounded-md bg-campus-brand px-4 text-sm font-semibold text-campus-ink transition-colors hover:bg-campus-brandStrong hover:text-white sm:min-w-36"
           >
-            Continue →
+            Continue
           </button>
           <button
             onClick={onBack}
-            className="w-full h-12 rounded-xl bg-white border-2 border-[#F59E0B] text-[#F59E0B] font-bold text-sm tracking-wide active:bg-gray-50 transition-all"
+            className="h-11 rounded-md border border-neutral-300 px-4 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 sm:min-w-28"
           >
             Back
           </button>
@@ -175,7 +175,7 @@ export function ProgramSelection({
     const availablePrograms = getAvailablePrograms();
 
     return (
-      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-36">
+      <div className="px-4 pt-5 pb-5">
         <SelectionTags schoolLevel={schoolLevel} applicantType={applicantType} />
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
@@ -239,21 +239,21 @@ export function ProgramSelection({
           )}
         </div>
 
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
+        <div className="mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-4 sm:flex-row sm:justify-end">
           <button
             onClick={handleContinue}
             disabled={!canContinue()}
-            className={`w-full h-12 rounded-xl font-bold text-sm tracking-wide transition-all ${
+            className={`h-11 rounded-md px-4 text-sm font-semibold transition-colors sm:min-w-36 ${
               canContinue()
-                ? "bg-[#F59E0B] text-white shadow-lg shadow-amber-100 active:bg-[#D97706]"
+                ? "bg-campus-brand text-campus-ink hover:bg-campus-brandStrong hover:text-white"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
             }`}
           >
-            Continue →
+            Continue
           </button>
           <button
             onClick={onBack}
-            className="w-full h-12 rounded-xl bg-white border-2 border-[#F59E0B] text-[#F59E0B] font-bold text-sm tracking-wide active:bg-gray-50 transition-all"
+            className="h-11 rounded-md border border-neutral-300 px-4 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 sm:min-w-28"
           >
             Back
           </button>
@@ -265,7 +265,7 @@ export function ProgramSelection({
   // Senior High School track selection
   if (schoolLevel === "Senior High School") {
     return (
-      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-36">
+      <div className="px-4 pt-5 pb-5">
         <SelectionTags schoolLevel={schoolLevel} applicantType={applicantType} />
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
@@ -319,21 +319,21 @@ export function ProgramSelection({
           )}
         </div>
 
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20 space-y-2.5">
+        <div className="mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-4 sm:flex-row sm:justify-end">
           <button
             onClick={handleContinue}
             disabled={!canContinue()}
-            className={`w-full h-12 rounded-xl font-bold text-sm tracking-wide transition-all ${
+            className={`h-11 rounded-md px-4 text-sm font-semibold transition-colors sm:min-w-36 ${
               canContinue()
-                ? "bg-[#F59E0B] text-white shadow-lg shadow-amber-100 active:bg-[#D97706]"
+                ? "bg-campus-brand text-campus-ink hover:bg-campus-brandStrong hover:text-white"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
             }`}
           >
-            Continue →
+            Continue
           </button>
           <button
             onClick={onBack}
-            className="w-full h-12 rounded-xl bg-white border-2 border-[#F59E0B] text-[#F59E0B] font-bold text-sm tracking-wide active:bg-gray-50 transition-all"
+            className="h-11 rounded-md border border-neutral-300 px-4 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 sm:min-w-28"
           >
             Back
           </button>

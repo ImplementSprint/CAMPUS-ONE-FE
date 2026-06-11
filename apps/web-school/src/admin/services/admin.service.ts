@@ -1,5 +1,5 @@
 import { supabase } from "@/shared/lib/supabase";
-import type { SchoolLevel, ApplicantType, AdmissionStatus, SupabaseResponse } from "@/applicant/types/admissions.types";
+import type { SchoolLevel, ApplicantType, AdmissionStatus, SupabaseResponse } from "@/app/admissions/types/admissions.types";
 import { sendEmail } from "@/services/email.service";
 import {
   getAdmissionsApplicationDetail,

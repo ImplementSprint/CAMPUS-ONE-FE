@@ -30,6 +30,7 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
   const [examSchedule, setExamSchedule] = useState("");
   const [applicationStatus, setApplicationStatus] = useState<AdmissionStatus>("Under Review");
   const [loading, setLoading] = useState(true);
+  const [actionMessage, setActionMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   const admissionFee = 600.00;
 
@@ -52,74 +53,69 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
   };
 
   const taskList = [
-    { id: 1, text: "Encode Lorem Ipsum.", completed: true },
-    { id: 2, text: "Received Lorem Ipsum.", completed: true },
-    { id: 3, text: "Accomplish the Following.", completed: true, subtasks: [
-      "Lorem Ipsum",
-      "Lorem Ipsum Dolor",
-      "Update Lorem Ipsum",
-      "Upload Lorem Ipsum",
-      "Encode Lorem Ipsum",
-      "Answer Lorem Ipsum."
+    { id: 1, text: "Create applicant account.", completed: true },
+    { id: 2, text: "Submit personal, parent, and academic information.", completed: true },
+    { id: 3, text: "Complete required admissions documents.", completed: true, subtasks: [
+      "Review the document checklist",
+      "Upload required files",
+      "Wait for records office validation",
+      "Resolve missing or unclear documents when requested"
     ]},
-    { id: 4, text: "Accomplish Lorem Ipsum.", completed: true },
-    { id: 5, text: "Receive Lorem Ipsum.", completed: false },
-    { id: 6, text: "Select Lorem Ipsum.", completed: false },
-    { id: 7, text: "Pay Lorem Ipsum.", completed: false },
+    { id: 4, text: "Wait for admissions review.", completed: applicationStatus === "Passed" },
+    { id: 5, text: "Select an exam schedule when available.", completed: false },
+    { id: 6, text: "Pay the admission fee after acceptance.", completed: paymentCompleted },
   ];
 
   const activityLogs: ActivityLogEntry[] = [
     {
       sequence: 1,
-      activityName: "LOREM IPSUM RECEIVED.",
-      action: "1-JAN-25",
-      newActivity: "CONTINUE THE REGISTRATION"
+      activityName: "APPLICATION CREATED",
+      action: "Submitted",
+      newActivity: "Complete applicant profile"
     },
     {
       sequence: 2,
-      activityName: "COMPLETE THE LOREM IPSUM APPLICATION.",
-      action: "1-JAN-25",
-      newActivity: "WAIT FOR THE ORAD TO VERIFY YOU REQUIREMENTS AND ENCODED GRADES"
+      activityName: "PROFILE AND DOCUMENTS SUBMITTED",
+      action: "Submitted",
+      newActivity: "Wait for records validation"
     },
     {
       sequence: 3,
-      activityName: "LOREM IPSUM VERIFIED.",
-      action: "3-JAN-25",
-      newActivity: "PROCEED WITH ONLINE PAYMENT"
+      activityName: "ADMISSIONS REVIEW",
+      action: applicationStatus,
+      newActivity: applicationStatus === "Passed" ? "Proceed with payment and exam scheduling" : "Wait for admissions decision"
     },
     {
       sequence: 4,
-      activityName: "PAID LOREM IPSUM FEE",
-      action: "4-JAN-25",
-      newActivity: "DOWNLOAD TEST PERMIT"
-    },
-    {
-      sequence: 5,
-      activityName: "PRINTED LOREM IPSUM TEST PERMIT",
-      action: "5-JAN-25",
-      newActivity: "TAKE THE TEST"
+      activityName: "ADMISSION FEE",
+      action: paymentCompleted ? "Paid" : "Pending",
+      newActivity: paymentCompleted ? "Download official receipt" : "Complete payment when available"
     },
   ];
 
   const handlePayment = () => {
-    // TODO: Integrate with payment gateway
-    console.log("Processing payment with method:", paymentMethod);
     setPaymentCompleted(true);
+    setActionMessage({ type: "success", text: "Payment recorded for this session. Connect the payment gateway before using this in production." });
   };
 
   const handlePrintReceipt = () => {
-    // TODO: Generate and print receipt
-    console.log("Printing receipt");
+    setActionMessage({ type: "success", text: "Receipt generation will use the official payment record once the gateway is connected." });
   };
 
   const handleSubmitTestingCenter = () => {
-    // TODO: Submit testing center selection
-    console.log("Selected testing center:", selectedTestingCenter);
+    if (!selectedTestingCenter) {
+      setActionMessage({ type: "error", text: "Select an exam schedule before submitting." });
+      return;
+    }
+    setActionMessage({ type: "success", text: "Exam schedule selection saved for this session." });
   };
 
   const handleSubmitReschedule = () => {
-    // TODO: Submit reschedule request
-    console.log("Reschedule request:", { examSchedule, rescheduleReason });
+    if (!examSchedule || !rescheduleReason.trim()) {
+      setActionMessage({ type: "error", text: "Select a new schedule and provide a reason for the reschedule request." });
+      return;
+    }
+    setActionMessage({ type: "success", text: "Reschedule request prepared for admissions review." });
   };
 
   const isAccepted = applicationStatus === "Passed";
@@ -132,13 +128,24 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
       <div className="px-4 pt-5 pb-8">
         <SelectionTags schoolLevel={schoolLevel} applicantType={applicantType} />
 
-        {/* Application Status Debug (remove in production) */}
-        <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-xs text-blue-800">
-            <span className="font-semibold">Status:</span> {applicationStatus} 
-            {isAccepted && <span className="ml-2 text-green-600">✓ Payment tab visible</span>}
+        <div className="mb-3 rounded-lg border border-gray-200 bg-white p-3">
+          <p className="text-xs text-gray-700">
+            <span className="font-semibold">Application status:</span> {applicationStatus}
           </p>
         </div>
+
+        {actionMessage && (
+          <div
+            className={`mb-3 rounded-md border px-3 py-2 text-sm font-medium ${
+              actionMessage.type === "error"
+                ? "border-red-200 bg-red-50 text-red-700"
+                : "border-green-200 bg-green-50 text-green-700"
+            }`}
+            role={actionMessage.type === "error" ? "alert" : "status"}
+          >
+            {actionMessage.text}
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
@@ -205,7 +212,7 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
                         {task.subtasks && (
                           <ul className="ml-4 mt-2 space-y-1">
                             {task.subtasks.map((subtask, idx) => (
-                              <li key={idx} className="text-xs text-gray-600">• {subtask}</li>
+                              <li key={idx} className="text-xs text-gray-600">- {subtask}</li>
                             ))}
                           </ul>
                         )}
@@ -224,7 +231,7 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
 
               <div className="p-4">
                 <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Choose the exam schedule assigned by admissions. Available slots depend on your school level and applicant type.
                 </p>
 
                 <div className="mb-4">
@@ -235,9 +242,9 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
                     className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#F59E0B]"
                   >
                     <option value="">Select schedule</option>
-                    <option value="schedule1">Lorem Ipsum - January 15, 2025</option>
-                    <option value="schedule2">Lorem Ipsum - January 20, 2025</option>
-                    <option value="schedule3">Lorem Ipsum - January 25, 2025</option>
+                    <option value="morning">Main Campus - Morning Session</option>
+                    <option value="afternoon">Main Campus - Afternoon Session</option>
+                    <option value="online">Online Proctored Session</option>
                   </select>
                 </div>
 
@@ -258,7 +265,7 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
 
               <div className="p-4">
                 <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Request a different exam schedule when the assigned slot conflicts with your availability. Admissions will review the request.
                 </p>
 
                 <div className="mb-4">
@@ -269,8 +276,8 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
                     className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#F59E0B]"
                   >
                     <option value="">Select new schedule</option>
-                    <option value="schedule1">Lorem Ipsum - February 1, 2025</option>
-                    <option value="schedule2">Lorem Ipsum - February 5, 2025</option>
+                    <option value="next-week">Next available weekday</option>
+                    <option value="weekend">Next available weekend</option>
                   </select>
                 </div>
 
@@ -309,7 +316,7 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
                 <>
                   <div className="text-center mb-6">
                     <p className="text-xs font-semibold text-gray-600 mb-2">ADMISSION FEE:</p>
-                    <p className="text-3xl font-bold text-red-600">₱{admissionFee.toFixed(2)}</p>
+                    <p className="text-3xl font-bold text-red-600">PHP {admissionFee.toFixed(2)}</p>
                   </div>
 
                   <div className="space-y-3 mb-6">
@@ -365,7 +372,7 @@ export function ActivityLog({ schoolLevel, applicantType, applicantId }: Activit
                     <CheckCircle2 className="w-8 h-8 text-green-600" />
                   </div>
                   <p className="text-lg font-semibold text-gray-800 mb-2">Payment Successful!</p>
-                  <p className="text-sm text-gray-600 mb-6">Thank you for your payment. ♥</p>
+                  <p className="text-sm text-gray-600 mb-6">Thank you for your payment.</p>
                   <button
                     onClick={handlePrintReceipt}
                     className="px-6 h-11 rounded-lg bg-[#1a1a1a] text-white font-semibold text-sm hover:bg-black transition-all"

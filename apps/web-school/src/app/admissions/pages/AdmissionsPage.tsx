@@ -81,6 +81,7 @@ export function AdmissionsPage() {
     applicationStatus: null,
     referenceNumber: null,
   });
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const updateSession = (patch: Partial<AppSession>) =>
     setSession((prev) => ({ ...prev, ...patch }));
@@ -127,26 +128,12 @@ export function AdmissionsPage() {
 
   const handleSubmitApplication = async () => {
     if (!session.applicantId) return;
+    setSubmitError(null);
     
     const res = await submitApplication(session.applicantId);
     if (res.error) {
-      alert(`Error submitting application: ${res.error.message}`);
+      setSubmitError(`Unable to submit application: ${res.error.message}`);
     } else {
-      // Send confirmation email
-const { sendApplicationConfirmationEmail } = await import("@/services/email.service");
-      const emailResult = await sendApplicationConfirmationEmail({
-        to: session.email,
-        applicantName: `${session.firstName} ${session.lastName}`.trim() || "Applicant",
-        referenceNumber: res.data!.reference_number,
-        schoolLevel: session.schoolLevel!,
-        applicantType: session.applicantType!,
-      });
-      
-      if (!emailResult.success) {
-        console.error("Failed to send confirmation email:", emailResult.error);
-        // Don't block the flow if email fails, just log it
-      }
-      
       updateSession({ 
         step: "confirmation", 
         referenceNumber: res.data!.reference_number 
@@ -170,7 +157,7 @@ const { sendApplicationConfirmationEmail } = await import("@/services/email.serv
     }
     
     // Allow navigation to result, program, documents, personal-profile, parent-info, academic-background, alumni-info, and activity-log
-    if (step === "result" || step === "program" || step === "documents" || step === "personal-profile" || step === "parent-info" || step === "academic-background" || step === "alumni-info" || step === "activity-log") {
+    if (step === "result" || step === "program-selection" || step === "documents" || step === "personal-profile" || step === "parent-info" || step === "academic-background" || step === "alumni-info" || step === "activity-log") {
       updateSession({ step: step as AppSession["step"] });
     }
   };
@@ -217,7 +204,7 @@ const { sendApplicationConfirmationEmail } = await import("@/services/email.serv
       {/* ── SELECT SCREEN ──────────────────────────────────────────────── */}
       {session.step === "select" && (
         <>
-          <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28 space-y-5">
+          <div className="px-4 pt-4 pb-5 space-y-5">
             <SchoolLevelSelection selected={session.schoolLevel} onSelect={handleLevelSelect} />
             {session.schoolLevel && (
               <ApplicantTypeSelection
@@ -227,17 +214,17 @@ const { sendApplicationConfirmationEmail } = await import("@/services/email.serv
               />
             )}
           </div>
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20">
+          <div className="mx-4 mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-4 pb-5 sm:flex-row sm:justify-end">
             <button
               onClick={handleContinueFromSelect}
               disabled={!canContinueFromSelect}
-              className={`w-full h-12 rounded-xl font-bold text-sm tracking-wide transition-all ${
+              className={`h-11 rounded-md px-4 text-sm font-semibold transition-colors sm:min-w-40 ${
                 canContinueFromSelect
-                  ? "bg-[#F59E0B] text-white shadow-lg shadow-amber-100 active:bg-[#D97706]"
+                  ? "bg-campus-brand text-campus-ink hover:bg-campus-brandStrong hover:text-white"
                   : "bg-gray-100 text-gray-400 cursor-not-allowed"
               }`}
             >
-              Continue →
+              Continue
             </button>
           </div>
         </>
@@ -311,7 +298,7 @@ const { sendApplicationConfirmationEmail } = await import("@/services/email.serv
       {/* ── DOCUMENT CENTER ─────────────────────────────────────────────── */}
       {session.step === "documents" && session.schoolLevel && session.applicantType && session.applicantId && (
         <>
-          <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28">
+          <div className="px-4 pt-4">
             <DocumentCenter
               requirements={requirements}
               schoolLevel={session.schoolLevel}
@@ -319,12 +306,20 @@ const { sendApplicationConfirmationEmail } = await import("@/services/email.serv
               applicantId={session.applicantId}
             />
           </div>
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 z-20">
+          <div className="mx-4 mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-4 pb-5 sm:flex-row sm:justify-end">
+            {submitError && (
+              <p
+                className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 sm:mr-auto"
+                role="alert"
+              >
+                {submitError}
+              </p>
+            )}
             <button
               onClick={handleSubmitApplication}
-              className="w-full h-12 rounded-xl bg-[#1a1a1a] text-white font-bold text-sm tracking-wide active:bg-gray-800 transition-all shadow-lg"
+              className="h-11 rounded-md bg-campus-ink px-4 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 sm:min-w-44"
             >
-              Submit Application →
+              Submit Application
             </button>
           </div>
         </>

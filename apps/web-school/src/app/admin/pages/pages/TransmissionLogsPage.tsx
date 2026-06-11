@@ -13,6 +13,7 @@ interface Log {
 export function TransmissionLogsPage() {
   const [eventFilter, setEventFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [retryMessage, setRetryMessage] = useState<string | null>(null);
 
   const [logs] = useState<Log[]>([
     {
@@ -95,6 +96,11 @@ export function TransmissionLogsPage() {
 
   return (
     <div className="p-10">
+      {retryMessage && (
+        <div className="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800" role="status">
+          {retryMessage}
+        </div>
+      )}
       {/* Filters */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -166,7 +172,7 @@ export function TransmissionLogsPage() {
                     <td className="px-6 py-4">
                       {log.status === "Failed" && (
                         <button
-                          onClick={() => alert(`Retrying ${log.id}`)}
+                          onClick={() => setRetryMessage(`Retry queued for ${log.id}.`)}
                           className="p-2 text-[#F59E0B] hover:bg-amber-50 rounded-lg transition-colors"
                           title="Retry Failed"
                         >
